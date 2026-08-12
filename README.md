@@ -81,6 +81,8 @@ Both `apps/web/app/api/` and `apps/api/` exist on purpose. Delivery 1 left the b
 
 Next.js · React · TypeScript · Node 22 · Express · PostgreSQL 17 · pnpm workspaces · Turborepo · Docker Compose · ESLint and Prettier. LangGraph and n8n from release 2.
 
+TypeScript only. No `.js` or `.jsx` in the repo, config included: `tsconfig.base.json` sets `allowJs: false`, and ESLint fails any JavaScript file it is pointed at.
+
 ## Getting started
 
 Nothing to run yet. Once the apps are scaffolded:

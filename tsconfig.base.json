@@ -6,6 +6,8 @@
     "moduleResolution": "bundler",
     "jsx": "preserve",
     "strict": true,
+    "allowJs": false,
+    "checkJs": false,
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
     "isolatedModules": true,
