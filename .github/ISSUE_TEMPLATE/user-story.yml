@@ -1,0 +1,52 @@
+name: User story (US)
+description: A feature described from the user's need.
+title: "[US] "
+labels: ["user-story"]
+body:
+  - type: textarea
+    id: story
+    attributes:
+      label: Story
+      description: Connextra format.
+      value: |
+        As a <role>
+        I want <action>
+        so that <benefit>
+    validations:
+      required: true
+  - type: textarea
+    id: criteria
+    attributes:
+      label: Acceptance criteria
+      description: One per line, Given / When / Then.
+      value: |
+        - [ ] Given ... when ... then ...
+        - [ ] Given ... when ... then ...
+    validations:
+      required: true
+  - type: dropdown
+    id: release
+    attributes:
+      label: Story map release
+      options: ["Release 1", "Release 2", "Release 3"]
+    validations:
+      required: true
+  - type: input
+    id: owner
+    attributes:
+      label: Owner
+      placeholder: Pablo / Miguel / Valentina
+    validations:
+      required: true
+  - type: input
+    id: estimate
+    attributes:
+      label: Estimate (story points)
+      placeholder: "1, 2, 3, 5, 8"
+  - type: textarea
+    id: tasks
+    attributes:
+      label: Tasks
+      value: |
+        - [ ] 
+        - [ ] 

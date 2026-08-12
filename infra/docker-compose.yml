@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: match-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: match
+      POSTGRES_PASSWORD: match
+      POSTGRES_DB: match
+    ports:
+      - "5432:5432"
+    volumes:
+      - match-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U match -d match"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  match-pgdata:

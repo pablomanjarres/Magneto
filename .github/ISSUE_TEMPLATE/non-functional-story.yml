@@ -1,0 +1,40 @@
+name: Non-functional story (NFS)
+description: A quality, security or performance requirement. Section 10 of the Magneto brief.
+title: "[NFS] "
+labels: ["user-story", "non-functional"]
+body:
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - Authentication and authorization (JWT / session / roles)
+        - Input validation and sanitization
+        - Rate limiting
+        - Secret management
+        - Logging without sensitive data
+        - Performance
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: requirement
+    attributes:
+      label: Requirement
+      description: What the system must satisfy, and under which standard (OWASP Top 10 / ASVS).
+    validations:
+      required: true
+  - type: textarea
+    id: criteria
+    attributes:
+      label: Acceptance criteria
+      value: |
+        - [ ] 
+        - [ ] 
+    validations:
+      required: true
+  - type: input
+    id: owner
+    attributes:
+      label: Owner
+      placeholder: Pablo / Miguel / Valentina

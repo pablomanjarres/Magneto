@@ -1,0 +1,12 @@
+{
+  "//": "Solution-style root, for editor resolution across the monorepo only. Each workspace owns a tsconfig that extends tsconfig.base.json; turbo orchestrates cross-package builds.",
+  "files": [],
+  "include": [],
+  "references": [
+    { "path": "packages/types" },
+    { "path": "packages/core" },
+    { "path": "packages/db" },
+    { "path": "apps/web" },
+    { "path": "apps/api" }
+  ]
+}

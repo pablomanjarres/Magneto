@@ -1,0 +1,21 @@
+name: Technical task
+description: Work with no user-facing face (setup, refactor, infrastructure, tech debt).
+title: "[Task] "
+labels: ["task"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: What needs doing
+    validations:
+      required: true
+  - type: input
+    id: story
+    attributes:
+      label: Related story
+      placeholder: "#12"
+  - type: input
+    id: owner
+    attributes:
+      label: Owner
+      placeholder: Pablo / Miguel / Valentina

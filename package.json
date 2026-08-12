@@ -1,0 +1,32 @@
+{
+  "name": "match",
+  "version": "0.1.0",
+  "description": "Profile Manager for the Magneto challenge (EAFIT SI2005, 2026-2). See docs/architecture.md.",
+  "private": true,
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
+    "test": "turbo test",
+    "db:up": "docker compose -f infra/docker-compose.yml up -d",
+    "db:down": "docker compose -f infra/docker-compose.yml down",
+    "db:migrate": "pnpm --filter @match/db migrate",
+    "db:seed": "pnpm --filter @match/db seed",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json,yml,yaml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,md,json,yml,yaml}\""
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.4",
+    "@types/node": "^25.9.3",
+    "eslint": "^10.4.0",
+    "prettier": "^3.3.3",
+    "turbo": "^2.3.3",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "8.60.1"
+  }
+}

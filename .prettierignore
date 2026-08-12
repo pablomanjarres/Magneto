@@ -1,0 +1,9 @@
+node_modules
+dist
+.next
+.turbo
+coverage
+.DS_Store
+
+# Don't reformat SQL DDL: column order and quoting matter
+packages/db/migrations/**/*.sql
