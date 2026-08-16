@@ -15,6 +15,7 @@ next-env.d.ts
 .turbo
 .vercel
 coverage
+assets/brand/.build/
 
 # secrets. Never, not even "just for testing"
 .env
