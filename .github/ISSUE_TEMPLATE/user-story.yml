@@ -1,6 +1,6 @@
 name: User story (US)
 description: A feature described from the user's need.
-title: "[US] "
+title: "[HU] "
 labels: ["user-story"]
 body:
   - type: textarea
