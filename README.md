@@ -19,9 +19,7 @@ Our answer to the Profile Manager challenge from **Magneto**, for Ingeniería de
 
 Candidates leave their profile half-filled and wait to be contacted, which wrecks match quality for everyone. Moon Light takes a résumé and a set of expectations, says exactly what is missing to reach 100%, and ranks jobs by a weighted score with its reasons attached. The MVP runs locally against our own dataset, since the challenge gives no access to real Magneto postings.
 
-This repository is the whole submission. The link to it is the delivery.
-
-Status: planning. Nothing is built yet. Delivery 1 is due **19 August 2026**, checklist in [`docs/deliverables/delivery-1/`](docs/deliverables/delivery-1/README.md).
+Status: Building. Delivery 1 is due **19 August 2026**, checklist in [`docs/deliverables/delivery-1/`](docs/deliverables/delivery-1/README.md).
 
 ## Layout
 
@@ -41,16 +39,6 @@ moonlight/
 ├── infra/              # local Postgres, n8n workflow exports
 └── tests/e2e/
 ```
-
-`packages/core` imports nothing, so business rules cannot reach the database or the framework.
-
-Both `apps/web/app/api/` and `apps/api/` exist on purpose. The backend choice is still open between Next API routes and a standalone Express service, so both get measured before one is deleted.
-
-## Stack
-
-Next.js · React · TypeScript · Node 22 · Express · PostgreSQL 17 · pnpm workspaces · Turborepo · Docker Compose. LangGraph and n8n from release 2.
-
-TypeScript only, config included. `tsconfig.base.json` sets `allowJs: false` and ESLint fails any JavaScript file.
 
 ## Getting started
 
@@ -85,7 +73,6 @@ pnpm format:check
 | Pablo Manjarrés | Team lead and development. Architecture, backlog, MVP, proof of concept, coordination with the external contacts |
 | Valentina Barbosa | Documentation and communication. Delivery document, presentation, prior art, sketches, video |
 
-Product Owner: Magneto. Technical lead and monitor: to be confirmed.
 
 ## License
 
