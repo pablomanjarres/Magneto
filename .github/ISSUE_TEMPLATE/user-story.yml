@@ -35,7 +35,7 @@ body:
     id: owner
     attributes:
       label: Owner
-      placeholder: Pablo / Miguel / Valentina
+      placeholder: Pablo / Valentina
     validations:
       required: true
   - type: input

@@ -119,8 +119,7 @@ The delivery document cannot be AI-generated, and no AI may produce design artif
 
 | Name | Role |
 |---|---|
-| Pablo Manjarrés | Team lead and development. Architecture, backlog, coordination with the external contacts |
-| Miguel Ángel Riveros | Development. MVP features, proof of concept, dev and test environment |
+| Pablo Manjarrés | Team lead and development. Architecture, backlog, MVP features, proof of concept, dev and test environment, coordination with the external contacts |
 | Valentina Barbosa | Documentation and communication. Delivery document, presentation, prior art, sketches, video |
 
 Product Owner: Magneto. Technical lead and monitor: to be confirmed.
