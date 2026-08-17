@@ -47,7 +47,7 @@ By hand or Balsamiq. No AI. They go in `docs/sketches/`.
 - [x] Environment PoC: Next.js, an endpoint, PostgreSQL seeded (Pablo)
 - [x] Comparison PoC: Next API routes vs Express, recorded as an ADR (Pablo)
 - [x] Seeded vacancy dataset, 20 vacancies (Valentina)
-- [x] MVP: profile in, scored, ordered list out (Pablo)
+- [ ] MVP: profile in, scored, ordered list out (Pablo)
 - [ ] Video, 5 minutes, showing JSON and database rows (Valentina)
 
 ## 6 Referencias
