@@ -1,5 +1,5 @@
 {
-  "name": "match",
+  "name": "moonlight",
   "version": "0.1.0",
   "description": "Profile Manager for the Magneto challenge (EAFIT SI2005, 2026-2). See docs/architecture.md.",
   "private": true,
@@ -15,8 +15,8 @@
     "test": "turbo test",
     "db:up": "docker compose -f infra/docker-compose.yml up -d",
     "db:down": "docker compose -f infra/docker-compose.yml down",
-    "db:migrate": "pnpm --filter @match/db migrate",
-    "db:seed": "pnpm --filter @match/db seed",
+    "db:migrate": "pnpm --filter @moonlight/db migrate",
+    "db:seed": "pnpm --filter @moonlight/db seed",
     "format": "prettier --write \"**/*.{ts,tsx,md,json,yml,yaml}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,md,json,yml,yaml}\""
   },

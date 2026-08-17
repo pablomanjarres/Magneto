@@ -1,21 +1,21 @@
 services:
   postgres:
     image: postgres:17-alpine
-    container_name: match-postgres
+    container_name: moonlight-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: match
-      POSTGRES_PASSWORD: match
-      POSTGRES_DB: match
+      POSTGRES_USER: moonlight
+      POSTGRES_PASSWORD: moonlight
+      POSTGRES_DB: moonlight
     ports:
       - "5432:5432"
     volumes:
-      - match-pgdata:/var/lib/postgresql/data
+      - moonlight-pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U match -d match"]
+      test: ["CMD-SHELL", "pg_isready -U moonlight -d moonlight"]
       interval: 5s
       timeout: 5s
       retries: 10
 
 volumes:
-  match-pgdata:
+  moonlight-pgdata:

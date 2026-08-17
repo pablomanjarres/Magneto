@@ -1,8 +1,8 @@
 <p align="center">
-  <img src=".github/banner.webp" alt="Match" width="100%" />
+  <img src=".github/banner.webp" alt="Moon Light" width="100%" />
 </p>
 
-<h1 align="center">Match</h1>
+<h1 align="center">Moon Light</h1>
 
 <p align="center"><em>A profile driven to 100%, and jobs ranked by a score the candidate can actually read.</em></p>
 
@@ -19,9 +19,9 @@
   <img alt="EAFIT SI2005" src="https://img.shields.io/badge/EAFIT-SI2005_2026--2-c8542a?style=flat" />
 </p>
 
-Match is our answer to the Profile Manager challenge from **Magneto**, built for Ingeniería de Software (SI2005) at Universidad EAFIT, 2026-2.
+Moon Light is our answer to the Profile Manager challenge from **Magneto**, built for Ingeniería de Software (SI2005) at Universidad EAFIT, 2026-2.
 
-Job seekers register on a portal, leave the profile half-filled, and wait to be contacted, which quietly destroys match quality for everyone. Match flips that: a wizard takes a résumé and a set of expectations, the system says exactly what is missing to hit 100%, and it ranks jobs by a weighted score that comes with its reasons attached. The MVP runs locally against our own job dataset, because the challenge gives no access to real Magneto postings.
+Job seekers register on a portal, leave the profile half-filled, and wait to be contacted, which quietly destroys match quality for everyone. Moon Light flips that: a wizard takes a résumé and a set of expectations, the system says exactly what is missing to hit 100%, and it ranks jobs by a weighted score that comes with its reasons attached. The MVP runs locally against our own job dataset, because the challenge gives no access to real Magneto postings.
 
 This repository is the whole submission. Code and every graded artifact live here, so the link to this repo is the delivery.
 
@@ -38,7 +38,7 @@ Planning. Nothing is built yet. Everything below is the blueprint the work lands
 ## Layout
 
 ```text
-match/
+moonlight/
 ├── apps/
 │   ├── web/            # Next.js: onboarding wizard, dashboard, ranked jobs, status board
 │   │   └── app/api/    #   Next API routes, branch A of the comparison PoC

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the Match brand assets from the raster master.
+"""Build the Moon Light brand assets from the raster master.
 
     python3 assets/brand/build.py
 
@@ -302,19 +302,19 @@ def main():
 
     # --- the family -------------------------------------------------------
     metal = cres_p("url(#mgBody)") + cres_p("url(#mgEdge)")
-    write("logo.svg", svg(metal + mono_p(GE, NV), "Match", grad))
-    write("logo-flat.svg", svg(cres_p(var("gold", GOLD)) + mono_p(GE, NV), "Match"))
+    write("logo.svg", svg(metal + mono_p(GE, NV), "Moon Light", grad))
+    write("logo-flat.svg", svg(cres_p(var("gold", GOLD)) + mono_p(GE, NV), "Moon Light"))
 
     # one colour, inherited from CSS: works on any background
     write("logo-mono.svg", svg(
-        cres_p("currentColor") + mono_p("currentColor", "currentColor"), "Match"))
+        cres_p("currentColor") + mono_p("currentColor", "currentColor"), "Moon Light"))
 
-    write("crescent.svg", svg(cres_p(var("gold", GOLD)), "Match crescent"))
-    write("monogram.svg", svg(mono_p(GE, NV), "Match monogram ML"))
+    write("crescent.svg", svg(cres_p(var("gold", GOLD)), "Moon Light crescent"))
+    write("monogram.svg", svg(mono_p(GE, NV), "Moon Light monogram ML"))
 
     # for dark surfaces: the glyph reads light instead of navy
     write("logo-inverse.svg", svg(
-        cres_p(var("gold", GOLD)) + mono_p(GE, var("paper", PAPER)), "Match"))
+        cres_p(var("gold", GOLD)) + mono_p(GE, var("paper", PAPER)), "Moon Light"))
 
     # favicon: same art, less margin so it survives 16px
     xf2, k2, _ = fit(cres + core, margin=8)
@@ -323,19 +323,19 @@ def main():
         cres_p(GOLD, emit(cres, xf2))
         + f'<path d="{emit(core, xf2)}" fill="{NAVY}" fill-rule="evenodd" '
           f'stroke="{GOLD_EDGE}" stroke-width="{sw2}" stroke-linejoin="round" '
-          f'paint-order="stroke"/>', "Match"))
+          f'paint-order="stroke"/>', "Moon Light"))
 
-    # sprite: one definition, referenced by <use href="sprite.svg#match-*">
+    # sprite: one definition, referenced by <use href="sprite.svg#moonlight-*">
     write("sprite.svg",
           '<svg xmlns="http://www.w3.org/2000/svg" style="display:none">'
           f'<defs>{grad}</defs>'
-          f'<symbol id="match-logo" viewBox="0 0 {VIEW} {VIEW}">'
+          f'<symbol id="moonlight-logo" viewBox="0 0 {VIEW} {VIEW}">'
           f'{metal}{mono_p(GOLD_EDGE, NAVY)}</symbol>'
-          f'<symbol id="match-logo-mono" viewBox="0 0 {VIEW} {VIEW}">'
+          f'<symbol id="moonlight-logo-mono" viewBox="0 0 {VIEW} {VIEW}">'
           f'{cres_p("currentColor")}{mono_p("currentColor", "currentColor")}</symbol>'
-          f'<symbol id="match-crescent" viewBox="0 0 {VIEW} {VIEW}">'
+          f'<symbol id="moonlight-crescent" viewBox="0 0 {VIEW} {VIEW}">'
           f'{cres_p("currentColor")}</symbol>'
-          f'<symbol id="match-monogram" viewBox="0 0 {VIEW} {VIEW}">'
+          f'<symbol id="moonlight-monogram" viewBox="0 0 {VIEW} {VIEW}">'
           f'{mono_p("currentColor", "currentColor")}</symbol>'
           "</svg>\n")
 

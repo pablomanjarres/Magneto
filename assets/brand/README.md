@@ -1,6 +1,6 @@
 # Brand assets
 
-The Match mark: a gold crescent carrying the navy **ML** monogram.
+The Moon Light mark: a gold crescent carrying the navy **ML** monogram.
 
 `master.png` is the raster original. Everything under `svg/` and `png/` is
 **generated** from it by `build.py` — never hand-edit those files, they are
@@ -33,11 +33,11 @@ Every part shares one `0 0 1024 1024` viewBox, so `crescent.svg` and
 
 ```html
 <!-- one definition, many uses -->
-<svg><use href="/brand/sprite.svg#match-logo" /></svg>
+<svg><use href="/brand/sprite.svg#moonlight-logo" /></svg>
 
 <!-- one colour, inherited -->
 <span style="color: var(--brand-navy)">
-  <svg><use href="/brand/sprite.svg#match-logo-mono" /></svg>
+  <svg><use href="/brand/sprite.svg#moonlight-logo-mono" /></svg>
 </span>
 ```
 
