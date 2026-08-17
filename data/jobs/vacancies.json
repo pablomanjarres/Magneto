@@ -1,0 +1,642 @@
+[
+  {
+    "id": "v001",
+    "title": "Frontend Developer",
+    "company": "Bancolombia",
+    "city": "Medellín",
+    "workMode": "hybrid",
+    "salaryMin": 6000000,
+    "salaryMax": 9000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "TypeScript",
+        "kind": "must-have"
+      },
+      {
+        "skill": "React",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Git",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Next.js",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Tailwind CSS",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v002",
+    "title": "Backend Developer",
+    "company": "Rappi",
+    "city": "Bogotá",
+    "workMode": "remote",
+    "salaryMin": 8000000,
+    "salaryMax": 12000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Node.js",
+        "kind": "must-have"
+      },
+      {
+        "skill": "PostgreSQL",
+        "kind": "must-have"
+      },
+      {
+        "skill": "REST",
+        "kind": "must-have"
+      },
+      {
+        "skill": "TypeScript",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Docker",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v003",
+    "title": "Full Stack Developer",
+    "company": "Nequi",
+    "city": "Medellín",
+    "workMode": "hybrid",
+    "salaryMin": 7000000,
+    "salaryMax": 11000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "TypeScript",
+        "kind": "must-have"
+      },
+      {
+        "skill": "React",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Node.js",
+        "kind": "must-have"
+      },
+      {
+        "skill": "PostgreSQL",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "AWS",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v004",
+    "title": "Data Engineer",
+    "company": "Grupo Éxito",
+    "city": "Envigado",
+    "workMode": "onsite",
+    "salaryMin": 7500000,
+    "salaryMax": 11000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Python",
+        "kind": "must-have"
+      },
+      {
+        "skill": "SQL",
+        "kind": "must-have"
+      },
+      {
+        "skill": "ETL",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Airflow",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "AWS",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v005",
+    "title": "DevOps Engineer",
+    "company": "Globant",
+    "city": "Bogotá",
+    "workMode": "remote",
+    "salaryMin": 9000000,
+    "salaryMax": 14000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Docker",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Kubernetes",
+        "kind": "must-have"
+      },
+      {
+        "skill": "CI/CD",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Terraform",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "AWS",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v006",
+    "title": "Java Backend Developer",
+    "company": "Sura",
+    "city": "Medellín",
+    "workMode": "hybrid",
+    "salaryMin": 7000000,
+    "salaryMax": 10500000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Java",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Spring Boot",
+        "kind": "must-have"
+      },
+      {
+        "skill": "SQL",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Docker",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Kafka",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v007",
+    "title": "Mobile Developer",
+    "company": "Tpaga",
+    "city": "Bogotá",
+    "workMode": "remote",
+    "salaryMin": 7500000,
+    "salaryMax": 11500000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Kotlin",
+        "kind": "must-have"
+      },
+      {
+        "skill": "REST",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Git",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Swift",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Firebase",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v008",
+    "title": "QA Automation Engineer",
+    "company": "PSL",
+    "city": "Medellín",
+    "workMode": "hybrid",
+    "salaryMin": 5500000,
+    "salaryMax": 8500000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Selenium",
+        "kind": "must-have"
+      },
+      {
+        "skill": "SQL",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Git",
+        "kind": "must-have"
+      },
+      {
+        "skill": "TypeScript",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Jest",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v009",
+    "title": "Cloud Engineer",
+    "company": "Amazon",
+    "city": "Bogotá",
+    "workMode": "remote",
+    "salaryMin": 11000000,
+    "salaryMax": 16000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "AWS",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Terraform",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Docker",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Kubernetes",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Python",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v010",
+    "title": "React Developer",
+    "company": "Mercado Libre",
+    "city": "Remote",
+    "workMode": "remote",
+    "salaryMin": 8500000,
+    "salaryMax": 13000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "React",
+        "kind": "must-have"
+      },
+      {
+        "skill": "TypeScript",
+        "kind": "must-have"
+      },
+      {
+        "skill": "REST",
+        "kind": "must-have"
+      },
+      {
+        "skill": "GraphQL",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Jest",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v011",
+    "title": "Python Developer",
+    "company": "Addi",
+    "city": "Bogotá",
+    "workMode": "remote",
+    "salaryMin": 8000000,
+    "salaryMax": 12000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Python",
+        "kind": "must-have"
+      },
+      {
+        "skill": "PostgreSQL",
+        "kind": "must-have"
+      },
+      {
+        "skill": "REST",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Django",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Docker",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v012",
+    "title": "Platform Engineer",
+    "company": "Nubank",
+    "city": "Remote",
+    "workMode": "remote",
+    "salaryMin": 12000000,
+    "salaryMax": 18000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Kubernetes",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Go",
+        "kind": "must-have"
+      },
+      {
+        "skill": "CI/CD",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Terraform",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Prometheus",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v013",
+    "title": "Frontend Engineer",
+    "company": "Habi",
+    "city": "Bogotá",
+    "workMode": "hybrid",
+    "salaryMin": 7000000,
+    "salaryMax": 10000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "React",
+        "kind": "must-have"
+      },
+      {
+        "skill": "TypeScript",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Tailwind CSS",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Next.js",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Figma",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v014",
+    "title": "Software Engineer",
+    "company": "Ualá",
+    "city": "Remote",
+    "workMode": "remote",
+    "salaryMin": 9000000,
+    "salaryMax": 14000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "TypeScript",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Node.js",
+        "kind": "must-have"
+      },
+      {
+        "skill": "PostgreSQL",
+        "kind": "must-have"
+      },
+      {
+        "skill": "AWS",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "GraphQL",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v015",
+    "title": "Backend Engineer",
+    "company": "Bold",
+    "city": "Bogotá",
+    "workMode": "hybrid",
+    "salaryMin": 8500000,
+    "salaryMax": 12500000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Go",
+        "kind": "must-have"
+      },
+      {
+        "skill": "PostgreSQL",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Docker",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Kubernetes",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "gRPC",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v016",
+    "title": "Angular Developer",
+    "company": "Choucair",
+    "city": "Medellín",
+    "workMode": "onsite",
+    "salaryMin": 5500000,
+    "salaryMax": 8000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Angular",
+        "kind": "must-have"
+      },
+      {
+        "skill": "TypeScript",
+        "kind": "must-have"
+      },
+      {
+        "skill": "REST",
+        "kind": "must-have"
+      },
+      {
+        "skill": "RxJS",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Jest",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v017",
+    "title": "Data Analyst",
+    "company": "Falabella",
+    "city": "Bogotá",
+    "workMode": "hybrid",
+    "salaryMin": 5000000,
+    "salaryMax": 7500000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "SQL",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Excel",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Power BI",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Python",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Tableau",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v018",
+    "title": ".NET Developer",
+    "company": "Softtek",
+    "city": "Medellín",
+    "workMode": "remote",
+    "salaryMin": 6500000,
+    "salaryMax": 10000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "C#",
+        "kind": "must-have"
+      },
+      {
+        "skill": ".NET",
+        "kind": "must-have"
+      },
+      {
+        "skill": "SQL",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Azure",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Docker",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v019",
+    "title": "Site Reliability Engineer",
+    "company": "Cabify",
+    "city": "Remote",
+    "workMode": "remote",
+    "salaryMin": 10000000,
+    "salaryMax": 15000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Kubernetes",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Prometheus",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Linux",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Go",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Terraform",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v020",
+    "title": "Junior Web Developer",
+    "company": "Perficient",
+    "city": "Medellín",
+    "workMode": "hybrid",
+    "salaryMin": 3500000,
+    "salaryMax": 5500000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "HTML",
+        "kind": "must-have"
+      },
+      {
+        "skill": "CSS",
+        "kind": "must-have"
+      },
+      {
+        "skill": "JavaScript",
+        "kind": "must-have"
+      },
+      {
+        "skill": "React",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Git",
+        "kind": "nice-to-have"
+      }
+    ]
+  }
+]

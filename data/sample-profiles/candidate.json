@@ -1,0 +1,57 @@
+{
+  "id": "demo-candidate",
+  "email": "ana.gomez@example.com",
+  "fullName": "Ana Gómez",
+  "city": "Medellín",
+  "skills": [
+    {
+      "name": "TypeScript"
+    },
+    {
+      "name": "React"
+    },
+    {
+      "name": "Node.js"
+    },
+    {
+      "name": "Git"
+    },
+    {
+      "name": "REST"
+    },
+    {
+      "name": "PostgreSQL"
+    }
+  ],
+  "experience": [
+    {
+      "company": "Sofka Technologies",
+      "title": "Frontend Developer",
+      "startDate": "2023-02",
+      "description": "React and TypeScript on an internal banking portal."
+    },
+    {
+      "company": "Freelance",
+      "title": "Web Developer",
+      "startDate": "2021-06",
+      "endDate": "2023-01"
+    }
+  ],
+  "education": [
+    {
+      "institution": "Universidad EAFIT",
+      "degree": "Ingeniería de Sistemas",
+      "startYear": 2020,
+      "endYear": 2025
+    }
+  ],
+  "expectations": {
+    "targetRole": "Full Stack Developer",
+    "salaryMin": 7000000,
+    "salaryMax": 11000000,
+    "currency": "COP",
+    "workModes": ["remote", "hybrid"],
+    "willRelocate": false,
+    "cities": []
+  }
+}
