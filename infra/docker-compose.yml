@@ -8,11 +8,13 @@ services:
       POSTGRES_PASSWORD: moonlight
       POSTGRES_DB: moonlight
     ports:
-      - "5432:5432"
+      # 5433 on the host on purpose: a native PostgreSQL often already holds
+      # 5432, and localhost resolves to it before the container.
+      - '5433:5432'
     volumes:
       - moonlight-pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U moonlight -d moonlight"]
+      test: ['CMD-SHELL', 'pg_isready -U moonlight -d moonlight']
       interval: 5s
       timeout: 5s
       retries: 10

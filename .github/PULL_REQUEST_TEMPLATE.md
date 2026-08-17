@@ -26,4 +26,3 @@ Closes #
 - [ ] New logs carry no sensitive personal data
 
 ## AI usage
-

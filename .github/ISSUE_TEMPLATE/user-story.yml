@@ -1,7 +1,7 @@
 name: User story (US)
 description: A feature described from the user's need.
-title: "[HU] "
-labels: ["user-story"]
+title: '[HU] '
+labels: ['user-story']
 body:
   - type: textarea
     id: story
@@ -28,7 +28,7 @@ body:
     id: release
     attributes:
       label: Story map release
-      options: ["Release 1", "Release 2", "Release 3"]
+      options: ['Release 1', 'Release 2', 'Release 3']
     validations:
       required: true
   - type: input
@@ -42,11 +42,11 @@ body:
     id: estimate
     attributes:
       label: Estimate (story points)
-      placeholder: "1, 2, 3, 5, 8"
+      placeholder: '1, 2, 3, 5, 8'
   - type: textarea
     id: tasks
     attributes:
       label: Tasks
       value: |
         - [ ] 
-        - [ ] 
+        - [ ]

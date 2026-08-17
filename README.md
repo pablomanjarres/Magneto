@@ -60,7 +60,7 @@ Nothing to run yet. Once the apps are scaffolded:
 pnpm install
 cp .env.example .env.local   # fill DATABASE_URL, generate JWT_SECRET
 
-pnpm db:up                   # PostgreSQL 17 on :5432
+pnpm db:up                   # PostgreSQL 17 on :5433
 pnpm db:migrate
 pnpm db:seed
 
@@ -80,10 +80,10 @@ pnpm format:check
 
 ## Team
 
-| Name | Role |
-|---|---|
-| Pablo Manjarrés | Team lead and development. Architecture, backlog, MVP, proof of concept, coordination with the external contacts |
-| Valentina Barbosa | Documentation and communication. Delivery document, presentation, prior art, sketches, video |
+| Name              | Role                                                                                                             |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Pablo Manjarrés   | Team lead and development. Architecture, backlog, MVP, proof of concept, coordination with the external contacts |
+| Valentina Barbosa | Documentation and communication. Delivery document, presentation, prior art, sketches, video                     |
 
 Product Owner: Magneto. Technical lead and monitor: to be confirmed.
 
