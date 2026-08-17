@@ -55,7 +55,6 @@ pnpm db:seed
 pnpm dev
 ```
 
-
 ```bash
 pnpm lint
 pnpm typecheck
@@ -69,7 +68,6 @@ pnpm format:check
 | ----------------- | ---------------------------------------------------------------------------------------------------------------- |
 | Pablo Manjarrés   | Team lead and development. Architecture, backlog, MVP, proof of concept, coordination with the external contacts |
 | Valentina Barbosa | Documentation and communication. Delivery document, presentation, prior art, sketches, video                     |
-
 
 ## License
 
