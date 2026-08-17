@@ -1,7 +1,7 @@
 name: Non-functional story (NFS)
 description: A quality, security or performance requirement. Section 10 of the Magneto brief.
-title: "[HU_NF] "
-labels: ["user-story", "non-functional"]
+title: '[HU_NF] '
+labels: ['user-story', 'non-functional']
 body:
   - type: dropdown
     id: category
@@ -30,7 +30,7 @@ body:
       label: Acceptance criteria
       value: |
         - [ ] 
-        - [ ] 
+        - [ ]
     validations:
       required: true
   - type: input
