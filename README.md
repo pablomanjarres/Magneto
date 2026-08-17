@@ -113,7 +113,7 @@ All four have to pass before a pull request is merged.
 
 ## Two rules from the course
 
-The delivery document cannot be AI-generated, and no AI may produce design artifacts. That covers everything in `docs/sketches/` and `docs/diagrams/`, which are drawn by hand. Any other AI use is declared with its prompts in the delivery document.
+The delivery document cannot be AI-generated, and no AI may produce design artifacts. That covers everything in `docs/sketches/` and `docs/diagrams/`, which are drawn by hand. Any other AI use is logged with its prompt in [`docs/ai-usage.md`](docs/ai-usage.md), and the delivery document declares it from there.
 
 ## Team
 
