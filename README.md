@@ -55,9 +55,6 @@ pnpm db:seed
 pnpm dev
 ```
 
-Secrets never enter the repo. `.env` is gitignored and every variable is documented in [`.env.example`](.env.example).
-
-All four have to pass before a pull request is merged:
 
 ```bash
 pnpm lint
