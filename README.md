@@ -1,5 +1,5 @@
 <p align="center">
-  <img src=".github/banner.webp" alt="Moon Light" width="100%" />
+  <img src="assets/brand/svg/logo.svg" alt="Moon Light" width="160" />
 </p>
 
 <h1 align="center">Moon Light</h1>
