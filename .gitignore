@@ -35,6 +35,10 @@ GEMINI.md
 # session work log: plans, reviews, pending items. Working notes, not a deliverable.
 tasks/
 
+# course material handed to us (brief, roles, delivery spec). Ours to read,
+# not ours to redistribute, so it stays out of the submission.
+.private/
+
 # os / editor
 .DS_Store
 ._*
