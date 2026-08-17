@@ -27,4 +27,3 @@ Closes #
 
 ## AI usage
 
-<!-- If you used AI on this change, log it in docs/ai-usage.md too -->
