@@ -13,21 +13,21 @@
 
 ## 1 Generalidades
 
-- [ ] 1.1 Problem and solution (Valentina)
-- [ ] 1.2 People and roles table (Valentina)
-- [ ] 1.3 Context diagram, by hand (Pablo)
+- [x] 1.1 Problem and solution (Valentina)
+- [x] 1.2 People and roles table (Valentina)
+- [x] 1.3 Context diagram, by hand (Pablo)
 - [ ] 1.4 Interaction process, candidate and admin (Pablo)
 
 ## 2 Antecedentes
 
-- [ ] Three similar apps with URL and screenshots (Valentina)
-- [ ] Our differentiator (Valentina)
+- [x] Three similar apps with URL and screenshots (Valentina)
+- [x] Our differentiator (Valentina)
 
 ## 3 Artefactos ágiles
 
 - [ ] 3.1 Weekly ceremonies in Teams (Pablo)
-- [ ] 3.1 Meeting with the PO or the Technical Lead (Pablo)
-- [ ] 3.2 Vision and story mapping, with screenshot (Valentina)
+- [x] 3.1 Meeting with the PO or the Technical Lead (Pablo)
+- [x] 3.2 Vision and story mapping, with screenshot (Valentina)
 - [x] 3.3 Backlog on GitHub, 34 stories, minimum was 20 (Pablo)
 - [x] 3.3 Non-functional stories marked HU_NF, 5 of them (Pablo)
 - [x] 3.4 Sprint backlog with criteria, owner and tasks (Valentina)
@@ -53,4 +53,4 @@ By hand or Balsamiq. No AI. They go in `docs/sketches/`.
 ## 6 Referencias
 
 - [ ] Sources used (Valentina)
-- [ ] AI tools with their prompts (Valentina)
+- [x] AI tools with their prompts (Valentina)
