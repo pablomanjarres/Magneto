@@ -6,7 +6,9 @@ import type { MarketGap } from "@moonlight/types";
  */
 export function MarketGaps({ gaps, limit = 6 }: { gaps: MarketGap[]; limit?: number }) {
   if (gaps.length === 0) {
-    return <p className="lead">Nothing. Every skill the dataset asks for is already on the profile.</p>;
+    return (
+      <p className="lead">Nothing. Every skill the dataset asks for is already on the profile.</p>
+    );
   }
 
   return (
@@ -16,7 +18,8 @@ export function MarketGaps({ gaps, limit = 6 }: { gaps: MarketGap[]; limit?: num
           <div className="split">
             <span style={{ fontSize: 13.5 }}>{gap.skill}</span>
             <span className="meta num">
-              {gap.demandCount} {gap.demandCount === 1 ? "vacancy" : "vacancies"} · {gap.sharePercent}%
+              {gap.demandCount} {gap.demandCount === 1 ? "vacancy" : "vacancies"} ·{" "}
+              {gap.sharePercent}%
             </span>
           </div>
           <div className="track" style={{ height: 6 }}>

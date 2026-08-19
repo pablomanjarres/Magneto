@@ -29,8 +29,8 @@ export default async function VacancyPage({ params }: { params: Promise<{ id: st
     return (
       <AppShell title="Vacancy">
         <EmptyState title="No candidate yet">
-          A score needs a profile. Fill the wizard at <Link href="/onboarding">/onboarding</Link>, or
-          seed the demo candidate with <code>pnpm db:seed</code>.
+          A score needs a profile. Fill the wizard at <Link href="/onboarding">/onboarding</Link>,
+          or seed the demo candidate with <code>pnpm db:seed</code>.
         </EmptyState>
       </AppShell>
     );
@@ -62,7 +62,12 @@ export default async function VacancyPage({ params }: { params: Promise<{ id: st
 
       <section
         className="panel"
-        style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) auto", gap: 28, alignItems: "center" }}
+        style={{
+          display: "grid",
+          gridTemplateColumns: "minmax(0, 1fr) auto",
+          gap: 28,
+          alignItems: "center",
+        }}
       >
         <div className="stack" style={{ gap: 12 }}>
           <h1 className="display" style={{ fontSize: 38 }}>
@@ -213,11 +218,11 @@ export default async function VacancyPage({ params }: { params: Promise<{ id: st
               <div className="card stack" style={{ gap: 5 }}>
                 <span style={{ fontSize: 13.5 }}>How the score is built</span>
                 <p className="lead">
-                  Every requirement carries a weight: a must-have is worth{" "}
-                  {WEIGHTS["must-have"]}, a nice-to-have is worth {WEIGHTS["nice-to-have"]}. Your
-                  score is the weight you earn divided by the weight on offer. No hidden factors and
-                  no ranking by company. Skill names are matched loosely, so <code>Node.js</code>,{" "}
-                  <code>node js</code> and <code>NodeJS</code> all count as one skill.
+                  Every requirement carries a weight: a must-have is worth {WEIGHTS["must-have"]}, a
+                  nice-to-have is worth {WEIGHTS["nice-to-have"]}. Your score is the weight you earn
+                  divided by the weight on offer. No hidden factors and no ranking by company. Skill
+                  names are matched loosely, so <code>Node.js</code>, <code>node js</code> and{" "}
+                  <code>NodeJS</code> all count as one skill.
                 </p>
               </div>
             </>

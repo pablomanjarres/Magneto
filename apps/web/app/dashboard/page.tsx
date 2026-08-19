@@ -32,7 +32,10 @@ export default async function DashboardPage() {
 
   return (
     <AppShell title="Dashboard" meta={`${ranked.length} vacancies scored`}>
-      <section className="panel" style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 300px", gap: 32 }}>
+      <section
+        className="panel"
+        style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 300px", gap: 32 }}
+      >
         <div className="stack" style={{ gap: 14 }}>
           <div className="split">
             <h1 className="display">Your profile is {completeness.percentage}% complete</h1>

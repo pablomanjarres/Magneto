@@ -26,13 +26,7 @@ export interface VacancyListItem {
 const ANY = "any";
 const WORK_MODES: ReadonlyArray<WorkMode> = ["remote", "hybrid", "onsite"];
 
-export function VacancyFilters({
-  items,
-  cities,
-}: {
-  items: VacancyListItem[];
-  cities: string[];
-}) {
+export function VacancyFilters({ items, cities }: { items: VacancyListItem[]; cities: string[] }) {
   const [query, setQuery] = useState("");
   const [mode, setMode] = useState<string>(ANY);
   const [city, setCity] = useState<string>(ANY);

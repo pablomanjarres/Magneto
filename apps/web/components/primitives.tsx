@@ -50,7 +50,11 @@ export function EmptyState({ title, children }: { title: string; children?: Reac
   return (
     <div className="empty">
       <p style={{ margin: 0, color: "var(--ink-secondary)" }}>{title}</p>
-      {children && <p className="lead" style={{ marginTop: 8 }}>{children}</p>}
+      {children && (
+        <p className="lead" style={{ marginTop: 8 }}>
+          {children}
+        </p>
+      )}
     </div>
   );
 }

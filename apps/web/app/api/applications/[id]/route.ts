@@ -12,7 +12,10 @@ export async function PATCH(
   const body = (await request.json()) as { status?: unknown };
 
   if (!isApplicationStatus(body?.status)) {
-    return Response.json({ error: "status must be one of the four board columns" }, { status: 400 });
+    return Response.json(
+      { error: "status must be one of the four board columns" },
+      { status: 400 },
+    );
   }
 
   const current = await getApplication(id);

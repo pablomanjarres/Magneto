@@ -39,9 +39,7 @@ const toVacancy = (r: VacancyRow): Vacancy => ({
 });
 
 export async function listVacancies(): Promise<Vacancy[]> {
-  const { rows } = await pool.query<VacancyRow>(
-    `${SELECT_VACANCIES} GROUP BY v.id ORDER BY v.id`,
-  );
+  const { rows } = await pool.query<VacancyRow>(`${SELECT_VACANCIES} GROUP BY v.id ORDER BY v.id`);
   return rows.map(toVacancy);
 }
 

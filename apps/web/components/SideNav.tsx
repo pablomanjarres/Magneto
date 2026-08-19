@@ -5,7 +5,12 @@ import { usePathname } from "next/navigation";
 
 import { Icon, type IconName } from "./Icon";
 
-const LINKS: ReadonlyArray<{ href: string; label: string; icon: IconName; count?: "vacancies" | "applications" }> = [
+const LINKS: ReadonlyArray<{
+  href: string;
+  label: string;
+  icon: IconName;
+  count?: "vacancies" | "applications";
+}> = [
   { href: "/dashboard", label: "Dashboard", icon: "dashboard" },
   { href: "/jobs", label: "Vacancies", icon: "briefcase", count: "vacancies" },
   { href: "/applications", label: "Applications", icon: "board", count: "applications" },

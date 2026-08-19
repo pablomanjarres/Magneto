@@ -19,10 +19,16 @@ async function send<T>(url: string, init: RequestInit): Promise<T> {
   return body as T;
 }
 
-export const applyToVacancy = (profileId: string, vacancyId: string): Promise<{ application: Application }> =>
+export const applyToVacancy = (
+  profileId: string,
+  vacancyId: string,
+): Promise<{ application: Application }> =>
   send("/api/applications", { method: "POST", body: JSON.stringify({ profileId, vacancyId }) });
 
-export const moveApplication = (id: string, status: ApplicationStatus): Promise<{ application: Application }> =>
+export const moveApplication = (
+  id: string,
+  status: ApplicationStatus,
+): Promise<{ application: Application }> =>
   send(`/api/applications/${id}`, { method: "PATCH", body: JSON.stringify({ status }) });
 
 export const withdrawApplication = (id: string): Promise<null> =>

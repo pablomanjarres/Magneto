@@ -113,7 +113,9 @@ app.post("/applications", async (req, res) => {
     res.status(404).json({ error: "vacancy not found" });
     return;
   }
-  res.status(201).json({ application: await createApplication(body.profileId, body.vacancyId, body.note) });
+  res
+    .status(201)
+    .json({ application: await createApplication(body.profileId, body.vacancyId, body.note) });
 });
 
 app.patch("/applications/:id", async (req, res) => {

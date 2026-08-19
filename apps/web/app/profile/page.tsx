@@ -68,7 +68,9 @@ function Entry({ index, children }: { index: number; children: ReactNode }) {
   return (
     <div
       className="stack"
-      style={index === 0 ? { gap: 4 } : { gap: 4, paddingTop: 14, borderTop: "1px solid var(--line)" }}
+      style={
+        index === 0 ? { gap: 4 } : { gap: 4, paddingTop: 14, borderTop: "1px solid var(--line)" }
+      }
     >
       {children}
     </div>

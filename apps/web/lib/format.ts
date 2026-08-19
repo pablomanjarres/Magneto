@@ -9,7 +9,9 @@ const WORK_MODES: Record<WorkMode, string> = {
 export const workModeLabel = (mode: WorkMode): string => WORK_MODES[mode];
 
 /** Colombian pesos in millions, because 7000000 is unreadable on a card. */
-export function salaryRange(vacancy: Pick<Vacancy, "salaryMin" | "salaryMax" | "currency">): string {
+export function salaryRange(
+  vacancy: Pick<Vacancy, "salaryMin" | "salaryMax" | "currency">,
+): string {
   const { salaryMin, salaryMax, currency } = vacancy;
   if (salaryMin === undefined && salaryMax === undefined) return "Salary not stated";
   const short = (n: number): string =>

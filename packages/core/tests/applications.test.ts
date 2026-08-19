@@ -30,7 +30,11 @@ const vacancy = (id: string, skills: string[]): Vacancy => ({
   requirements: skills.map((skill) => ({ skill, kind: "must-have" as const })),
 });
 
-const application = (id: string, vacancyId: string, status: Application["status"]): Application => ({
+const application = (
+  id: string,
+  vacancyId: string,
+  status: Application["status"],
+): Application => ({
   id,
   profileId: "p1",
   vacancyId,

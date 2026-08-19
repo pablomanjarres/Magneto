@@ -89,7 +89,21 @@ check(
 
 // --- output: completing the profile raises the number ---
 
-const completed = { ...stored, city: "Medellín", education: [{ institution: "EAFIT", degree: "Ing.", startYear: 2020 }], experience: [{ company: "ACME", title: "Dev", startDate: "2024-01" }], expectations: { targetRole: "Full Stack Developer", salaryMin: 7_000_000, salaryMax: 11_000_000, currency: "COP", workModes: ["remote" as const], willRelocate: false, cities: [] } };
+const completed = {
+  ...stored,
+  city: "Medellín",
+  education: [{ institution: "EAFIT", degree: "Ing.", startYear: 2020 }],
+  experience: [{ company: "ACME", title: "Dev", startDate: "2024-01" }],
+  expectations: {
+    targetRole: "Full Stack Developer",
+    salaryMin: 7_000_000,
+    salaryMax: 11_000_000,
+    currency: "COP",
+    workModes: ["remote" as const],
+    willRelocate: false,
+    cities: [],
+  },
+};
 await saveProfile(completed);
 const after = profileCompleteness(completed);
 check("filling the gaps reaches 100%", after.percentage === 100, `${before.percentage}% → 100%`);

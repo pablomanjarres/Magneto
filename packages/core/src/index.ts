@@ -202,7 +202,8 @@ export function applicationCards(
       return vacancy ? [{ ...a, vacancy, score: scoreVacancy(profile, vacancy).score }] : [];
     })
     .sort(
-      (a, b) => column(a.status) - column(b.status) || b.score - a.score || a.id.localeCompare(b.id),
+      (a, b) =>
+        column(a.status) - column(b.status) || b.score - a.score || a.id.localeCompare(b.id),
     );
 }
 

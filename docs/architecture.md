@@ -21,12 +21,12 @@ apps/web      apps/api          entrypoints. Route handlers and pages. No domain
 
 ## The dependency rule
 
-| Package     | May import                        | May never import           |
-| ----------- | --------------------------------- | -------------------------- |
-| `types`     | nothing                           | everything                 |
-| `core`      | `types`                           | `db`, `next`, `pg`, `express` |
-| `db`        | `types`, `pg`                     | `core`, `next`, `express`  |
-| `apps/*`    | `types`, `core`, `db`             | another app                |
+| Package  | May import            | May never import              |
+| -------- | --------------------- | ----------------------------- |
+| `types`  | nothing               | everything                    |
+| `core`   | `types`               | `db`, `next`, `pg`, `express` |
+| `db`     | `types`, `pg`         | `core`, `next`, `express`     |
+| `apps/*` | `types`, `core`, `db` | another app                   |
 
 Two consequences worth stating. Moving off Next means rewriting `apps/web`, and nothing else.
 And a bug in a score is a bug in one pure function, reproducible from a unit test.
