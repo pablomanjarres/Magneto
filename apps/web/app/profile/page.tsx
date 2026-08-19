@@ -1,6 +1,4 @@
-import type { ReactNode } from "react";
 import Link from "next/link";
-import type { Education, Experience } from "@moonlight/types";
 
 import { AppShell } from "../../components/AppShell";
 import { Chip, EmptyState, ProgressBar } from "../../components/primitives";
@@ -8,6 +6,7 @@ import { Icon } from "../../components/Icon";
 import { loadProfile } from "../../lib/queries";
 import { salaryRange, shortDate, workModeLabel } from "../../lib/format";
 import { COMPLETENESS_FIELDS, profileCompleteness } from "@moonlight/core";
+import { Detail, type Entry, EntryList, ProfileSection } from "./ProfileSection";
 
 export const dynamic = "force-dynamic";
 
@@ -25,57 +24,6 @@ const period = (start: string, end: string | undefined): string =>
   `${monthLabel(start)} – ${end ? monthLabel(end) : "Present"}`;
 
 const years = (start: number, end: number | undefined): string => `${start} – ${end ?? "Present"}`;
-
-function Section({ title, hint, children }: { title: string; hint: string; children: ReactNode }) {
-  return (
-    <section className="card stack" style={{ gap: 14, padding: "20px 22px" }}>
-      <div className="stack" style={{ gap: 5 }}>
-        <h2 className="h2">{title}</h2>
-        <span className="meta" style={{ textWrap: "pretty" }}>
-          {hint}
-        </span>
-      </div>
-      {children}
-    </section>
-  );
-}
-
-/** One label-and-value line. Expectations are five of them, never five copies. */
-function Detail({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <div className="row" style={{ gap: 14, alignItems: "flex-start" }}>
-      <span className="meta" style={{ width: 116, flexShrink: 0, paddingTop: 2 }}>
-        {label}
-      </span>
-      <div
-        className="grow"
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: 7,
-          fontSize: 13,
-          color: "var(--ink-secondary)",
-        }}
-      >
-        {children}
-      </div>
-    </div>
-  );
-}
-
-/** Items inside a card are split by a rule rather than a gap, so long lists stay readable. */
-function Entry({ index, children }: { index: number; children: ReactNode }) {
-  return (
-    <div
-      className="stack"
-      style={
-        index === 0 ? { gap: 4 } : { gap: 4, paddingTop: 14, borderTop: "1px solid var(--line)" }
-      }
-    >
-      {children}
-    </div>
-  );
-}
 
 export default async function ProfilePage() {
   const profile = await loadProfile();
@@ -95,10 +43,24 @@ export default async function ProfilePage() {
   const hasSalary = expectations.salaryMin !== undefined || expectations.salaryMax !== undefined;
 
   // Newest first, so the hint on each card holds whatever order the wizard saved.
-  const experience: Experience[] = [...profile.experience].sort((a, b) =>
-    b.startDate.localeCompare(a.startDate),
-  );
-  const education: Education[] = [...profile.education].sort((a, b) => b.startYear - a.startYear);
+  const experience: Entry[] = [...profile.experience]
+    .sort((a, b) => b.startDate.localeCompare(a.startDate))
+    .map((job) => ({
+      key: `${job.company}-${job.title}-${job.startDate}`,
+      title: job.title,
+      period: period(job.startDate, job.endDate),
+      subtitle: job.company,
+      description: job.description,
+    }));
+
+  const education: Entry[] = [...profile.education]
+    .sort((a, b) => b.startYear - a.startYear)
+    .map((degree) => ({
+      key: `${degree.institution}-${degree.degree}-${degree.startYear}`,
+      title: degree.degree,
+      period: years(degree.startYear, degree.endYear),
+      subtitle: degree.institution,
+    }));
 
   return (
     <AppShell title="Profile" meta={`${filled} of ${COMPLETENESS_FIELDS.length} fields`}>
@@ -157,57 +119,17 @@ export default async function ProfilePage() {
 
       <div className="two-col">
         <div className="stack" style={{ gap: 22 }}>
-          <Section title="Experience" hint="Most recent first.">
-            {experience.length === 0 ? (
-              <EmptyState title="No positions listed yet" />
-            ) : (
-              experience.map((job, index) => (
-                <Entry key={`${job.company}-${job.title}-${job.startDate}`} index={index}>
-                  <div className="split">
-                    <span style={{ fontSize: 14.5, fontWeight: 500 }}>{job.title}</span>
-                    <span className="meta num" style={{ whiteSpace: "nowrap" }}>
-                      {period(job.startDate, job.endDate)}
-                    </span>
-                  </div>
-                  <span className="meta" style={{ color: "var(--muted)" }}>
-                    {job.company}
-                  </span>
-                  {job.description && (
-                    <p className="lead" style={{ paddingTop: 2 }}>
-                      {job.description}
-                    </p>
-                  )}
-                </Entry>
-              ))
-            )}
-          </Section>
+          <ProfileSection title="Experience" hint="Most recent first.">
+            <EntryList entries={experience} empty="No positions listed yet" />
+          </ProfileSection>
 
-          <Section title="Education" hint="Degrees and the years you studied them.">
-            {education.length === 0 ? (
-              <EmptyState title="No education listed yet" />
-            ) : (
-              education.map((degree, index) => (
-                <Entry
-                  key={`${degree.institution}-${degree.degree}-${degree.startYear}`}
-                  index={index}
-                >
-                  <div className="split">
-                    <span style={{ fontSize: 14.5, fontWeight: 500 }}>{degree.degree}</span>
-                    <span className="meta num" style={{ whiteSpace: "nowrap" }}>
-                      {years(degree.startYear, degree.endYear)}
-                    </span>
-                  </div>
-                  <span className="meta" style={{ color: "var(--muted)" }}>
-                    {degree.institution}
-                  </span>
-                </Entry>
-              ))
-            )}
-          </Section>
+          <ProfileSection title="Education" hint="Degrees and the years you studied them.">
+            <EntryList entries={education} empty="No education listed yet" />
+          </ProfileSection>
         </div>
 
         <div className="stack" style={{ gap: 22 }}>
-          <Section title="Skills" hint="Every match score is calculated from this list.">
+          <ProfileSection title="Skills" hint="Every match score is calculated from this list.">
             {profile.skills.length === 0 ? (
               <EmptyState title="No skills listed yet" />
             ) : (
@@ -219,9 +141,9 @@ export default async function ProfilePage() {
                 ))}
               </div>
             )}
-          </Section>
+          </ProfileSection>
 
-          <Section title="Expectations" hint="What you are looking for, and where.">
+          <ProfileSection title="Expectations" hint="What you are looking for, and where.">
             <div className="stack" style={{ gap: 12 }}>
               <Detail label="Target role">{expectations.targetRole ?? "Not stated"}</Detail>
 
@@ -249,7 +171,7 @@ export default async function ProfilePage() {
                 </Detail>
               )}
             </div>
-          </Section>
+          </ProfileSection>
         </div>
       </div>
     </AppShell>

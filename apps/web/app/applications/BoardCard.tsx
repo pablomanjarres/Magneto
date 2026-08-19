@@ -7,7 +7,7 @@ import type { ApplicationCard, ApplicationStatus } from "@moonlight/types";
 import { ALLOWED_MOVES, STATUS_LABELS } from "@moonlight/core";
 
 import { moveApplication, withdrawApplication } from "../../lib/client";
-import { salaryRange, shortDate, workModeLabel } from "../../lib/format";
+import { placeMeta, salaryRange, shortDate } from "../../lib/format";
 
 /** Withdrawing is destructive, so the button asks once. Reverts on its own. */
 const CONFIRM_MS = 4000;
@@ -94,7 +94,7 @@ export function BoardCard({ card }: { card: ApplicationCard }) {
       <div className="stack" style={{ gap: 3 }}>
         <span style={{ fontSize: 11.5, color: "var(--muted)" }}>{card.vacancy.company}</span>
         <span className="meta">
-          {card.vacancy.city} · {workModeLabel(card.vacancy.workMode)} · {salaryRange(card.vacancy)}
+          {placeMeta(card.vacancy)} · {salaryRange(card.vacancy)}
         </span>
       </div>
 

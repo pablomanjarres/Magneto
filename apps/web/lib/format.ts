@@ -23,9 +23,19 @@ export function salaryRange(
   return `${short((salaryMin ?? salaryMax) as number)} ${unit}`.trim();
 }
 
-/** "Frontend Developer · Bancolombia · Medellín · Hybrid" without the empties. */
-export const vacancyMeta = (v: Vacancy): string =>
-  [v.company, v.city, workModeLabel(v.workMode)].filter(Boolean).join(" · ");
+/**
+ * "Medellín · Hybrid". Some vacancies in the dataset carry "Remote" as their
+ * city, so the city is dropped when it only repeats the work mode rather than
+ * printing "Remote · Remote".
+ */
+export function placeMeta(v: Pick<Vacancy, "city" | "workMode">): string {
+  const mode = workModeLabel(v.workMode);
+  const city = v.city.trim().toLowerCase() === mode.toLowerCase() ? "" : v.city;
+  return [city, mode].filter(Boolean).join(" · ");
+}
+
+/** "Bancolombia · Medellín · Hybrid" without the empties. */
+export const vacancyMeta = (v: Vacancy): string => `${v.company} · ${placeMeta(v)}`;
 
 export const initials = (fullName: string): string =>
   fullName

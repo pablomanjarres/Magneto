@@ -1,5 +1,4 @@
 import { Fragment } from "react";
-import Link from "next/link";
 
 import { AppShell } from "../../components/AppShell";
 import { EmptyState } from "../../components/primitives";

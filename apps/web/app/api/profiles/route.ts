@@ -13,7 +13,10 @@ export async function POST(request: Request): Promise<Response> {
 
   const parsed = parseProfile(body);
   if ("errors" in parsed) {
-    return Response.json({ error: parsed.errors.join(", "), errors: parsed.errors }, { status: 400 });
+    return Response.json(
+      { error: parsed.errors.join(", "), errors: parsed.errors },
+      { status: 400 },
+    );
   }
 
   const saved = await saveProfile(parsed.profile);

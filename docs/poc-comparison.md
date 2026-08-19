@@ -23,12 +23,12 @@ network hop.
 
 ## The other criteria
 
-| Criterion             | Next route handlers                                         | Express service                                                                       |
-| --------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Criterion             | Next route handlers                                                 | Express service                                                                       |
+| --------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
 | Implementation effort | One file per route, no server bootstrap, no CORS, no second process | One server file plus a dependency, a second process, and CORS once a browser calls it |
-| Technical limits      | Tied to the Next runtime and its deployment model           | Portable to any Node host                                                             |
-| Cost                  | One process, one deployment                                 | Two processes, two deployments                                                        |
-| Sustainability        | One stack for two people to learn and run                   | Two things to start, watch and debug                                                  |
+| Technical limits      | Tied to the Next runtime and its deployment model                   | Portable to any Node host                                                             |
+| Cost                  | One process, one deployment                                         | Two processes, two deployments                                                        |
+| Sustainability        | One stack for two people to learn and run                           | Two things to start, watch and debug                                                  |
 
 The page at `apps/web/app/page.tsx` reads the database directly from a server component, with no
 HTTP hop at all. Express cannot offer that.
