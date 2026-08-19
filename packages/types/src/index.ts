@@ -77,6 +77,30 @@ export interface ScoreResult {
   breakdown: ScoreLine[];
 }
 
+/** Where an application sits in the candidate's own pipeline. */
+export type ApplicationStatus = "applied" | "in-review" | "interview" | "rejected";
+
+/**
+ * A candidate's application to one vacancy. The brief rules out real
+ * auto-applying, so this records an application the candidate makes and tracks
+ * its state; nothing is sent anywhere.
+ */
+export interface Application {
+  id: string;
+  profileId: string;
+  vacancyId: string;
+  status: ApplicationStatus;
+  appliedAt: string;
+  updatedAt: string;
+  note?: string | undefined;
+}
+
+/** An application with the vacancy behind it and its score, for the board. */
+export interface ApplicationCard extends Application {
+  vacancy: Vacancy;
+  score: number;
+}
+
 export interface CompletenessResult {
   percentage: number;
   missing: string[];

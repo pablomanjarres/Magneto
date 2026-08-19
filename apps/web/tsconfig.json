@@ -11,6 +11,6 @@
     ],
     "incremental": true
   },
-  "include": ["app", "next-env.d.ts", ".next/types/**/*.ts"],
+  "include": ["app", "components", "lib", "css.d.ts", "next-env.d.ts", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
 }

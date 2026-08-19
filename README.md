@@ -19,7 +19,13 @@ Our answer to the Profile Manager challenge from **Magneto**, for Ingeniería de
 
 Candidates leave their profile half-filled and wait to be contacted, which wrecks match quality for everyone. Moon Light takes a résumé and a set of expectations, says exactly what is missing to reach 100%, and ranks jobs by a weighted score with its reasons attached. The MVP runs locally against our own dataset, since the challenge gives no access to real Magneto postings.
 
-Status: Building. Delivery 1 is due **19 August 2026**, checklist in [`docs/deliverables/delivery-1/`](docs/deliverables/delivery-1/README.md).
+In this delivery the candidate registers and fills their own profile. The LinkedIn and résumé
+import is release 2, and the wizard it will pre-fill is already the screen the candidate confirms
+by hand today.
+
+Status: the MVP runs. A seeded candidate, 20 vacancies, five screens and a scored, explained
+ranking. Delivery 1 is due **19 August 2026**, checklist in
+[`docs/deliverables/delivery-1/`](docs/deliverables/delivery-1/README.md).
 
 ## Layout
 
@@ -27,11 +33,13 @@ Status: Building. Delivery 1 is due **19 August 2026**, checklist in [`docs/deli
 moonlight/
 ├── apps/
 │   ├── web/            # Next.js: onboarding wizard, dashboard, ranked jobs, status board
-│   │   └── app/api/    #   Next API routes, branch A of the comparison PoC
+│   │   ├── app/api/    #   Next API routes, branch A of the comparison PoC
+│   │   ├── components/ #   the shell and the pieces every screen reuses
+│   │   └── lib/        #   server loaders and the browser side of the API
 │   ├── api/            # Express service, branch B of the comparison PoC
 │   └── agents/         # LangGraph agents, release 2+
 ├── packages/
-│   ├── core/           # domain: entities, use cases, scoring engine. Zero IO
+│   ├── core/           # domain: scoring, completeness, market gaps, status machine. Zero IO
 │   ├── db/             # PostgreSQL: migrations, seeds, repositories
 │   └── types/          # shapes shared across boundaries
 ├── data/               # our own job dataset and fictional sample profiles
@@ -42,23 +50,43 @@ moonlight/
 
 ## Getting started
 
-Nothing to run yet. Once the apps are scaffolded:
+Docker and Node 22 are the only prerequisites.
 
 ```bash
 pnpm install
-cp .env.example .env.local   # fill DATABASE_URL, generate JWT_SECRET
+cp .env.example .env.local   # optional: the defaults already match db:up
 
 pnpm db:up                   # PostgreSQL 17 on :5433
-pnpm db:migrate
-pnpm db:seed
+pnpm db:migrate              # forward-only, re-runnable
+pnpm db:seed                 # 20 vacancies, one candidate, six applications
 
-pnpm dev
+pnpm dev                     # http://localhost:3000
+```
+
+Register at `/register` with a name and an email. Your profile starts **empty**, because this
+delivery imports nothing from LinkedIn, so `/onboarding` is where it gets filled and the
+completeness bar is what says how far along it is. From there, `/dashboard` shows completeness and
+top matches, `/jobs` the whole list by score, `/jobs/v003` one recommendation worked through, and
+`/applications` the status board.
+
+There is no sign-in. Registering puts your profile id in a cookie so the app knows whose profile
+to draw; nothing is verified. To see the seeded candidate instead, with her pipeline already
+filled, set that cookie to `demo-candidate` in the browser's devtools.
+
+The endpoints are real and inspectable, which is what the delivery video shows:
+
+```bash
+curl localhost:3000/api/health
+curl localhost:3000/api/vacancies | head -c 400
+curl localhost:3000/api/profiles/demo-candidate/recommendations | head -c 400
+curl "localhost:3000/api/applications?profileId=demo-candidate" | head -c 400
 ```
 
 ```bash
 pnpm lint
 pnpm typecheck
 pnpm test
+pnpm build
 pnpm format:check
 ```
 

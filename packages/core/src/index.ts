@@ -1,4 +1,7 @@
 import type {
+  Application,
+  ApplicationCard,
+  ApplicationStatus,
   CompletenessResult,
   MarketGap,
   Profile,
@@ -143,3 +146,76 @@ export function marketGaps(profile: Profile, vacancies: Vacancy[]): MarketGap[] 
     }))
     .sort((a, b) => b.demandCount - a.demandCount || a.skill.localeCompare(b.skill));
 }
+
+/** The board's columns, left to right. Order is the pipeline. */
+export const APPLICATION_STATUSES: readonly ApplicationStatus[] = [
+  "applied",
+  "in-review",
+  "interview",
+  "rejected",
+];
+
+export const STATUS_LABELS: Record<ApplicationStatus, string> = {
+  applied: "Applied",
+  "in-review": "In review",
+  interview: "Interview",
+  rejected: "Rejected",
+};
+
+/**
+ * Every move the board allows, written out rather than derived. Four states do
+ * not need an algorithm, and a table is the thing a reader can check.
+ */
+export const ALLOWED_MOVES: Record<ApplicationStatus, readonly ApplicationStatus[]> = {
+  applied: ["in-review", "rejected"],
+  "in-review": ["interview", "rejected"],
+  interview: ["rejected"],
+  rejected: ["applied"],
+};
+
+export function canMove(from: ApplicationStatus, to: ApplicationStatus): boolean {
+  return ALLOWED_MOVES[from].includes(to);
+}
+
+/** True when the string is one of the four statuses. Guards the API boundary. */
+export function isApplicationStatus(value: unknown): value is ApplicationStatus {
+  return typeof value === "string" && APPLICATION_STATUSES.includes(value as ApplicationStatus);
+}
+
+/**
+ * Join applications to the vacancies behind them and score each one, so the
+ * board shows the same number the ranked list does. Pure: both the Next route
+ * handlers and the Express service call this and get the same payload.
+ * An application whose vacancy is gone is dropped rather than half-rendered.
+ */
+export function applicationCards(
+  profile: Profile,
+  applications: Application[],
+  vacancies: Vacancy[],
+): ApplicationCard[] {
+  const byId = new Map(vacancies.map((v) => [v.id, v]));
+  const column = (s: ApplicationStatus): number => APPLICATION_STATUSES.indexOf(s);
+
+  return applications
+    .flatMap((a) => {
+      const vacancy = byId.get(a.vacancyId);
+      return vacancy ? [{ ...a, vacancy, score: scoreVacancy(profile, vacancy).score }] : [];
+    })
+    .sort(
+      (a, b) =>
+        column(a.status) - column(b.status) || b.score - a.score || a.id.localeCompare(b.id),
+    );
+}
+
+/** The same cards split into the board's four columns, in column order. */
+export function groupByStatus(
+  cards: ApplicationCard[],
+): Array<{ status: ApplicationStatus; label: string; cards: ApplicationCard[] }> {
+  return APPLICATION_STATUSES.map((status) => ({
+    status,
+    label: STATUS_LABELS[status],
+    cards: cards.filter((c) => c.status === status),
+  }));
+}
+
+export { parseProfile } from "./parse-profile.js";

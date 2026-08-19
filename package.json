@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Profile Manager for the Magneto challenge (EAFIT SI2005, 2026-2). See docs/architecture.md.",
   "private": true,
+  "type": "module",
   "packageManager": "pnpm@10.28.0",
   "engines": {
     "node": ">=22.0.0"
@@ -10,7 +11,7 @@
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
-    "lint": "turbo lint",
+    "lint": "turbo lint && eslint scripts",
     "typecheck": "turbo typecheck",
     "test": "turbo test",
     "db:up": "docker compose -f infra/docker-compose.yml up -d",
@@ -19,9 +20,13 @@
     "db:seed": "pnpm --filter @moonlight/db seed",
     "format": "prettier --write \"**/*.{ts,tsx,md,json,yml,yaml}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,md,json,yml,yaml}\"",
-    "bench": "tsx scripts/bench.ts"
+    "bench": "tsx scripts/bench.ts",
+    "smoke": "tsx --env-file-if-exists=.env.local scripts/smoke.ts"
   },
   "devDependencies": {
+    "@moonlight/core": "workspace:*",
+    "@moonlight/db": "workspace:*",
+    "@moonlight/types": "workspace:*",
     "@eslint/js": "9.39.4",
     "@types/node": "^25.9.3",
     "eslint": "^10.4.0",

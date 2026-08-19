@@ -11,8 +11,8 @@
   "scripts": {
     "lint": "eslint src",
     "typecheck": "tsc --noEmit",
-    "migrate": "tsx src/migrate.ts",
-    "seed": "tsx src/seed.ts"
+    "migrate": "tsx --env-file-if-exists=../../.env.local src/migrate.ts",
+    "seed": "tsx --env-file-if-exists=../../.env.local src/seed.ts"
   },
   "dependencies": {
     "@moonlight/types": "workspace:*",

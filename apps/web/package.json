@@ -6,7 +6,7 @@
     "dev": "next dev -p 3000",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint app",
+    "lint": "eslint app components lib",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

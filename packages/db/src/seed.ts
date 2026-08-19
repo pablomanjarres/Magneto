@@ -1,15 +1,28 @@
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import type { Vacancy } from "@moonlight/types";
+import type { Application, Profile, Vacancy } from "@moonlight/types";
 
 import { pool, readJson } from "./index.js";
+import { saveProfile } from "./repositories/profiles.js";
 
-const here = dirname(fileURLToPath(import.meta.url));
-const vacancies = readJson<Vacancy[]>(
-  join(here, "..", "..", "..", "data", "jobs", "vacancies.json"),
-);
+const data = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "data");
+const vacancies = readJson<Vacancy[]>(join(data, "jobs", "vacancies.json"));
+const candidate = readJson<Profile>(join(data, "sample-profiles", "candidate.json"));
 
-// Re-runnable on purpose: seeding twice must not duplicate a vacancy.
+/**
+ * The demo pipeline. Fixed ids and fixed vacancies so the board looks the same
+ * on every machine, which is what the delivery video needs.
+ */
+const applications: ReadonlyArray<Pick<Application, "id" | "vacancyId" | "status">> = [
+  { id: "a001", vacancyId: "v003", status: "interview" },
+  { id: "a002", vacancyId: "v001", status: "in-review" },
+  { id: "a003", vacancyId: "v013", status: "in-review" },
+  { id: "a004", vacancyId: "v010", status: "applied" },
+  { id: "a005", vacancyId: "v014", status: "applied" },
+  { id: "a006", vacancyId: "v006", status: "rejected" },
+];
+
+// Re-runnable on purpose: seeding twice must not duplicate anything.
 for (const v of vacancies) {
   await pool.query(
     `INSERT INTO vacancies (id, title, company, city, work_mode, salary_min, salary_max, currency)
@@ -35,6 +48,26 @@ for (const v of vacancies) {
   }
 }
 
-const { rows } = await pool.query<{ count: string }>("SELECT count(*) FROM vacancies");
-console.log(`seeded ${vacancies.length} vacancies, table now holds ${rows[0]?.count ?? "0"}`);
+await saveProfile(candidate);
+
+for (const a of applications) {
+  // No conflict target: the row can already exist under its seeded id OR under
+  // a generated one, because the candidate withdrew it and applied again in the
+  // app. Naming only the id would abort the seed on that second case.
+  await pool.query(
+    `INSERT INTO applications (id, profile_id, vacancy_id, status) VALUES ($1, $2, $3, $4)
+     ON CONFLICT DO NOTHING`,
+    [a.id, candidate.id, a.vacancyId, a.status],
+  );
+}
+
+const { rows } = await pool.query<{ vacancies: string; applications: string }>(
+  `SELECT (SELECT count(*) FROM vacancies)    AS vacancies,
+          (SELECT count(*) FROM applications) AS applications`,
+);
+console.log(
+  `seeded ${vacancies.length} vacancies and profile ${candidate.id}; ` +
+    `tables now hold ${rows[0]?.vacancies ?? "0"} vacancies and ` +
+    `${rows[0]?.applications ?? "0"} applications`,
+);
 await pool.end();
