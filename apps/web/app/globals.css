@@ -309,6 +309,24 @@ a.card:hover {
   align-items: center;
 }
 
+/* A chip the candidate can press: add a skill, drop a city, pick a work mode. */
+.chip--action {
+  background: none;
+  cursor: pointer;
+  font: inherit;
+}
+
+.chip--action:hover {
+  border-color: var(--glow);
+  color: var(--ink);
+}
+
+.chip--action[aria-pressed="true"] {
+  border-color: var(--gold);
+  background: rgba(183, 125, 58, 0.1);
+  color: var(--ink);
+}
+
 /* ---------- buttons ---------- */
 
 .btn {
@@ -452,6 +470,13 @@ a.card:hover {
 .select:focus {
   outline: 2px solid var(--glow);
   outline-offset: -1px;
+}
+
+/* Two fields on one row: salary min and max, start year and end year. */
+.two-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 18px;
 }
 
 .check {

@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { AppShell } from "../../components/AppShell";
 import { EmptyState } from "../../components/primitives";
+import { NoProfile } from "../../components/NoProfile";
 import { VacancyRow } from "../../components/VacancyRow";
 import { loadAppliedIds, loadProfile, loadRanked } from "../../lib/queries";
 import { VacancyFilters, type VacancyListItem } from "./VacancyFilters";
@@ -27,16 +28,7 @@ function Stat({ value, label, tone }: { value: string; label: string; tone?: "go
 
 export default async function JobsPage() {
   const profile = await loadProfile();
-  if (!profile) {
-    return (
-      <AppShell title="Vacancies">
-        <EmptyState title="No candidate yet">
-          Run <code>pnpm db:migrate &amp;&amp; pnpm db:seed</code>, or fill the wizard at{" "}
-          <Link href="/onboarding">/onboarding</Link>.
-        </EmptyState>
-      </AppShell>
-    );
-  }
+  if (!profile) return <NoProfile title="Vacancies" />;
 
   const { vacancies, ranked } = await loadRanked(profile);
   const applied = await loadAppliedIds(profile.id);

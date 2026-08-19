@@ -1,4 +1,4 @@
-import type { Profile } from "@moonlight/types";
+import type { Profile, Vacancy } from "@moonlight/types";
 import { getProfile, listApplications, listVacancies } from "@moonlight/db";
 import { applicationCards, marketGaps, profileCompleteness, rankVacancies } from "@moonlight/core";
 
@@ -13,6 +13,9 @@ import { DEMO_PROFILE_ID } from "./demo";
 
 export const loadProfile = (id: string = DEMO_PROFILE_ID): Promise<Profile | null> =>
   getProfile(id);
+
+/** The dataset on its own, for a screen that scores in the browser as you type. */
+export const loadVacancies = (): Promise<Vacancy[]> => listVacancies();
 
 /** Counts for the side rail, on every page. */
 export async function loadNavCounts(): Promise<{ vacancies: number; applications: number }> {

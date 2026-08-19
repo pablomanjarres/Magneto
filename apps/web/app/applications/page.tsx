@@ -4,6 +4,7 @@ import { groupByStatus } from "@moonlight/core";
 import { AppShell } from "../../components/AppShell";
 import { EmptyState } from "../../components/primitives";
 import { Icon } from "../../components/Icon";
+import { NoProfile } from "../../components/NoProfile";
 import { loadBoard, loadProfile } from "../../lib/queries";
 import { BoardColumn } from "./BoardColumn";
 
@@ -11,16 +12,7 @@ export const dynamic = "force-dynamic";
 
 export default async function ApplicationsPage() {
   const profile = await loadProfile();
-  if (!profile) {
-    return (
-      <AppShell title="Applications">
-        <EmptyState title="No candidate yet">
-          Run <code>pnpm db:migrate &amp;&amp; pnpm db:seed</code>, or fill the wizard at{" "}
-          <Link href="/onboarding">/onboarding</Link>.
-        </EmptyState>
-      </AppShell>
-    );
-  }
+  if (!profile) return <NoProfile title="Applications" />;
 
   const cards = await loadBoard(profile);
   const columns = groupByStatus(cards);

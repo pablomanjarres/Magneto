@@ -59,20 +59,35 @@ export function EmptyState({ title, children }: { title: string; children?: Reac
   );
 }
 
+/**
+ * One labelled input. Pass `group` when the label covers several controls
+ * rather than one — a `<label>` around a row of buttons points at nothing, so
+ * that case gets a real group with an accessible name instead.
+ */
 export function Field({
   label,
   hint,
+  group = false,
   children,
 }: {
   label: string;
   hint?: string;
+  group?: boolean;
   children: ReactNode;
 }) {
-  return (
-    <label className="field">
+  const body = (
+    <>
       <span className="field__label">{label}</span>
       {children}
       {hint && <span className="field__hint">{hint}</span>}
-    </label>
+    </>
+  );
+
+  return group ? (
+    <div className="field" role="group" aria-label={label}>
+      {body}
+    </div>
+  ) : (
+    <label className="field">{body}</label>
   );
 }

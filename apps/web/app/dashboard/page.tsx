@@ -4,6 +4,7 @@ import { AppShell } from "../../components/AppShell";
 import { Chip, EmptyState, ProgressBar } from "../../components/primitives";
 import { Icon } from "../../components/Icon";
 import { MarketGaps } from "../../components/MarketGaps";
+import { NoProfile } from "../../components/NoProfile";
 import { VacancyRow } from "../../components/VacancyRow";
 import { loadAppliedIds, loadProfile, loadRanked } from "../../lib/queries";
 import { COMPLETENESS_FIELDS } from "@moonlight/core";
@@ -12,16 +13,7 @@ export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   const profile = await loadProfile();
-  if (!profile) {
-    return (
-      <AppShell title="Dashboard">
-        <EmptyState title="No candidate yet">
-          Run <code>pnpm db:migrate &amp;&amp; pnpm db:seed</code>, or fill the wizard at{" "}
-          <Link href="/onboarding">/onboarding</Link>.
-        </EmptyState>
-      </AppShell>
-    );
-  }
+  if (!profile) return <NoProfile title="Dashboard" />;
 
   const { vacancies, completeness, ranked, gaps } = await loadRanked(profile);
   const applied = await loadAppliedIds(profile.id);
