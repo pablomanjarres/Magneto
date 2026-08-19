@@ -97,7 +97,7 @@ export function ScoreBreakdown({
                     alignItems: "center",
                     justifyContent: "flex-end",
                     gap: 6,
-                    color: line.met ? "var(--gold-text)" : "var(--dim)",
+                    color: line.met ? "var(--gold-deep)" : "var(--dim)",
                   }}
                 >
                   <Icon name={line.met ? "check" : "close"} size={14} strokeWidth={2.6} />
@@ -112,7 +112,7 @@ export function ScoreBreakdown({
               <span className="num" style={RIGHT}>
                 {earned} / {total}
               </span>
-              <span className="num" style={{ ...RIGHT, color: "var(--gold-text)" }}>
+              <span className="num" style={{ ...RIGHT, color: "var(--gold-deep)" }}>
                 {result.score}%
               </span>
             </div>

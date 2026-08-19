@@ -17,7 +17,7 @@ const noteStyle = (status: ApplicationStatus): React.CSSProperties =>
     ? {
         background: "var(--wash)",
         border: "1px solid var(--line-strong)",
-        color: "var(--gold-text)",
+        color: "var(--gold-deep)",
       }
     : {
         background: "var(--tint)",
@@ -74,7 +74,7 @@ export function BoardCard({ card }: { card: ApplicationCard }) {
             fontFamily: "var(--font-display)",
             fontSize: 22,
             lineHeight: 1,
-            color: card.score >= 80 ? "var(--gold-text)" : "var(--muted)",
+            color: card.score >= 80 ? "var(--gold-deep)" : "var(--muted)",
           }}
         >
           {card.score}%
@@ -114,7 +114,7 @@ export function BoardCard({ card }: { card: ApplicationCard }) {
       )}
 
       {error && (
-        <span role="alert" style={{ fontSize: 11, lineHeight: 1.4, color: "var(--gold-text)" }}>
+        <span role="alert" style={{ fontSize: 11, lineHeight: 1.4, color: "var(--gold-deep)" }}>
           {error}
         </span>
       )}
@@ -137,7 +137,7 @@ export function BoardCard({ card }: { card: ApplicationCard }) {
           className="btn btn--sm"
           disabled={pending}
           aria-label={armed ? "Confirm withdraw" : "Withdraw this application"}
-          style={armed ? { borderColor: "var(--gold)", color: "var(--gold-text)" } : undefined}
+          style={armed ? { borderColor: "var(--gold)", color: "var(--gold-deep)" } : undefined}
           onClick={onWithdraw}
           onBlur={disarm}
         >

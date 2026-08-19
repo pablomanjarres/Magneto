@@ -40,7 +40,7 @@ export function CompletenessPanel({
           Missing:
         </span>
         {completeness.missing.length === 0 ? (
-          <span className="meta" style={{ color: "var(--gold-text)" }}>
+          <span className="meta" style={{ color: "var(--gold-deep)" }}>
             nothing — every field is filled.
           </span>
         ) : (

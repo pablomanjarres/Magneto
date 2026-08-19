@@ -35,11 +35,11 @@ export function CompletenessRail({ completeness }: { completeness: CompletenessR
         <div className="row" style={{ alignItems: "baseline", gap: 8 }}>
           <span
             className="display num"
-            style={{ fontSize: 46, lineHeight: 1, color: "var(--gold-text)" }}
+            style={{ fontSize: 46, lineHeight: 1, color: "var(--gold-deep)" }}
           >
             {completeness.percentage}
           </span>
-          <span style={{ fontSize: 18, color: "var(--gold-text)" }}>%</span>
+          <span style={{ fontSize: 18, color: "var(--gold-deep)" }}>%</span>
           <span className="meta num" style={{ marginLeft: "auto" }}>
             {filledFieldsLabel(completeness)}
           </span>
@@ -163,7 +163,7 @@ export function ChipInput({
                 border: 0,
                 padding: 4,
                 cursor: "pointer",
-                color: "var(--gold-text)",
+                color: "var(--gold-deep)",
               }}
             >
               <Icon name="close" size={12} strokeWidth={2.4} />
@@ -253,7 +253,7 @@ export function AddButton({ label, onClick }: { label: string; onClick: () => vo
         cursor: "pointer",
       }}
     >
-      <span style={{ color: "var(--gold-text)", display: "flex" }}>
+      <span style={{ color: "var(--gold-deep)", display: "flex" }}>
         <Icon name="plus" size={16} strokeWidth={2.2} />
       </span>
       {label}

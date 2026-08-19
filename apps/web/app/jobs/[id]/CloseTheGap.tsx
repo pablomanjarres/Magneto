@@ -91,7 +91,7 @@ export function CloseTheGap({
               <div className="grow">
                 <ProgressBar percentage={potential} />
               </div>
-              <span className="num" style={{ fontSize: 15, color: "var(--gold-text)" }}>
+              <span className="num" style={{ fontSize: 15, color: "var(--gold-deep)" }}>
                 {potential}%
               </span>
             </div>

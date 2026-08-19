@@ -95,7 +95,7 @@ export function SkillsStep({
                 className="chip chip--dashed chip--action"
                 onClick={() => onAddSkill(gap.skill)}
               >
-                <span style={{ color: "var(--gold-text)", display: "flex" }}>
+                <span style={{ color: "var(--gold-deep)", display: "flex" }}>
                   <Icon name="plus" size={13} strokeWidth={2.4} />
                 </span>
                 {gap.skill}

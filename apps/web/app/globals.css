@@ -1,48 +1,46 @@
-/* Moon Light — lunar, light. The lit surface rather than the night side.
-   Palette and type come from the sprint 1 screen designs. Every foreground on
-   background pair here clears WCAG AA. */
-
 :root {
-  /* Surfaces. Moon rock, not paper: there is no #ffffff in this palette. The
-     page is the deepest, panels sit above it, and a well you type into sits
-     between the two. Every step below was measured, not picked by eye. */
-  --ground: #d4dbe8;
-  --rail: #e3e8f2;
-  --panel: #eff3fa;
-  --panel-deep: #e9eef7;
-  --input: #e6ecf6;
-  --btn: #dfe5f1;
-  --btn-hover: #d6dded;
-  --track: #bfc9dc;
+  /* Surfaces. The moon as the old joke has it: aged cheese rind, not a bright
+     yellow. Warm sand for the page, cream for anything sitting on it, and no
+     #ffffff anywhere. Every step and every ink below was measured. */
+  --ground: #dcd4c1;
+  --rail: #e8e2d2;
+  --panel: #f2ede1;
+  --panel-deep: #ece5d6;
+  --input: #e9e3d3;
+  --btn: #e3dccb;
+  --btn-hover: #d9d1bc;
+  --track: #c7bda4;
+  --cream: #f6f2e8;
 
-  /* Ink. The whole ramp clears WCAG AA on every surface above, including the
-     smallest 11px meta text, which the first cut of this palette did not. */
-  --ink: #0f1a2c;
-  --ink-active: #1b2740;
-  --ink-secondary: #2c3752;
-  --muted: #48536b;
-  --dim: #4f5a72;
-  --faint: #525d76;
+  /* Ink, warm through the whole ramp. All eight tones clear WCAG AA on all six
+     surfaces above, including the 11px meta text. */
+  --ink: #231c10;
+  --ink-active: #312817;
+  --ink-secondary: #3f3520;
+  --muted: #57492e;
+  --dim: #5f5134;
+  --faint: #635437;
 
-  /* Accents. Two golds on purpose: one to fill a shape, a deeper one for gold
-     as text, because the fill is only 3.4:1 against a panel. */
-  --glow: #41568a;
-  --gold: #b0762f;
-  --gold-text: #7d5019;
+  /* Accents. --glow is the olive-brown for anything interactive, --gold fills a
+     shape, --gold-deep is gold you can read: it carries the score numbers and
+     the one primary button, which takes a cream label rather than a dark one. */
+  --glow: #5f5220;
+  --gold: #9c6524;
+  --gold-deep: #7a4e16;
 
-  /* Lines. --control-line is solid and darker than it looks it should be: it
-     is the boundary of anything you can press, and WCAG 1.4.11 wants 3:1 there.
-     The old 9%-opacity hairline measured 1.2:1, which is why buttons and cards
-     dissolved into the page. */
-  --line: rgba(15, 26, 44, 0.22);
-  --line-strong: rgba(15, 26, 44, 0.34);
-  --line-dashed: rgba(15, 26, 44, 0.38);
-  --control-line: #717c93;
-  --wash: rgba(65, 86, 138, 0.14);
+  /* Lines. --control-line is solid and darker than instinct says, because WCAG
+     1.4.11 wants 3:1 on the boundary of anything pressable. The hairline this
+     replaced measured 1.2:1, which is why the buttons dissolved into the page. */
+  --line: rgba(35, 28, 16, 0.22);
+  --line-strong: rgba(35, 28, 16, 0.34);
+  --line-dashed: rgba(35, 28, 16, 0.38);
+  --control-line: #83756d;
+  --wash: rgba(122, 78, 22, 0.14);
   /* A row or cell pressed very slightly into its surface. */
-  --tint: rgba(15, 26, 44, 0.06);
+  --tint: rgba(35, 28, 16, 0.06);
 
-  --shadow: 0 1px 2px rgba(15, 26, 44, 0.07), 0 2px 10px rgba(15, 26, 44, 0.05);
+  --shadow:
+    0 1px 2px rgba(35, 28, 16, 0.08), 0 2px 10px rgba(35, 28, 16, 0.06);
 
   --radius: 12px;
   --radius-sm: 8px;
@@ -172,7 +170,7 @@ button {
 }
 
 .nav__link:hover {
-  background: rgba(65, 86, 138, 0.08);
+  background: rgba(122, 78, 22, 0.08);
   color: var(--ink-active);
 }
 
@@ -191,7 +189,7 @@ button {
   width: 32px;
   height: 32px;
   border-radius: 999px;
-  background: rgba(65, 86, 138, 0.16);
+  background: rgba(122, 78, 22, 0.16);
   border: 1px solid var(--control-line);
   display: flex;
   align-items: center;
@@ -304,9 +302,9 @@ a.card:hover {
 }
 
 .chip--met {
-  border-color: rgba(65, 86, 138, 0.45);
+  border-color: rgba(122, 78, 22, 0.5);
   color: var(--ink-secondary);
-  background: rgba(65, 86, 138, 0.1);
+  background: var(--wash);
 }
 
 .chip--missing {
@@ -378,15 +376,15 @@ a.card:hover {
 }
 
 .btn--primary {
-  background: var(--gold);
-  border-color: var(--gold);
-  color: var(--ink);
+  background: var(--gold-deep);
+  border-color: var(--gold-deep);
+  color: var(--cream);
   font-weight: 600;
 }
 
 .btn--primary:hover:not(:disabled) {
-  background: #9c6728;
-  border-color: #9c6728;
+  background: #67420f;
+  border-color: #67420f;
   color: var(--ink);
 }
 
@@ -412,7 +410,7 @@ a.card:hover {
   font-family: var(--font-display);
   font-size: 30px;
   line-height: 1;
-  color: var(--gold-text);
+  color: var(--gold-deep);
 }
 
 .score__label {
