@@ -1,4 +1,6 @@
 import type {
+  Application,
+  ApplicationCard,
   ApplicationStatus,
   CompletenessResult,
   MarketGap,
@@ -177,7 +179,40 @@ export function canMove(from: ApplicationStatus, to: ApplicationStatus): boolean
 
 /** True when the string is one of the four statuses. Guards the API boundary. */
 export function isApplicationStatus(value: unknown): value is ApplicationStatus {
-  return (
-    typeof value === "string" && APPLICATION_STATUSES.includes(value as ApplicationStatus)
-  );
+  return typeof value === "string" && APPLICATION_STATUSES.includes(value as ApplicationStatus);
+}
+
+/**
+ * Join applications to the vacancies behind them and score each one, so the
+ * board shows the same number the ranked list does. Pure: both the Next route
+ * handlers and the Express service call this and get the same payload.
+ * An application whose vacancy is gone is dropped rather than half-rendered.
+ */
+export function applicationCards(
+  profile: Profile,
+  applications: Application[],
+  vacancies: Vacancy[],
+): ApplicationCard[] {
+  const byId = new Map(vacancies.map((v) => [v.id, v]));
+  const column = (s: ApplicationStatus): number => APPLICATION_STATUSES.indexOf(s);
+
+  return applications
+    .flatMap((a) => {
+      const vacancy = byId.get(a.vacancyId);
+      return vacancy ? [{ ...a, vacancy, score: scoreVacancy(profile, vacancy).score }] : [];
+    })
+    .sort(
+      (a, b) => column(a.status) - column(b.status) || b.score - a.score || a.id.localeCompare(b.id),
+    );
+}
+
+/** The same cards split into the board's four columns, in column order. */
+export function groupByStatus(
+  cards: ApplicationCard[],
+): Array<{ status: ApplicationStatus; label: string; cards: ApplicationCard[] }> {
+  return APPLICATION_STATUSES.map((status) => ({
+    status,
+    label: STATUS_LABELS[status],
+    cards: cards.filter((c) => c.status === status),
+  }));
 }
