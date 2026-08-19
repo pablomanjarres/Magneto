@@ -1,10 +1,8 @@
 import type { Profile, Vacancy } from "@moonlight/types";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { getProfile, listApplications, listVacancies } from "@moonlight/db";
 import { applicationCards, marketGaps, profileCompleteness, rankVacancies } from "@moonlight/core";
-
-import { redirect } from "next/navigation";
-
-import { currentProfile } from "./session";
 
 /**
  * Everything the server components read, in one place. Pages stay a layout and
@@ -14,17 +12,29 @@ import { currentProfile } from "./session";
  */
 
 /**
- * The signed-in candidate. Every screen reads their own data and nobody else's,
- * which is what the session cookie is for. Pass an id only to look one up
- * deliberately, never to decide who is looking at the page.
+ * Which candidate the browser is working as. This is NOT authentication: there
+ * is no password and no check, and anyone editing the cookie becomes somebody
+ * else. Sign-in is HU_NF #32 and is not built. It exists only so the app knows
+ * whose profile to show after the registration form.
  */
-export const loadProfile = (id?: string): Promise<Profile | null> =>
-  id === undefined ? currentProfile() : getProfile(id);
+export const CANDIDATE_COOKIE = "moonlight_candidate";
+
+export async function currentProfile(): Promise<Profile | null> {
+  const id = (await cookies()).get(CANDIDATE_COOKIE)?.value;
+  return id ? getProfile(id) : null;
+}
+
+/** The current candidate, or a trip to the registration form. */
+export async function requireProfile(): Promise<Profile> {
+  const profile = await currentProfile();
+  if (!profile) redirect("/register");
+  return profile;
+}
 
 /** The dataset on its own, for a screen that scores in the browser as you type. */
 export const loadVacancies = (): Promise<Vacancy[]> => listVacancies();
 
-/** Counts for the side rail, for whoever is signed in. */
+/** Counts for the side rail. */
 export async function loadNavCounts(
   profileId: string,
 ): Promise<{ vacancies: number; applications: number }> {
@@ -52,17 +62,6 @@ export async function loadBoard(profile: Profile) {
     listVacancies(),
   ]);
   return applicationCards(profile, applications, vacancies);
-}
-
-/**
- * The signed-in candidate, or a trip to the sign-in page. Every screen behind
- * the rail starts with this, so "who is this?" is answered once per request and
- * never with a guess.
- */
-export async function requireProfile(): Promise<Profile> {
-  const profile = await currentProfile();
-  if (!profile) redirect("/login");
-  return profile;
 }
 
 /** Which vacancies the candidate already applied to, for the Apply button. */

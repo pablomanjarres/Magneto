@@ -53,11 +53,14 @@ need a profile, not a particular way of obtaining one. Typing it is a way of obt
 import is release 2, and it pre-fills the very wizard the candidate already confirms today, so
 nothing built here gets thrown away when it lands.
 
+There is **no sign-in** either. Registering writes the new profile's id into a cookie so the app
+knows whose profile to draw, and nothing is verified. Authentication is HU_NF #32 and stays open.
+
 Backlog consequences, already applied on GitHub:
 
 | Story                              | Was                    | Now                                           |
 | ---------------------------------- | ---------------------- | --------------------------------------------- |
-| #3 Sign up and log in              | release 1, not started | release 1, **done** in this sprint            |
+| #3 Sign up and log in              | release 1, not started | still open: registration only, no sign-in     |
 | #4 Submit my LinkedIn profile URL  | release 1              | release 2                                     |
 | #5 Extract my work experience      | release 1              | release 2                                     |
 | #6 Extract my education            | release 1              | release 2                                     |
@@ -80,14 +83,14 @@ Each of those issues carries the decision in its body, so the board and the docu
 
 Start it with `pnpm db:up && pnpm db:migrate && pnpm db:seed && pnpm dev`, then walk these:
 
-| Screen         | Route           | What to show                                                |
-| -------------- | --------------- | ----------------------------------------------------------- |
-| Register       | `/register`     | a real sign-up, landing in the wizard with an empty profile |
-| Onboarding     | `/onboarding`   | the bar moving as fields are filled                         |
-| Dashboard      | `/dashboard`    | completeness, top matches, the gaps measured across all 20  |
-| Vacancies      | `/jobs`         | 20 scored and ordered, filters                              |
-| Vacancy detail | `/jobs/v003`    | the weight table and 10 ÷ 11 = 91%                          |
-| Status board   | `/applications` | moving an application between columns                       |
+| Screen         | Route           | What to show                                                     |
+| -------------- | --------------- | ---------------------------------------------------------------- |
+| Register       | `/register`     | a name and an email, landing in the wizard with an empty profile |
+| Onboarding     | `/onboarding`   | the bar moving as fields are filled                              |
+| Dashboard      | `/dashboard`    | completeness, top matches, the gaps measured across all 20       |
+| Vacancies      | `/jobs`         | 20 scored and ordered, filters                                   |
+| Vacancy detail | `/jobs/v003`    | the weight table and 10 ÷ 11 = 91%                               |
+| Status board   | `/applications` | moving an application between columns                            |
 
 For the JSON and the rows the brief asks for:
 

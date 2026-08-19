@@ -5,9 +5,9 @@ import { STATUS_LABELS, scoreVacancy } from "@moonlight/core";
 
 import { AppShell } from "../../../components/AppShell";
 import { Icon } from "../../../components/Icon";
-import { Chip, EmptyState, Score } from "../../../components/primitives";
+import { Chip, Score } from "../../../components/primitives";
 import { salaryRange, shortDate, workModeLabel } from "../../../lib/format";
-import { loadProfile, loadRanked } from "../../../lib/queries";
+import { loadRanked, requireProfile } from "../../../lib/queries";
 import { ApplyButton } from "./ApplyButton";
 import { CloseTheGap } from "./CloseTheGap";
 import { ScoreBreakdown } from "./ScoreBreakdown";
@@ -18,19 +18,8 @@ const MUTED = { color: "var(--muted)" };
 
 export default async function VacancyPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const [profile, vacancy] = await Promise.all([loadProfile(), getVacancy(id)]);
+  const [profile, vacancy] = await Promise.all([requireProfile(), getVacancy(id)]);
   if (!vacancy) notFound();
-
-  if (!profile) {
-    return (
-      <AppShell title="Vacancy">
-        <EmptyState title="No candidate yet">
-          A score needs a profile. Fill the wizard at <Link href="/onboarding">/onboarding</Link>,
-          or seed the demo candidate with <code>pnpm db:seed</code>.
-        </EmptyState>
-      </AppShell>
-    );
-  }
 
   const result = scoreVacancy(profile, vacancy);
   const [{ vacancies, ranked, gaps }, applications] = await Promise.all([

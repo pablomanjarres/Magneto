@@ -3,14 +3,11 @@ import { dirname, join } from "node:path";
 import type { Application, Profile, Vacancy } from "@moonlight/types";
 
 import { pool, readJson } from "./index.js";
-import { registerProfile } from "./repositories/accounts.js";
+import { saveProfile } from "./repositories/profiles.js";
 
 const data = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "data");
 const vacancies = readJson<Vacancy[]>(join(data, "jobs", "vacancies.json"));
 const candidate = readJson<Profile>(join(data, "sample-profiles", "candidate.json"));
-
-/** Seed data, not a secret: it is in the repository and the delivery video. */
-const DEMO_PASSWORD = "moonlight-demo";
 
 /**
  * The demo pipeline. Fixed ids and fixed vacancies so the board looks the same
@@ -51,9 +48,7 @@ for (const v of vacancies) {
   }
 }
 
-// The demo account signs in like any other: delivery 1 has no LinkedIn import,
-// so there is no way into a profile except registering or signing in.
-await registerProfile(candidate, DEMO_PASSWORD);
+await saveProfile(candidate);
 
 for (const a of applications) {
   // No conflict target: the row can already exist under its seeded id OR under
@@ -71,7 +66,7 @@ const { rows } = await pool.query<{ vacancies: string; applications: string }>(
           (SELECT count(*) FROM applications) AS applications`,
 );
 console.log(
-  `seeded ${vacancies.length} vacancies and the demo account ${candidate.email}; ` +
+  `seeded ${vacancies.length} vacancies and profile ${candidate.id}; ` +
     `tables now hold ${rows[0]?.vacancies ?? "0"} vacancies and ` +
     `${rows[0]?.applications ?? "0"} applications`,
 );

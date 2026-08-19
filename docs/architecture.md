@@ -63,25 +63,20 @@ the evidence for the ADR.
 | `vacancy_requirements` | one row per requirement, `must-have` or `nice-to-have`                 |
 | `profiles`             | the candidate. Sub-objects stay JSONB: they are read and written whole |
 | `applications`         | the candidate's own pipeline, one row per vacancy applied to           |
-| `sessions`             | one row per sign-in. The cookie holds this token, never a profile id   |
 
 Migrations are forward only and each one is re-runnable, so `pnpm db:migrate` can be run twice
 without a ledger table. Never edit a migration that has run; add the next one.
 
-## Who is signed in
+## Which candidate is this?
 
-A candidate registers themselves: sprint 1 imports nothing from LinkedIn, so `/register` is the
-only door in and `/onboarding` is what fills the profile behind it.
+A candidate registers themselves at `/register`: sprint 1 imports nothing from LinkedIn, so a name
+and an email is how a profile starts and `/onboarding` is what fills it.
 
-The password is hashed with scrypt from `node:crypto`, so storing one safely costs no dependency.
-Signing in creates a row in `sessions` and puts its opaque token in an httpOnly cookie — an id in
-a cookie would be one guess away from reading somebody else's profile. `apps/web/lib/session.ts`
-is the only file that knows the cookie's name, and `requireProfile()` in `lib/queries.ts` is how
-every screen behind the rail answers "who is this?". `AppShell` redirects a stranger to
-`/login` on its own, so a page that forgets to check still cannot render anyone else's data.
-
-JWTs and roles are HU_NF #32 and are not built yet; the `JWT_*` variables in `.env.example` are
-still unread.
+**There is no sign-in, and this is not authentication.** `POST /api/candidates` puts the new
+profile's id in a cookie, and `currentProfile()` in `apps/web/lib/queries.ts` reads it back. There
+is no password and nothing is verified — editing the cookie makes you somebody else. It exists so
+the app knows whose profile to draw, nothing more. Real authentication is HU_NF #32 and is not
+built; the `JWT_*` variables in `.env.example` are still unread.
 
 ## Scoring, in one paragraph
 

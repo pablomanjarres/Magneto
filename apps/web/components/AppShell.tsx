@@ -3,15 +3,14 @@ import Link from "next/link";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 
-import { loadNavCounts, loadProfile } from "../lib/queries";
+import { currentProfile, loadNavCounts } from "../lib/queries";
 import { initials } from "../lib/format";
 import { SideNav } from "./SideNav";
-import { SignOutButton } from "./SignOutButton";
 
 /**
  * The frame every signed-in screen sits in: side rail, top bar, content.
- * It reads the session itself and sends a stranger to the sign-in page, so a
- * page that forgot to check still cannot render anyone else's data.
+ * It reads the candidate cookie itself and sends anyone without one to the
+ * registration form, so a page that forgot to check cannot render a blank rail.
  */
 export async function AppShell({
   title,
@@ -22,8 +21,8 @@ export async function AppShell({
   meta?: ReactNode;
   children: ReactNode;
 }) {
-  const profile = await loadProfile();
-  if (!profile) redirect("/login");
+  const profile = await currentProfile();
+  if (!profile) redirect("/register");
 
   const counts = await loadNavCounts(profile.id);
 
@@ -39,11 +38,10 @@ export async function AppShell({
 
         <div className="rail__foot">
           <span className="avatar">{initials(profile.fullName)}</span>
-          <span className="stack grow" style={{ gap: 0 }}>
+          <span className="stack" style={{ gap: 0 }}>
             <span style={{ fontSize: 13 }}>{profile.fullName}</span>
             <span style={{ fontSize: 11, color: "var(--faint)" }}>Candidate</span>
           </span>
-          <SignOutButton />
         </div>
       </aside>
 

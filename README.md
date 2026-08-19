@@ -63,14 +63,15 @@ pnpm db:seed                 # 20 vacancies, one candidate, six applications
 pnpm dev                     # http://localhost:3000
 ```
 
-Register your own candidate at `/register`, or sign in to the seeded demo account
-(`ana.gomez@example.com` / `moonlight-demo`) to see a profile that is already complete with a
-pipeline behind it.
+Register at `/register` with a name and an email. Your profile starts **empty**, because this
+delivery imports nothing from LinkedIn, so `/onboarding` is where it gets filled and the
+completeness bar is what says how far along it is. From there, `/dashboard` shows completeness and
+top matches, `/jobs` the whole list by score, `/jobs/v003` one recommendation worked through, and
+`/applications` the status board.
 
-A candidate you register yourself starts **empty**: this delivery imports nothing from LinkedIn,
-so `/onboarding` is where the profile gets filled and the completeness bar is what says how far
-along it is. From there, `/dashboard` shows completeness and top matches, `/jobs` the whole list by
-score, `/jobs/v003` one recommendation worked through, and `/applications` the status board.
+There is no sign-in. Registering puts your profile id in a cookie so the app knows whose profile
+to draw; nothing is verified. To see the seeded candidate instead, with her pipeline already
+filled, set that cookie to `demo-candidate` in the browser's devtools.
 
 The endpoints are real and inspectable, which is what the delivery video shows:
 

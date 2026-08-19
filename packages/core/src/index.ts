@@ -219,10 +219,3 @@ export function groupByStatus(
 }
 
 export { parseProfile } from "./parse-profile.js";
-export {
-  blankProfile,
-  parseRegistration,
-  MIN_PASSWORD,
-  MAX_PASSWORD,
-  type Registration,
-} from "./parse-registration.js";

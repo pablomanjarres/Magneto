@@ -4,4 +4,3 @@ export { pool, readJson } from "./pool.js";
 export * from "./repositories/vacancies.js";
 export * from "./repositories/profiles.js";
 export * from "./repositories/applications.js";
-export * from "./repositories/accounts.js";
