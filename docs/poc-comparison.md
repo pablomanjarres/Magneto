@@ -2,10 +2,11 @@
 
 Delivery 1 left the backend open. Both branches were built and measured instead of argued about.
 
-Both expose the same four endpoints (`/health`, `/vacancies`, `POST /profiles`,
-`/profiles/:id/recommendations`), call the same scoring engine from `packages/core`, and read the
-same PostgreSQL database. Their JSON responses are byte-identical, verified by diffing the two
-payloads. Whatever differs below is transport and runtime, not logic.
+Both expose the same endpoints — `/health`, `/vacancies`, `/vacancies/:id`, `POST /profiles`,
+`/profiles/:id`, `/profiles/:id/recommendations`, and the four application routes — call the same
+scoring engine from `packages/core`, and read the same PostgreSQL database. Their JSON responses
+are byte-identical, verified by diffing the two payloads. Whatever differs below is transport and
+runtime, not logic.
 
 ## Performance
 
@@ -24,7 +25,7 @@ network hop.
 
 | Criterion             | Next route handlers                                         | Express service                                                                       |
 | --------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| Implementation effort | Four files, no server bootstrap, no CORS, no second process | One server file plus a dependency, a second process, and CORS once a browser calls it |
+| Implementation effort | One file per route, no server bootstrap, no CORS, no second process | One server file plus a dependency, a second process, and CORS once a browser calls it |
 | Technical limits      | Tied to the Next runtime and its deployment model           | Portable to any Node host                                                             |
 | Cost                  | One process, one deployment                                 | Two processes, two deployments                                                        |
 | Sustainability        | One stack for two people to learn and run                   | Two things to start, watch and debug                                                  |
