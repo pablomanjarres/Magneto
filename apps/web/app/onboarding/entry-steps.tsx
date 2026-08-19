@@ -3,7 +3,7 @@
 import type { Education, Experience } from "@moonlight/types";
 
 import { EmptyState, Field } from "../../components/primitives";
-import { AddButton, EntryCard, PAIRED_FIELDS, optionalNumber, optionalText } from "./fields";
+import { AddButton, EntryCard, optionalNumber, optionalText } from "./fields";
 
 export const BLANK_EXPERIENCE: Experience = {
   company: "",
@@ -42,7 +42,7 @@ export function ExperienceStep({
 
       {items.map((item, index) => (
         <EntryCard key={index} removeLabel="Remove this position" onRemove={() => onRemove(index)}>
-          <div style={PAIRED_FIELDS}>
+          <div className="two-fields">
             <Field label="Company">
               <input
                 className="input"
@@ -113,7 +113,7 @@ export function EducationStep({
 
       {items.map((item, index) => (
         <EntryCard key={index} removeLabel="Remove this degree" onRemove={() => onRemove(index)}>
-          <div style={PAIRED_FIELDS}>
+          <div className="two-fields">
             <Field label="Institution">
               <input
                 className="input"

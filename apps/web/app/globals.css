@@ -3,28 +3,46 @@
    background pair here clears WCAG AA. */
 
 :root {
-  /* surface */
-  --ground: #f4f6fa;
-  --panel: #ffffff;
-  --track: #e3e8f0;
+  /* Surfaces. Moon rock, not paper: there is no #ffffff in this palette. The
+     page is the deepest, panels sit above it, and a well you type into sits
+     between the two. Every step below was measured, not picked by eye. */
+  --ground: #d4dbe8;
+  --rail: #e3e8f2;
+  --panel: #eff3fa;
+  --panel-deep: #e9eef7;
+  --input: #e6ecf6;
+  --btn: #dfe5f1;
+  --btn-hover: #d6dded;
+  --track: #bfc9dc;
 
-  /* ink */
+  /* Ink. The whole ramp clears WCAG AA on every surface above, including the
+     smallest 11px meta text, which the first cut of this palette did not. */
   --ink: #0f1a2c;
-  --ink-active: #16233a;
-  --ink-secondary: #35425c;
-  --muted: #616d84;
-  --dim: #78829a;
-  --faint: #8a93a6;
+  --ink-active: #1b2740;
+  --ink-secondary: #2c3752;
+  --muted: #48536b;
+  --dim: #4f5a72;
+  --faint: #525d76;
 
-  /* accents */
-  --glow: #5a6f9c;
-  --gold: #b77d3a;
+  /* Accents. Two golds on purpose: one to fill a shape, a deeper one for gold
+     as text, because the fill is only 3.4:1 against a panel. */
+  --glow: #41568a;
+  --gold: #b0762f;
+  --gold-text: #7d5019;
 
-  /* lines, all derived from the ink so they sit on any surface */
-  --line: rgba(15, 26, 44, 0.09);
-  --line-strong: rgba(15, 26, 44, 0.13);
-  --line-dashed: rgba(15, 26, 44, 0.2);
-  --wash: rgba(90, 111, 156, 0.1);
+  /* Lines. --control-line is solid and darker than it looks it should be: it
+     is the boundary of anything you can press, and WCAG 1.4.11 wants 3:1 there.
+     The old 9%-opacity hairline measured 1.2:1, which is why buttons and cards
+     dissolved into the page. */
+  --line: rgba(15, 26, 44, 0.22);
+  --line-strong: rgba(15, 26, 44, 0.34);
+  --line-dashed: rgba(15, 26, 44, 0.38);
+  --control-line: #717c93;
+  --wash: rgba(65, 86, 138, 0.14);
+  /* A row or cell pressed very slightly into its surface. */
+  --tint: rgba(15, 26, 44, 0.06);
+
+  --shadow: 0 1px 2px rgba(15, 26, 44, 0.07), 0 2px 10px rgba(15, 26, 44, 0.05);
 
   --radius: 12px;
   --radius-sm: 8px;
@@ -81,7 +99,7 @@ button {
   flex-direction: column;
   gap: 26px;
   padding: 22px 14px;
-  background: var(--panel);
+  background: var(--rail);
   border-right: 1px solid var(--line);
   position: sticky;
   top: 0;
@@ -154,7 +172,7 @@ button {
 }
 
 .nav__link:hover {
-  background: rgba(90, 111, 156, 0.06);
+  background: rgba(65, 86, 138, 0.08);
   color: var(--ink-active);
 }
 
@@ -173,8 +191,8 @@ button {
   width: 32px;
   height: 32px;
   border-radius: 999px;
-  background: rgba(90, 111, 156, 0.12);
-  border: 1px solid var(--line-dashed);
+  background: rgba(65, 86, 138, 0.16);
+  border: 1px solid var(--control-line);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -222,7 +240,8 @@ button {
 .panel {
   border: 1px solid var(--line-strong);
   border-radius: 14px;
-  background: linear-gradient(160deg, #ffffff 0%, #f7f9fd 70%);
+  background: linear-gradient(160deg, var(--panel) 0%, var(--panel-deep) 100%);
+  box-shadow: var(--shadow);
   padding: 24px 26px;
 }
 
@@ -230,6 +249,7 @@ button {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--panel);
+  box-shadow: var(--shadow);
   padding: 16px 18px;
 }
 
@@ -284,9 +304,9 @@ a.card:hover {
 }
 
 .chip--met {
-  border-color: rgba(90, 111, 156, 0.35);
+  border-color: rgba(65, 86, 138, 0.45);
   color: var(--ink-secondary);
-  background: rgba(90, 111, 156, 0.07);
+  background: rgba(65, 86, 138, 0.1);
 }
 
 .chip--missing {
@@ -311,7 +331,8 @@ a.card:hover {
 
 /* A chip the candidate can press: add a skill, drop a city, pick a work mode. */
 .chip--action {
-  background: none;
+  background: var(--btn);
+  border-color: var(--control-line);
   cursor: pointer;
   font: inherit;
 }
@@ -338,14 +359,15 @@ a.card:hover {
   justify-content: center;
   gap: 9px;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--line-strong);
-  background: var(--panel);
+  border: 1px solid var(--control-line);
+  background: var(--btn);
   color: var(--ink-secondary);
   font-size: 14px;
   cursor: pointer;
 }
 
 .btn:hover:not(:disabled) {
+  background: var(--btn-hover);
   border-color: var(--glow);
   color: var(--ink);
 }
@@ -363,8 +385,8 @@ a.card:hover {
 }
 
 .btn--primary:hover:not(:disabled) {
-  background: #a56c2d;
-  border-color: #a56c2d;
+  background: #9c6728;
+  border-color: #9c6728;
   color: var(--ink);
 }
 
@@ -390,7 +412,7 @@ a.card:hover {
   font-family: var(--font-display);
   font-size: 30px;
   line-height: 1;
-  color: var(--gold);
+  color: var(--gold-text);
 }
 
 .score__label {
@@ -452,9 +474,9 @@ a.card:hover {
   width: 100%;
   height: 42px;
   padding: 0 12px;
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--control-line);
   border-radius: var(--radius-sm);
-  background: var(--panel);
+  background: var(--input);
   color: var(--ink);
   font: inherit;
 }

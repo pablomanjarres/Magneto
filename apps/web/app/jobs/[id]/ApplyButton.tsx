@@ -41,7 +41,7 @@ export function ApplyButton({ profileId, vacancyId }: { profileId: string; vacan
       </button>
 
       {error ? (
-        <span className="meta" role="alert" style={{ color: "var(--gold)" }}>
+        <span className="meta" role="alert" style={{ color: "var(--gold-text)" }}>
           {error}
         </span>
       ) : (

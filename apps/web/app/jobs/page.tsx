@@ -14,7 +14,7 @@ function Stat({ value, label, tone }: { value: string; label: string; tone?: "go
     <div className="stack" style={{ gap: 2, padding: "0 26px" }}>
       <span
         className="display num"
-        style={{ color: tone === "gold" ? "var(--gold)" : "var(--ink-active)" }}
+        style={{ color: tone === "gold" ? "var(--gold-text)" : "var(--ink-active)" }}
       >
         {value}
       </span>

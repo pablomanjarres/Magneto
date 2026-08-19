@@ -20,7 +20,7 @@ const HEAD_ROW: CSSProperties = {
   color: "var(--faint)",
 };
 
-const TOTAL_ROW: CSSProperties = { ...ROW, background: "rgba(15, 26, 44, 0.06)", fontSize: 13 };
+const TOTAL_ROW: CSSProperties = { ...ROW, background: "var(--tint)", fontSize: 13 };
 
 const RIGHT: CSSProperties = { textAlign: "right" };
 
@@ -77,7 +77,7 @@ export function ScoreBreakdown({
                   alignItems: "center",
                   borderBottom:
                     index < result.breakdown.length - 1 ? "1px solid var(--line)" : "none",
-                  background: line.met ? "transparent" : "rgba(15, 26, 44, 0.045)",
+                  background: line.met ? "transparent" : "var(--tint)",
                 }}
               >
                 <span style={{ fontSize: 14 }}>{line.skill}</span>
@@ -97,7 +97,7 @@ export function ScoreBreakdown({
                     alignItems: "center",
                     justifyContent: "flex-end",
                     gap: 6,
-                    color: line.met ? "var(--gold)" : "var(--dim)",
+                    color: line.met ? "var(--gold-text)" : "var(--dim)",
                   }}
                 >
                   <Icon name={line.met ? "check" : "close"} size={14} strokeWidth={2.6} />
@@ -112,7 +112,7 @@ export function ScoreBreakdown({
               <span className="num" style={RIGHT}>
                 {earned} / {total}
               </span>
-              <span className="num" style={{ ...RIGHT, color: "var(--gold)" }}>
+              <span className="num" style={{ ...RIGHT, color: "var(--gold-text)" }}>
                 {result.score}%
               </span>
             </div>

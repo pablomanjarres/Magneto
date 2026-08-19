@@ -11,6 +11,13 @@ import type { Education, Experience, Profile, WorkMode } from "@moonlight/types"
 
 const WORK_MODES: readonly WorkMode[] = ["remote", "hybrid", "onsite"];
 
+const MIN_YEAR = 1900;
+const MAX_YEAR = 2100;
+
+// Colombian pesos, where 7,000,000 a month is normal: this is over a hundred
+// times that, so only a typo or a broken client can reach it.
+const MAX_SALARY = 1_000_000_000;
+
 const isRecord = (v: unknown): v is Record<string, unknown> =>
   typeof v === "object" && v !== null && !Array.isArray(v);
 
@@ -23,38 +30,65 @@ const optionalNumber = (v: unknown): number | undefined =>
 
 const year = (v: unknown): number | undefined => {
   const n = optionalNumber(v);
-  return n !== undefined && n >= 1900 && n <= 2100 ? Math.trunc(n) : undefined;
+  return n !== undefined && n >= MIN_YEAR && n <= MAX_YEAR ? Math.trunc(n) : undefined;
 };
 
-function experience(v: unknown): Experience[] {
-  return list(v)
-    .filter(isRecord)
-    .flatMap((e) => {
-      const company = str(e["company"]);
-      const title = str(e["title"]);
-      if (!company || !title) return [];
-      return [
-        {
-          company,
-          title,
-          startDate: str(e["startDate"]),
-          endDate: optionalStr(e["endDate"]),
-          description: optionalStr(e["description"]),
-        },
-      ];
-    });
+/**
+ * An entry the candidate half filled is rejected, never quietly deleted:
+ * dropping it showed them a finished profile and stored a shorter one.
+ */
+function experienceList(v: unknown, errors: string[]): Experience[] {
+  return list(v).flatMap((raw, i) => {
+    const e = isRecord(raw) ? raw : {};
+    const company = str(e["company"]);
+    const title = str(e["title"]);
+    const startDate = str(e["startDate"]);
+    const at = `experience ${i + 1}`;
+
+    if (!company) errors.push(`${at} is missing a company`);
+    if (!title) errors.push(`${at} is missing a title`);
+    if (!startDate) errors.push(`${at} is missing a start date`);
+    if (!company || !title || !startDate) return [];
+
+    return [
+      {
+        company,
+        title,
+        startDate,
+        endDate: optionalStr(e["endDate"]),
+        description: optionalStr(e["description"]),
+      },
+    ];
+  });
 }
 
-function education(v: unknown): Education[] {
-  return list(v)
-    .filter(isRecord)
-    .flatMap((e) => {
-      const institution = str(e["institution"]);
-      const degree = str(e["degree"]);
-      const startYear = year(e["startYear"]);
-      if (!institution || !degree || startYear === undefined) return [];
-      return [{ institution, degree, startYear, endYear: year(e["endYear"]) }];
-    });
+function educationList(v: unknown, errors: string[]): Education[] {
+  return list(v).flatMap((raw, i) => {
+    const e = isRecord(raw) ? raw : {};
+    const institution = str(e["institution"]);
+    const degree = str(e["degree"]);
+    const startYear = year(e["startYear"]);
+    const at = `education ${i + 1}`;
+
+    if (!institution) errors.push(`${at} is missing an institution`);
+    if (!degree) errors.push(`${at} is missing a degree`);
+    if (startYear === undefined) {
+      errors.push(`${at} needs a start year between ${MIN_YEAR} and ${MAX_YEAR}`);
+    }
+    if (!institution || !degree || startYear === undefined) return [];
+
+    return [{ institution, degree, startYear, endYear: year(e["endYear"]) }];
+  });
+}
+
+/** A number that is not a salary is refused; anything unreadable stays absent. */
+function salary(v: unknown, field: string, errors: string[]): number | undefined {
+  const n = optionalNumber(v);
+  if (n === undefined) return undefined;
+  if (n < 0) errors.push(`${field} cannot be negative`);
+  else if (!Number.isInteger(n)) errors.push(`${field} must be a whole number`);
+  else if (n > MAX_SALARY) errors.push(`${field} is larger than any real salary`);
+  return n;
 }
 
 /**
@@ -76,9 +110,12 @@ export function parseProfile(input: unknown): { profile: Profile } | { errors: s
   else if (!/^[^@\s]+@[^@\s]+$/.test(email)) errors.push("email is not an address");
   if (!fullName) errors.push("fullName is required");
 
+  const experience = experienceList(input["experience"], errors);
+  const education = educationList(input["education"], errors);
+
   const raw = isRecord(input["expectations"]) ? input["expectations"] : {};
-  const salaryMin = optionalNumber(raw["salaryMin"]);
-  const salaryMax = optionalNumber(raw["salaryMax"]);
+  const salaryMin = salary(raw["salaryMin"], "salaryMin", errors);
+  const salaryMax = salary(raw["salaryMax"], "salaryMax", errors);
   if (salaryMin !== undefined && salaryMax !== undefined && salaryMin > salaryMax) {
     errors.push("salaryMin cannot be greater than salaryMax");
   }
@@ -98,8 +135,8 @@ export function parseProfile(input: unknown): { profile: Profile } | { errors: s
         .map((s) => str(s["name"]))
         .filter(Boolean)
         .map((name) => ({ name })),
-      experience: experience(input["experience"]),
-      education: education(input["education"]),
+      experience,
+      education,
       expectations: {
         targetRole: optionalStr(raw["targetRole"]),
         salaryMin,

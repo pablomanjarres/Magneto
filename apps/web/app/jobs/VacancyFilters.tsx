@@ -5,6 +5,7 @@ import type { WorkMode } from "@moonlight/types";
 
 import { Icon } from "../../components/Icon";
 import { EmptyState, Field } from "../../components/primitives";
+import { WORK_MODES } from "../../components/work-modes";
 import { workModeLabel } from "../../lib/format";
 
 /**
@@ -26,7 +27,6 @@ export interface VacancyListItem {
 }
 
 const ANY = "any";
-const WORK_MODES: ReadonlyArray<WorkMode> = ["remote", "hybrid", "onsite"];
 
 export function VacancyFilters({
   items,

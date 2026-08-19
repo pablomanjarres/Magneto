@@ -4,12 +4,14 @@ import { Icon } from "./Icon";
 
 /** The small pieces every screen repeats. One definition each, no copies. */
 
-export function ProgressBar({ percentage }: { percentage: number }) {
+/** `label` names the bar: a progressbar without one is announced as a bare number. */
+export function ProgressBar({ percentage, label }: { percentage: number; label?: string }) {
   const clamped = Math.max(0, Math.min(100, percentage));
   return (
     <div
       className="track"
       role="progressbar"
+      aria-label={label}
       aria-valuenow={clamped}
       aria-valuemin={0}
       aria-valuemax={100}

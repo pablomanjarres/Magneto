@@ -26,7 +26,13 @@ export async function GET(request: Request): Promise<Response> {
 
 /** POST /api/applications — apply to one vacancy. Applying twice is one row. */
 export async function POST(request: Request): Promise<Response> {
-  const body = (await request.json()) as { profileId?: string; vacancyId?: string; note?: string };
+  let body: { profileId?: string; vacancyId?: string; note?: string };
+  try {
+    body = (await request.json()) as typeof body;
+  } catch {
+    return Response.json({ error: "body is not valid JSON" }, { status: 400 });
+  }
+
   if (!body?.profileId || !body.vacancyId) {
     return Response.json({ error: "profileId and vacancyId are required" }, { status: 400 });
   }

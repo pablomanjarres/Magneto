@@ -5,10 +5,10 @@ import { marketGaps, normalizeSkill } from "@moonlight/core";
 
 import { Icon } from "../../components/Icon";
 import { Field } from "../../components/primitives";
+import { WORK_MODES } from "../../components/work-modes";
 import { salaryRange, workModeLabel } from "../../lib/format";
-import { ChipInput, PAIRED_FIELDS, optionalNumber } from "./fields";
+import { ChipInput, optionalNumber } from "./fields";
 
-const WORK_MODES: readonly WorkMode[] = ["remote", "hybrid", "onsite"];
 const CURRENCIES = ["COP", "USD", "EUR"];
 
 export function BasicsStep({
@@ -19,7 +19,7 @@ export function BasicsStep({
   onPatch: (changes: Partial<Profile>) => void;
 }) {
   return (
-    <div style={PAIRED_FIELDS}>
+    <div className="two-fields">
       <div style={{ gridColumn: "span 2" }}>
         <Field label="Full name">
           <input
@@ -95,7 +95,7 @@ export function SkillsStep({
                 className="chip chip--dashed chip--action"
                 onClick={() => onAddSkill(gap.skill)}
               >
-                <span style={{ color: "var(--gold)", display: "flex" }}>
+                <span style={{ color: "var(--gold-text)", display: "flex" }}>
                   <Icon name="plus" size={13} strokeWidth={2.4} />
                 </span>
                 {gap.skill}
@@ -204,7 +204,9 @@ export function ExpectationsStep({
         </div>
       </div>
 
-      <div
+      {/* The question is inside the label, so the box is announced as "Willing
+          to relocate". The Yes/No beside it only repeats the checked state. */}
+      <label
         className="row"
         style={{
           justifyContent: "space-between",
@@ -212,13 +214,14 @@ export function ExpectationsStep({
           border: "1px solid var(--line)",
           borderRadius: 10,
           background: "var(--panel)",
+          cursor: "pointer",
         }}
       >
         <span className="stack" style={{ gap: 3 }}>
           <span style={{ fontSize: 14 }}>Willing to relocate</span>
           <span className="meta">Say yes and we ask which cities.</span>
         </span>
-        <label className="check">
+        <span className="check">
           <input
             type="checkbox"
             checked={expectations.willRelocate}
@@ -231,8 +234,8 @@ export function ExpectationsStep({
             }
           />
           {expectations.willRelocate ? "Yes" : "No"}
-        </label>
-      </div>
+        </span>
+      </label>
 
       {expectations.willRelocate && (
         <ChipInput

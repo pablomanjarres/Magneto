@@ -1,18 +1,11 @@
 "use client";
 
-import { useState, type CSSProperties, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import type { CompletenessResult } from "@moonlight/types";
-import { COMPLETENESS_FIELDS } from "@moonlight/core";
 
+import { filledFieldsLabel } from "../../components/CompletenessPanel";
 import { Icon } from "../../components/Icon";
 import { ProgressBar } from "../../components/primitives";
-
-/** Two fields to a row. globals.css has no grid helper, so it lives here once. */
-export const PAIRED_FIELDS: CSSProperties = {
-  display: "grid",
-  gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-  gap: "16px 18px",
-};
 
 /** An input left empty is a missing value, not an empty string. */
 export function optionalText(value: string): string | undefined {
@@ -25,8 +18,6 @@ export function optionalNumber(value: string): number | undefined {
 
 /** The whole point of the wizard, on screen at every step. */
 export function CompletenessRail({ completeness }: { completeness: CompletenessResult }) {
-  const filled = COMPLETENESS_FIELDS.length - completeness.missing.length;
-
   return (
     <aside className="card stack" style={{ gap: 18, padding: "20px 22px" }}>
       <span
@@ -44,16 +35,16 @@ export function CompletenessRail({ completeness }: { completeness: CompletenessR
         <div className="row" style={{ alignItems: "baseline", gap: 8 }}>
           <span
             className="display num"
-            style={{ fontSize: 46, lineHeight: 1, color: "var(--gold)" }}
+            style={{ fontSize: 46, lineHeight: 1, color: "var(--gold-text)" }}
           >
             {completeness.percentage}
           </span>
-          <span style={{ fontSize: 18, color: "var(--gold)" }}>%</span>
+          <span style={{ fontSize: 18, color: "var(--gold-text)" }}>%</span>
           <span className="meta num" style={{ marginLeft: "auto" }}>
-            {filled} of {COMPLETENESS_FIELDS.length} fields
+            {filledFieldsLabel(completeness)}
           </span>
         </div>
-        <ProgressBar percentage={completeness.percentage} />
+        <ProgressBar percentage={completeness.percentage} label="Profile completeness" />
       </div>
 
       <div className="stack" style={{ gap: 9 }}>
@@ -172,7 +163,7 @@ export function ChipInput({
                 border: 0,
                 padding: 4,
                 cursor: "pointer",
-                color: "var(--gold)",
+                color: "var(--gold-text)",
               }}
             >
               <Icon name="close" size={12} strokeWidth={2.4} />
@@ -191,6 +182,9 @@ export function ChipInput({
               add();
             }
           }}
+          // Leaving the box is as much a commit as pressing Enter: whatever was
+          // typed is kept instead of being dropped by the next step.
+          onBlur={add}
           placeholder={placeholder}
           style={{
             flex: "1 1 180px",
@@ -259,7 +253,7 @@ export function AddButton({ label, onClick }: { label: string; onClick: () => vo
         cursor: "pointer",
       }}
     >
-      <span style={{ color: "var(--gold)", display: "flex" }}>
+      <span style={{ color: "var(--gold-text)", display: "flex" }}>
         <Icon name="plus" size={16} strokeWidth={2.2} />
       </span>
       {label}

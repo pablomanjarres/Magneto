@@ -1,13 +1,13 @@
 import Link from "next/link";
 
 import { AppShell } from "../../components/AppShell";
-import { Chip, EmptyState, ProgressBar } from "../../components/primitives";
+import { CompletenessPanel, filledFieldsLabel } from "../../components/CompletenessPanel";
+import { EmptyState } from "../../components/primitives";
 import { Icon } from "../../components/Icon";
 import { MarketGaps } from "../../components/MarketGaps";
 import { NoProfile } from "../../components/NoProfile";
 import { VacancyRow } from "../../components/VacancyRow";
 import { loadAppliedIds, loadProfile, loadRanked } from "../../lib/queries";
-import { COMPLETENESS_FIELDS } from "@moonlight/core";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +18,6 @@ export default async function DashboardPage() {
   const { vacancies, completeness, ranked, gaps } = await loadRanked(profile);
   const applied = await loadAppliedIds(profile.id);
   const byId = new Map(vacancies.map((v) => [v.id, v]));
-  const filled = COMPLETENESS_FIELDS.length - completeness.missing.length;
   const top = ranked.slice(0, 3);
   const topGap = gaps[0];
 
@@ -28,33 +27,11 @@ export default async function DashboardPage() {
         className="panel"
         style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 300px", gap: 32 }}
       >
-        <div className="stack" style={{ gap: 14 }}>
-          <div className="split">
-            <h1 className="display">Your profile is {completeness.percentage}% complete</h1>
-            <span className="meta num" style={{ whiteSpace: "nowrap" }}>
-              {filled} of {COMPLETENESS_FIELDS.length} fields
-            </span>
-          </div>
-
-          <ProgressBar percentage={completeness.percentage} />
-
-          <div className="chips">
-            <span className="meta" style={{ color: "var(--muted)" }}>
-              Missing:
-            </span>
-            {completeness.missing.length === 0 ? (
-              <span className="meta" style={{ color: "var(--gold)" }}>
-                nothing — every field is filled.
-              </span>
-            ) : (
-              completeness.missing.map((label) => (
-                <Chip key={label} tone="dashed">
-                  {label}
-                </Chip>
-              ))
-            )}
-          </div>
-        </div>
+        <CompletenessPanel
+          completeness={completeness}
+          heading={<h1 className="display">Your profile is {completeness.percentage}% complete</h1>}
+          detail={filledFieldsLabel(completeness)}
+        />
 
         <div
           className="stack"
@@ -120,7 +97,7 @@ export default async function DashboardPage() {
                 marginTop: "auto",
                 padding: "12px 14px",
                 borderRadius: 10,
-                background: "rgba(90, 111, 156, 0.07)",
+                background: "var(--wash)",
                 border: "1px solid var(--line-strong)",
                 color: "var(--ink-secondary)",
               }}

@@ -9,7 +9,13 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> },
 ): Promise<Response> {
   const { id } = await params;
-  const body = (await request.json()) as { status?: unknown };
+
+  let body: { status?: unknown };
+  try {
+    body = (await request.json()) as typeof body;
+  } catch {
+    return Response.json({ error: "body is not valid JSON" }, { status: 400 });
+  }
 
   if (!isApplicationStatus(body?.status)) {
     return Response.json(

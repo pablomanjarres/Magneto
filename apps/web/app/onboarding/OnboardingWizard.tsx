@@ -253,7 +253,7 @@ export function OnboardingWizard({
           </div>
 
           {error && (
-            <p className="lead" role="alert" style={{ color: "var(--gold)" }}>
+            <p className="lead" role="alert" style={{ color: "var(--gold-text)" }}>
               {error}
             </p>
           )}

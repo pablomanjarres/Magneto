@@ -1,11 +1,12 @@
 import Link from "next/link";
 
 import { AppShell } from "../../components/AppShell";
-import { Chip, EmptyState, ProgressBar } from "../../components/primitives";
+import { CompletenessPanel, filledFieldsLabel } from "../../components/CompletenessPanel";
+import { Chip, EmptyState } from "../../components/primitives";
 import { Icon } from "../../components/Icon";
 import { loadProfile } from "../../lib/queries";
 import { salaryRange, shortDate, workModeLabel } from "../../lib/format";
-import { COMPLETENESS_FIELDS, profileCompleteness } from "@moonlight/core";
+import { profileCompleteness } from "@moonlight/core";
 import { Detail, type Entry, EntryList, ProfileSection } from "./ProfileSection";
 
 export const dynamic = "force-dynamic";
@@ -38,7 +39,6 @@ export default async function ProfilePage() {
   }
 
   const completeness = profileCompleteness(profile);
-  const filled = COMPLETENESS_FIELDS.length - completeness.missing.length;
   const expectations = profile.expectations;
   const hasSalary = expectations.salaryMin !== undefined || expectations.salaryMax !== undefined;
 
@@ -63,7 +63,7 @@ export default async function ProfilePage() {
     }));
 
   return (
-    <AppShell title="Profile" meta={`${filled} of ${COMPLETENESS_FIELDS.length} fields`}>
+    <AppShell title="Profile" meta={filledFieldsLabel(completeness)}>
       <section
         className="panel"
         style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 300px", gap: 32 }}
@@ -77,29 +77,11 @@ export default async function ProfilePage() {
             </span>
           </div>
 
-          <div className="split">
-            <span className="meta">Profile completeness</span>
-            <span className="meta num">{completeness.percentage}%</span>
-          </div>
-
-          <ProgressBar percentage={completeness.percentage} />
-
-          <div className="chips">
-            <span className="meta" style={{ color: "var(--muted)" }}>
-              Missing:
-            </span>
-            {completeness.missing.length === 0 ? (
-              <span className="meta" style={{ color: "var(--gold)" }}>
-                nothing — every field is filled.
-              </span>
-            ) : (
-              completeness.missing.map((label) => (
-                <Chip key={label} tone="dashed">
-                  {label}
-                </Chip>
-              ))
-            )}
-          </div>
+          <CompletenessPanel
+            completeness={completeness}
+            heading={<span className="meta">Profile completeness</span>}
+            detail={`${completeness.percentage}%`}
+          />
         </div>
 
         <div
