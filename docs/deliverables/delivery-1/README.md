@@ -50,6 +50,26 @@ By hand or Balsamiq. No AI. They go in `docs/sketches/`.
 - [x] MVP: profile in, scored, ordered list out (Pablo)
 - [ ] Video, 5 minutes, showing JSON and database rows (Valentina)
 
+### What runs, for the video
+
+Start it with `pnpm db:up && pnpm db:migrate && pnpm db:seed && pnpm dev`, then walk these:
+
+| Screen         | Route           | What to show                                               |
+| -------------- | --------------- | ---------------------------------------------------------- |
+| Onboarding     | `/onboarding`   | the bar moving as fields are filled                        |
+| Dashboard      | `/dashboard`    | completeness, top matches, the gaps measured across all 20 |
+| Vacancies      | `/jobs`         | 20 scored and ordered, filters                             |
+| Vacancy detail | `/jobs/v003`    | the weight table and 10 ÷ 11 = 91%                         |
+| Status board   | `/applications` | moving an application between columns                      |
+
+For the JSON and the rows the brief asks for:
+
+```bash
+pnpm smoke http://localhost:3000/api    # the whole flow, checked, against the real database
+curl localhost:3000/api/profiles/demo-candidate/recommendations
+psql -h localhost -p 5433 -U moonlight -d moonlight -c 'table applications'
+```
+
 ## 6 Referencias
 
 - [ ] Sources used (Valentina)
