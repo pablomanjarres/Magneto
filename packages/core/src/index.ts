@@ -217,3 +217,5 @@ export function groupByStatus(
     cards: cards.filter((c) => c.status === status),
   }));
 }
+
+export { parseProfile } from "./parse-profile.js";

@@ -1,5 +1,4 @@
 import express from "express";
-import type { Profile } from "@moonlight/types";
 import {
   createApplication,
   deleteApplication,
@@ -17,6 +16,7 @@ import {
   canMove,
   isApplicationStatus,
   marketGaps,
+  parseProfile,
   profileCompleteness,
   rankVacancies,
 } from "@moonlight/core";
@@ -45,12 +45,12 @@ app.get("/vacancies/:id", async (req, res) => {
 });
 
 app.post("/profiles", async (req, res) => {
-  const profile = req.body as Profile;
-  if (!profile?.id || !profile.email) {
-    res.status(400).json({ error: "id and email are required" });
+  const parsed = parseProfile(req.body);
+  if ("errors" in parsed) {
+    res.status(400).json({ error: parsed.errors.join(", "), errors: parsed.errors });
     return;
   }
-  const saved = await saveProfile(profile);
+  const saved = await saveProfile(parsed.profile);
   res.status(201).json({ profile: saved, completeness: profileCompleteness(saved) });
 });
 
