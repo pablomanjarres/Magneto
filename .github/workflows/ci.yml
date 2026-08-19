@@ -56,4 +56,7 @@ jobs:
       - name: Seed is re-runnable
         run: pnpm db:seed
 
+      - name: The MVP flow, end to end
+        run: pnpm smoke
+
       - run: pnpm build
