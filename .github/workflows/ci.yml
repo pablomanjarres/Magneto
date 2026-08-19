@@ -56,6 +56,18 @@ jobs:
       - name: Seed is re-runnable
         run: pnpm db:seed
 
+      # A virgin database is the easy case. The one that broke in review is a
+      # candidate who withdrew a seeded application and applied again, so the
+      # row exists under a generated id rather than the seeded one.
+      - name: Seed survives a database the app has been used on
+        env:
+          PGPASSWORD: moonlight
+        run: |
+          psql -h localhost -p 5433 -U moonlight -d moonlight \
+            -c "DELETE FROM applications WHERE id = 'a001'" \
+            -c "INSERT INTO applications (profile_id, vacancy_id) VALUES ('demo-candidate', 'v003')"
+          pnpm db:seed
+
       - name: The MVP flow, end to end
         run: pnpm smoke
 

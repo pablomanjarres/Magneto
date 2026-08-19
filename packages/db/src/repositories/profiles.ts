@@ -50,3 +50,9 @@ export async function getProfile(id: string): Promise<Profile | null> {
     expectations: r.expectations,
   };
 }
+
+/** Only the smoke script needs this: it cleans up the candidate it invented. */
+export async function deleteProfile(id: string): Promise<boolean> {
+  const { rowCount } = await pool.query("DELETE FROM profiles WHERE id = $1", [id]);
+  return (rowCount ?? 0) > 0;
+}

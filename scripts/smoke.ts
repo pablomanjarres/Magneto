@@ -15,13 +15,14 @@
 import {
   createApplication,
   deleteApplication,
+  deleteProfile,
   getProfile,
   listApplications,
   listVacancies,
+  pool,
   saveProfile,
   updateApplicationStatus,
 } from "@moonlight/db";
-import { pool } from "@moonlight/db";
 import {
   applicationCards,
   canMove,
@@ -126,7 +127,7 @@ check("the board carries the same score as the list", cards[0]?.score === ranked
 check("the board always has four columns", groupByStatus(cards).length === 4);
 
 await deleteApplication(application.id);
-await pool.query("DELETE FROM profiles WHERE id = $1", [PROFILE_ID]);
+await deleteProfile(PROFILE_ID);
 
 // --- optional: the HTTP surface ---
 

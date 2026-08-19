@@ -11,7 +11,7 @@
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
-    "lint": "turbo lint",
+    "lint": "turbo lint && eslint scripts",
     "typecheck": "turbo typecheck",
     "test": "turbo test",
     "db:up": "docker compose -f infra/docker-compose.yml up -d",
@@ -21,7 +21,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,md,json,yml,yaml}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,md,json,yml,yaml}\"",
     "bench": "tsx scripts/bench.ts",
-    "smoke": "tsx scripts/smoke.ts"
+    "smoke": "tsx --env-file-if-exists=.env.local scripts/smoke.ts"
   },
   "devDependencies": {
     "@moonlight/core": "workspace:*",

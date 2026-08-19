@@ -5,8 +5,10 @@ Delivery 1 left the backend open. Both branches were built and measured instead 
 Both expose the same endpoints — `/health`, `/vacancies`, `/vacancies/:id`, `POST /profiles`,
 `/profiles/:id`, `/profiles/:id/recommendations`, and the four application routes — call the same
 scoring engine from `packages/core`, and read the same PostgreSQL database. Their JSON responses
-are byte-identical, verified by diffing the two payloads. Whatever differs below is transport and
-runtime, not logic.
+match field for field on every success path, verified by diffing the two payloads. Two things do
+differ, and neither is logic: `/health` names the service it is (`next` against `express`, which is
+the point of the endpoint), and an unexpected database failure is rendered by each framework's own
+error handler. Whatever differs below is transport and runtime.
 
 ## Performance
 

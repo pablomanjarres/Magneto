@@ -51,9 +51,12 @@ for (const v of vacancies) {
 await saveProfile(candidate);
 
 for (const a of applications) {
+  // No conflict target: the row can already exist under its seeded id OR under
+  // a generated one, because the candidate withdrew it and applied again in the
+  // app. Naming only the id would abort the seed on that second case.
   await pool.query(
     `INSERT INTO applications (id, profile_id, vacancy_id, status) VALUES ($1, $2, $3, $4)
-     ON CONFLICT (id) DO NOTHING`,
+     ON CONFLICT DO NOTHING`,
     [a.id, candidate.id, a.vacancyId, a.status],
   );
 }

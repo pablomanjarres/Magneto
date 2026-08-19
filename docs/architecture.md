@@ -16,7 +16,7 @@ apps/web      apps/api          entrypoints. Route handlers and pages. No domain
     packages/types                the shapes both sides agree on. No logic at all.
 
      packages/db                  PostgreSQL: migrations, seeds, repositories. Imports types,
-                                  never core. The only place that knows SQL exists.
+                                  never core. The only place that writes SQL.
 ```
 
 ## The dependency rule
