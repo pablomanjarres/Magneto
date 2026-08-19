@@ -1,8 +1,8 @@
 import Link from "next/link";
 import type { ScoreResult, Vacancy } from "@moonlight/types";
 
-import { salaryRange, vacancyMeta } from "../lib/format.js";
-import { Chip, Score } from "./primitives.js";
+import { salaryRange, vacancyMeta } from "../lib/format";
+import { Chip, Score } from "./primitives";
 
 /**
  * One scored vacancy as a row. The dashboard's top matches and the full

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { Icon } from "./Icon.js";
+import { Icon } from "./Icon";
 
 /** The small pieces every screen repeats. One definition each, no copies. */
 

@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import { loadProfile } from "../lib/queries.js";
+import { loadProfile } from "../lib/queries";
 
 export const dynamic = "force-dynamic";
 

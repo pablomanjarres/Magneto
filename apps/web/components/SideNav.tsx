@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { Icon, type IconName } from "./Icon.js";
+import { Icon, type IconName } from "./Icon";
 
 const LINKS: ReadonlyArray<{ href: string; label: string; icon: IconName; count?: "vacancies" | "applications" }> = [
   { href: "/dashboard", label: "Dashboard", icon: "dashboard" },

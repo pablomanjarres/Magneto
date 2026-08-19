@@ -2,7 +2,7 @@ import type { Profile } from "@moonlight/types";
 import { getProfile, listApplications, listVacancies } from "@moonlight/db";
 import { applicationCards, marketGaps, profileCompleteness, rankVacancies } from "@moonlight/core";
 
-import { DEMO_PROFILE_ID } from "./demo.js";
+import { DEMO_PROFILE_ID } from "./demo";
 
 /**
  * Everything the server components read, in one place. Pages stay a layout and

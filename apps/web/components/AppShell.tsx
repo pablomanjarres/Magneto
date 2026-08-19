@@ -1,9 +1,10 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
-import { loadNavCounts, loadProfile } from "../lib/queries.js";
-import { initials } from "../lib/format.js";
-import { SideNav } from "./SideNav.js";
+import { loadNavCounts, loadProfile } from "../lib/queries";
+import { initials } from "../lib/format";
+import { SideNav } from "./SideNav";
 
 /**
  * The frame every signed-in screen sits in: side rail, top bar, content.
@@ -24,8 +25,7 @@ export async function AppShell({
     <div className="shell">
       <aside className="rail">
         <Link href="/dashboard" className="logo">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/crescent.svg" alt="" width={26} height={26} />
+          <Image src="/brand/crescent.svg" alt="" width={26} height={26} priority />
           <span className="logo__word">Moon Light</span>
         </Link>
 
