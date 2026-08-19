@@ -1,4 +1,5 @@
 import type {
+  ApplicationStatus,
   CompletenessResult,
   MarketGap,
   Profile,
@@ -142,4 +143,41 @@ export function marketGaps(profile: Profile, vacancies: Vacancy[]): MarketGap[] 
       sharePercent: Math.round((e.count / vacancies.length) * 100),
     }))
     .sort((a, b) => b.demandCount - a.demandCount || a.skill.localeCompare(b.skill));
+}
+
+/** The board's columns, left to right. Order is the pipeline. */
+export const APPLICATION_STATUSES: readonly ApplicationStatus[] = [
+  "applied",
+  "in-review",
+  "interview",
+  "rejected",
+];
+
+export const STATUS_LABELS: Record<ApplicationStatus, string> = {
+  applied: "Applied",
+  "in-review": "In review",
+  interview: "Interview",
+  rejected: "Rejected",
+};
+
+/**
+ * Every move the board allows, written out rather than derived. Four states do
+ * not need an algorithm, and a table is the thing a reader can check.
+ */
+export const ALLOWED_MOVES: Record<ApplicationStatus, readonly ApplicationStatus[]> = {
+  applied: ["in-review", "rejected"],
+  "in-review": ["interview", "rejected"],
+  interview: ["rejected"],
+  rejected: ["applied"],
+};
+
+export function canMove(from: ApplicationStatus, to: ApplicationStatus): boolean {
+  return ALLOWED_MOVES[from].includes(to);
+}
+
+/** True when the string is one of the four statuses. Guards the API boundary. */
+export function isApplicationStatus(value: unknown): value is ApplicationStatus {
+  return (
+    typeof value === "string" && APPLICATION_STATUSES.includes(value as ApplicationStatus)
+  );
 }
