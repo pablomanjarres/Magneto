@@ -92,9 +92,8 @@ export function SkillsStep({
               <button
                 key={gap.skill}
                 type="button"
-                className="chip chip--dashed"
+                className="chip chip--dashed chip--action"
                 onClick={() => onAddSkill(gap.skill)}
-                style={{ cursor: "pointer", background: "transparent" }}
               >
                 <span style={{ color: "var(--gold)", display: "flex" }}>
                   <Icon name="plus" size={13} strokeWidth={2.4} />
@@ -182,7 +181,9 @@ export function ExpectationsStep({
         </div>
       </div>
 
-      <div className="stack" style={{ gap: 9 }}>
+      {/* A <label> around a row of buttons points at nothing, so this is a
+          named group instead. */}
+      <div className="stack" style={{ gap: 9 }} role="group" aria-label="Work mode">
         <span className="field__label">Work mode</span>
         <div className="row" style={{ gap: 10, flexWrap: "wrap" }}>
           {WORK_MODES.map((mode) => {
@@ -191,18 +192,10 @@ export function ExpectationsStep({
               <button
                 key={mode}
                 type="button"
-                className="chip"
+                className="chip chip--action"
                 aria-pressed={on}
                 onClick={() => onToggleWorkMode(mode)}
-                style={{
-                  height: 40,
-                  padding: "0 18px",
-                  fontSize: 13.5,
-                  cursor: "pointer",
-                  borderColor: on ? "var(--glow)" : "var(--line-strong)",
-                  background: on ? "var(--wash)" : "transparent",
-                  color: on ? "var(--ink-active)" : "var(--muted)",
-                }}
+                style={{ height: 40, padding: "0 18px", fontSize: 13.5 }}
               >
                 {workModeLabel(mode)}
               </button>

@@ -321,10 +321,11 @@ a.card:hover {
   color: var(--ink);
 }
 
+/* Pressed reads like the active nav item: moonlight, not gold. */
 .chip--action[aria-pressed="true"] {
-  border-color: var(--gold);
-  background: rgba(183, 125, 58, 0.1);
-  color: var(--ink);
+  border-color: var(--glow);
+  background: var(--wash);
+  color: var(--ink-active);
 }
 
 /* ---------- buttons ---------- */
