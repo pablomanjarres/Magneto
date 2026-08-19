@@ -5,15 +5,13 @@ import { CompletenessPanel, filledFieldsLabel } from "../../components/Completen
 import { EmptyState } from "../../components/primitives";
 import { Icon } from "../../components/Icon";
 import { MarketGaps } from "../../components/MarketGaps";
-import { NoProfile } from "../../components/NoProfile";
 import { VacancyRow } from "../../components/VacancyRow";
-import { loadAppliedIds, loadProfile, loadRanked } from "../../lib/queries";
+import { loadAppliedIds, loadRanked, requireProfile } from "../../lib/queries";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  const profile = await loadProfile();
-  if (!profile) return <NoProfile title="Dashboard" />;
+  const profile = await requireProfile();
 
   const { vacancies, completeness, ranked, gaps } = await loadRanked(profile);
   const applied = await loadAppliedIds(profile.id);

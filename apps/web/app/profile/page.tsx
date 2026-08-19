@@ -4,7 +4,7 @@ import { AppShell } from "../../components/AppShell";
 import { CompletenessPanel, filledFieldsLabel } from "../../components/CompletenessPanel";
 import { Chip, EmptyState } from "../../components/primitives";
 import { Icon } from "../../components/Icon";
-import { loadProfile } from "../../lib/queries";
+import { requireProfile } from "../../lib/queries";
 import { salaryRange, shortDate, workModeLabel } from "../../lib/format";
 import { profileCompleteness } from "@moonlight/core";
 import { Detail, type Entry, EntryList, ProfileSection } from "./ProfileSection";
@@ -27,16 +27,7 @@ const period = (start: string, end: string | undefined): string =>
 const years = (start: number, end: number | undefined): string => `${start} – ${end ?? "Present"}`;
 
 export default async function ProfilePage() {
-  const profile = await loadProfile();
-  if (!profile) {
-    return (
-      <AppShell title="Profile">
-        <EmptyState title="No profile yet">
-          Fill the wizard at <Link href="/onboarding">/onboarding</Link> and it shows up here.
-        </EmptyState>
-      </AppShell>
-    );
-  }
+  const profile = await requireProfile();
 
   const completeness = profileCompleteness(profile);
   const expectations = profile.expectations;

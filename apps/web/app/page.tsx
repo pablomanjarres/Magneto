@@ -1,10 +1,10 @@
 import { redirect } from "next/navigation";
 
-import { loadProfile } from "../lib/queries";
+import { currentProfile } from "../lib/session";
 
 export const dynamic = "force-dynamic";
 
-/** A candidate with no profile starts at the wizard, everyone else at the dashboard. */
+/** Signed in goes to the dashboard, everyone else to the sign-in page. */
 export default async function Home() {
-  redirect((await loadProfile()) ? "/dashboard" : "/onboarding");
+  redirect((await currentProfile()) ? "/dashboard" : "/login");
 }

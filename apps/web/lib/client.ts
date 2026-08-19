@@ -36,3 +36,16 @@ export const withdrawApplication = (id: string): Promise<null> =>
 
 export const saveProfile = (profile: Profile): Promise<{ profile: Profile }> =>
   send("/api/profiles", { method: "POST", body: JSON.stringify(profile) });
+
+export const registerAccount = (input: {
+  email: string;
+  fullName: string;
+  password: string;
+  confirmPassword: string;
+}): Promise<{ profile: Profile }> =>
+  send("/api/auth/register", { method: "POST", body: JSON.stringify(input) });
+
+export const signIn = (email: string, password: string): Promise<{ profile: Profile }> =>
+  send("/api/auth/login", { method: "POST", body: JSON.stringify({ email, password }) });
+
+export const signOut = (): Promise<null> => send("/api/auth/logout", { method: "POST" });

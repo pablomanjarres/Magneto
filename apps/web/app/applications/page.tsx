@@ -4,15 +4,13 @@ import { groupByStatus } from "@moonlight/core";
 import { AppShell } from "../../components/AppShell";
 import { EmptyState } from "../../components/primitives";
 import { Icon } from "../../components/Icon";
-import { NoProfile } from "../../components/NoProfile";
-import { loadBoard, loadProfile } from "../../lib/queries";
+import { loadBoard, requireProfile } from "../../lib/queries";
 import { BoardColumn } from "./BoardColumn";
 
 export const dynamic = "force-dynamic";
 
 export default async function ApplicationsPage() {
-  const profile = await loadProfile();
-  if (!profile) return <NoProfile title="Applications" />;
+  const profile = await requireProfile();
 
   const cards = await loadBoard(profile);
   const columns = groupByStatus(cards);

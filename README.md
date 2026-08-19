@@ -19,6 +19,10 @@ Our answer to the Profile Manager challenge from **Magneto**, for Ingeniería de
 
 Candidates leave their profile half-filled and wait to be contacted, which wrecks match quality for everyone. Moon Light takes a résumé and a set of expectations, says exactly what is missing to reach 100%, and ranks jobs by a weighted score with its reasons attached. The MVP runs locally against our own dataset, since the challenge gives no access to real Magneto postings.
 
+In this delivery the candidate registers and fills their own profile. The LinkedIn and résumé
+import is release 2, and the wizard it will pre-fill is already the screen the candidate confirms
+by hand today.
+
 Status: the MVP runs. A seeded candidate, 20 vacancies, five screens and a scored, explained
 ranking. Delivery 1 is due **19 August 2026**, checklist in
 [`docs/deliverables/delivery-1/`](docs/deliverables/delivery-1/README.md).
@@ -59,9 +63,14 @@ pnpm db:seed                 # 20 vacancies, one candidate, six applications
 pnpm dev                     # http://localhost:3000
 ```
 
-The seed makes the app usable immediately: `/dashboard` shows the candidate's completeness and
-top matches, `/jobs` the whole list by score, `/jobs/v003` one recommendation worked through,
-`/applications` the status board, and `/onboarding` the wizard, pre-filled.
+Register your own candidate at `/register`, or sign in to the seeded demo account
+(`ana.gomez@example.com` / `moonlight-demo`) to see a profile that is already complete with a
+pipeline behind it.
+
+A candidate you register yourself starts **empty**: this delivery imports nothing from LinkedIn,
+so `/onboarding` is where the profile gets filled and the completeness bar is what says how far
+along it is. From there, `/dashboard` shows completeness and top matches, `/jobs` the whole list by
+score, `/jobs/v003` one recommendation worked through, and `/applications` the status board.
 
 The endpoints are real and inspectable, which is what the delivery video shows:
 

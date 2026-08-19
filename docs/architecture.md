@@ -63,9 +63,25 @@ the evidence for the ADR.
 | `vacancy_requirements` | one row per requirement, `must-have` or `nice-to-have`                 |
 | `profiles`             | the candidate. Sub-objects stay JSONB: they are read and written whole |
 | `applications`         | the candidate's own pipeline, one row per vacancy applied to           |
+| `sessions`             | one row per sign-in. The cookie holds this token, never a profile id   |
 
 Migrations are forward only and each one is re-runnable, so `pnpm db:migrate` can be run twice
 without a ledger table. Never edit a migration that has run; add the next one.
+
+## Who is signed in
+
+A candidate registers themselves: sprint 1 imports nothing from LinkedIn, so `/register` is the
+only door in and `/onboarding` is what fills the profile behind it.
+
+The password is hashed with scrypt from `node:crypto`, so storing one safely costs no dependency.
+Signing in creates a row in `sessions` and puts its opaque token in an httpOnly cookie — an id in
+a cookie would be one guess away from reading somebody else's profile. `apps/web/lib/session.ts`
+is the only file that knows the cookie's name, and `requireProfile()` in `lib/queries.ts` is how
+every screen behind the rail answers "who is this?". `AppShell` redirects a stranger to
+`/login` on its own, so a page that forgets to check still cannot render anyone else's data.
+
+JWTs and roles are HU_NF #32 and are not built yet; the `JWT_*` variables in `.env.example` are
+still unread.
 
 ## Scoring, in one paragraph
 
