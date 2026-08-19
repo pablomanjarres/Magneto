@@ -28,7 +28,7 @@ import {
 
 // Branch B of the comparison PoC: the same endpoints as apps/web/app/api,
 // running as a standalone Express service instead of Next route handlers.
-// The payloads are byte-identical on purpose — see docs/poc-comparison.md.
+// The payloads match field for field on purpose — see docs/adr/0001-backend-choice.md.
 const app = express();
 app.use(express.json({ limit: "1mb" }));
 

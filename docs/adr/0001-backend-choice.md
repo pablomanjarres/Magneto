@@ -10,8 +10,19 @@ picking one by preference. Both were built: `apps/web/app/api/` on Next route ha
 `apps/api/` as an Express service. Both call the same engine in `packages/core` and return
 byte-identical payloads, so the comparison isolates transport and runtime.
 
-Measurements and the full criteria table are in [`../poc-comparison.md`](../poc-comparison.md).
-Express is faster by 0.4 ms (p50) on `/vacancies` and 0.9 ms on the recommendations route.
+Measured with `pnpm bench`: 200 requests per route after 20 warmup requests, Next built for
+production, both against the same database.
+
+| Route                           | Next p50 | Next p95 | Express p50 | Express p95 |
+| ------------------------------- | -------- | -------- | ----------- | ----------- |
+| `/vacancies`                    | 3.2 ms   | 5.0 ms   | 2.8 ms      | 4.0 ms      |
+| `/profiles/:id/recommendations` | 4.2 ms   | 5.1 ms   | 3.3 ms      | 4.6 ms      |
+
+Express is faster by 0.4 ms (p50) on `/vacancies` and 0.9 ms on the recommendations route. The
+other criteria: Next needs one file per route and no server bootstrap, no CORS and no second
+process, against one server file plus a dependency, a second process and CORS once a browser calls
+it; Next is tied to its runtime where Express is portable to any Node host; one deployment against
+two; and one stack for two people to learn and run against two things to start, watch and debug.
 
 ## Decision
 
