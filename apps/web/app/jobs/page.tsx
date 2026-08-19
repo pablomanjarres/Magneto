@@ -47,12 +47,16 @@ export default async function JobsPage() {
         city: vacancy.city,
         workMode: vacancy.workMode,
         applied: isApplied,
+        // Searching requirements is what makes "React" find the vacancies that
+        // ask for it rather than only the ones with it in the title.
+        skills: vacancy.requirements.map((r) => r.skill).join(" "),
         row: <VacancyRow vacancy={vacancy} result={result} applied={isApplied} />,
       },
     ];
   });
 
-  const cities = [...new Set(items.map((item) => item.city))].sort((a, b) => a.localeCompare(b));
+  const unique = (values: string[]): string[] =>
+    [...new Set(values)].sort((a, b) => a.localeCompare(b));
   const best = ranked[0]?.score ?? 0;
   const appliedCount = items.filter((item) => item.applied).length;
 
@@ -102,7 +106,11 @@ export default async function JobsPage() {
           <code>pnpm db:seed</code>.
         </EmptyState>
       ) : (
-        <VacancyFilters items={items} cities={cities} />
+        <VacancyFilters
+          items={items}
+          cities={unique(items.map((item) => item.city))}
+          companies={unique(items.map((item) => item.company))}
+        />
       )}
     </AppShell>
   );

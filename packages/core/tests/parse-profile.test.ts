@@ -98,6 +98,23 @@ describe("parseProfile", () => {
     expect(profile.expectations.cities).toEqual(["Bogotá"]);
   });
 
+  it("refuses a minimum salary above the maximum", () => {
+    expect(
+      errors({
+        ...valid,
+        expectations: { ...valid.expectations, salaryMin: 11_000_000, salaryMax: 7_000_000 },
+      }),
+    ).toEqual(["salaryMin cannot be greater than salaryMax"]);
+  });
+
+  it("allows a minimum equal to the maximum", () => {
+    const profile = ok({
+      ...valid,
+      expectations: { ...valid.expectations, salaryMin: 8_000_000, salaryMax: 8_000_000 },
+    });
+    expect(profile.expectations.salaryMin).toBe(8_000_000);
+  });
+
   it("refuses a salary that is not a finite number", () => {
     const profile = ok({
       ...valid,

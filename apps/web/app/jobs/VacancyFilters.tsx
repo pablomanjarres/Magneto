@@ -20,36 +20,51 @@ export interface VacancyListItem {
   city: string;
   workMode: WorkMode;
   applied: boolean;
+  /** Every requirement of this vacancy, joined, so the search can reach them. */
+  skills: string;
   row: ReactNode;
 }
 
 const ANY = "any";
 const WORK_MODES: ReadonlyArray<WorkMode> = ["remote", "hybrid", "onsite"];
 
-export function VacancyFilters({ items, cities }: { items: VacancyListItem[]; cities: string[] }) {
+export function VacancyFilters({
+  items,
+  cities,
+  companies,
+}: {
+  items: VacancyListItem[];
+  cities: string[];
+  companies: string[];
+}) {
   const [query, setQuery] = useState("");
   const [mode, setMode] = useState<string>(ANY);
   const [city, setCity] = useState<string>(ANY);
+  const [company, setCompany] = useState<string>(ANY);
   const [hideApplied, setHideApplied] = useState(false);
 
   const visible = useMemo(() => {
     const needle = query.trim().toLowerCase();
     return items.filter((item) => {
-      if (needle && !`${item.title} ${item.company}`.toLowerCase().includes(needle)) return false;
+      const haystack = `${item.title} ${item.company} ${item.skills}`.toLowerCase();
+      if (needle && !haystack.includes(needle)) return false;
       if (mode !== ANY && item.workMode !== mode) return false;
       if (city !== ANY && item.city !== city) return false;
+      if (company !== ANY && item.company !== company) return false;
       if (hideApplied && item.applied) return false;
       return true;
     });
-  }, [items, query, mode, city, hideApplied]);
+  }, [items, query, mode, city, company, hideApplied]);
 
   const hidden = items.length - visible.length;
-  const filtering = query.trim() !== "" || mode !== ANY || city !== ANY || hideApplied;
+  const filtering =
+    query.trim() !== "" || mode !== ANY || city !== ANY || company !== ANY || hideApplied;
 
   const clear = (): void => {
     setQuery("");
     setMode(ANY);
     setCity(ANY);
+    setCompany(ANY);
     setHideApplied(false);
   };
 
@@ -77,7 +92,7 @@ export function VacancyFilters({ items, cities }: { items: VacancyListItem[]; ci
                   style={{ paddingLeft: 36 }}
                   type="search"
                   value={query}
-                  placeholder="Title or company"
+                  placeholder="Title, company or a skill"
                   onChange={(event) => setQuery(event.target.value)}
                 />
               </span>
@@ -95,6 +110,23 @@ export function VacancyFilters({ items, cities }: { items: VacancyListItem[]; ci
                 {WORK_MODES.map((value) => (
                   <option key={value} value={value}>
                     {workModeLabel(value)}
+                  </option>
+                ))}
+              </select>
+            </Field>
+          </div>
+
+          <div style={{ width: 170 }}>
+            <Field label="Company">
+              <select
+                className="select"
+                value={company}
+                onChange={(event) => setCompany(event.target.value)}
+              >
+                <option value={ANY}>Any company</option>
+                {companies.map((value) => (
+                  <option key={value} value={value}>
+                    {value}
                   </option>
                 ))}
               </select>

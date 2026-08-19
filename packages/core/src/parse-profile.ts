@@ -76,9 +76,15 @@ export function parseProfile(input: unknown): { profile: Profile } | { errors: s
   else if (!/^[^@\s]+@[^@\s]+$/.test(email)) errors.push("email is not an address");
   if (!fullName) errors.push("fullName is required");
 
+  const raw = isRecord(input["expectations"]) ? input["expectations"] : {};
+  const salaryMin = optionalNumber(raw["salaryMin"]);
+  const salaryMax = optionalNumber(raw["salaryMax"]);
+  if (salaryMin !== undefined && salaryMax !== undefined && salaryMin > salaryMax) {
+    errors.push("salaryMin cannot be greater than salaryMax");
+  }
+
   if (errors.length > 0) return { errors };
 
-  const raw = isRecord(input["expectations"]) ? input["expectations"] : {};
   const willRelocate = raw["willRelocate"] === true;
 
   return {
@@ -96,8 +102,8 @@ export function parseProfile(input: unknown): { profile: Profile } | { errors: s
       education: education(input["education"]),
       expectations: {
         targetRole: optionalStr(raw["targetRole"]),
-        salaryMin: optionalNumber(raw["salaryMin"]),
-        salaryMax: optionalNumber(raw["salaryMax"]),
+        salaryMin,
+        salaryMax,
         currency: optionalStr(raw["currency"]),
         workModes: list(raw["workModes"]).filter((m): m is WorkMode =>
           WORK_MODES.includes(m as WorkMode),
