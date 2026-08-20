@@ -43,17 +43,21 @@ En la actualidad, muchas personas deben completar repetidamente la misma informa
 
 ### 1.3. Público objetivo y contexto
 
-Adjunto: `Context Diagram.pdf`
+![Diagrama de contexto: candidato, reclutador, administrador, Moon Light, el dataset de vacantes, PostgreSQL y Magneto como sistema externo](images/1-3-diagrama-contexto.png)
 
 ### 1.4. Descripción del proceso de interacción
 
-Diagrama: `diagrama_Inter.pdf`
+![Proceso de interacción: las cinco pantallas del candidato y los endpoints que consulta cada una](images/1-4-proceso-interaccion.png)
+
+![Diagrama de contenedores: Moon Light Web, la API Express de la PoC, el worker de agentes y PostgreSQL](images/1-4-diagrama-contenedores.png)
 
 ---
 
 ## Sección 2. Exploración de antecedentes y aplicaciones similares
 
 ### 1. Jobscan — https://www.jobscan.co
+
+![Captura de Jobscan: Match Rate del 76% sobre un currículum](images/2-1-jobscan.png)
 
 Jobscan permite comparar un currículum con una oferta de empleo para calcular qué tan compatible es el candidato con esa vacante. Analiza palabras clave, habilidades y otros elementos que suelen evaluar los sistemas ATS (Applicant Tracking Systems), mostrando un porcentaje de coincidencia y recomendaciones para mejorar el perfil.
 
@@ -66,6 +70,8 @@ Jobscan permite comparar un currículum con una oferta de empleo para calcular q
 
 ### 2. Teal — https://www.tealhq.com
 
+![Captura de Teal](images/2-2-teal.png)
+
 Teal es una plataforma que ayuda a organizar la búsqueda de empleo. Permite crear diferentes versiones del currículum, administrar postulaciones, analizar la compatibilidad con ofertas laborales y utilizar herramientas de inteligencia artificial para mejorar el contenido del perfil profesional.
 
 **Funciones de Moonlight que lo diferencian:**
@@ -76,6 +82,8 @@ Teal es una plataforma que ayuda a organizar la búsqueda de empleo. Permite cre
 - Ofrecer una experiencia sencilla orientada al análisis del perfil, sin incluir un sistema completo de seguimiento de postulaciones.
 
 ### 3. Resume Worded — https://resumeworded.com
+
+![Captura de Resume Worded](images/2-3-resume-worded.png)
 
 Resume Worded evalúa currículums y perfiles de LinkedIn, proporcionando una puntuación y recomendaciones para mejorar la presentación del candidato. También ofrece retroalimentación sobre fortalezas, palabras clave y oportunidades de optimización para aumentar las posibilidades de conseguir entrevistas.
 
@@ -94,24 +102,31 @@ Resume Worded evalúa currículums y perfiles de LinkedIn, proporcionando una pu
 
 Durante el desarrollo de la primera entrega se realizaron tres reuniones presenciales entre los integrantes del equipo. En estas reuniones se discutió la idea para dar solución al reto planteado, se definieron los roles y responsabilidades de cada integrante, se distribuyeron las tareas y se estableció la forma de trabajo para el desarrollo del proyecto. Adicionalmente, se realizó una reunión con el Product Owner, en la que se revisó el avance del proyecto.
 
+![Reunión con el Líder Técnico Santiago Manco por Teams](images/3-1-reunion-lider-tecnico.png)
+
 ### 3.2. Visión de producto y User Story mapping
 
-Adjunto: `Visioning y story mapping.pdf`
+![Visioning y Story Mapping: persona, actividades, tareas e historias por release](images/3-2-visioning-story-mapping.png)
 
 ### 3.3. Backlog de producto
 
 https://github.com/users/pablomanjarres/projects/3/views/1
 
+![Backlog de producto en GitHub Projects, vista completa](images/3-3-backlog-producto.png)
+
 ### 3.4. Sprint Backlog
 
 https://github.com/users/pablomanjarres/projects/3/views/2
+
+![Sprint Backlog en GitHub Projects: Todo, In Progress y Done](images/3-4-sprint-backlog.png)
 
 ---
 
 ## Sección 4. Sketches Iniciales
 
-- Boceto: `Bocetos_260819_194535.pdf`
-- Interfaz: `Sketches.pdf`
+![Las cinco pantallas: wizard de onboarding, dashboard, vacantes por puntaje, detalle de vacante y tablero de estados](images/4-sketches-pantallas.png)
+
+[PENDIENTE: boceto a mano alzada — `Bocetos_260819_194535.pdf`]
 
 ---
 
