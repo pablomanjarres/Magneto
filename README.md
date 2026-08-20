@@ -23,6 +23,8 @@ In this delivery the candidate registers and fills their own profile. The Linked
 import is release 2, and the wizard it will pre-fill is already the screen the candidate confirms
 by hand today.
 
+The delivery document is [`docs/deliverables/delivery-1/document/Entrega1.md`](docs/deliverables/delivery-1/document/Entrega1.md).
+
 Status: the MVP runs. A seeded candidate, 20 vacancies, five screens and a scored, explained
 ranking. Delivery 1 is due **19 August 2026**, checklist in
 [`docs/deliverables/delivery-1/`](docs/deliverables/delivery-1/README.md).

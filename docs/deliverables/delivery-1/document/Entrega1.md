@@ -1,10 +1,21 @@
-# Desarrollo del Sistema Profile Manager
+<p align="center">
+  <img src="images/logo.png" alt="Moonlight" width="130" />
+</p>
 
-**Equipo de trabajo:** Pablo Manjarres, Valentina Barbosa
-**Versión:** 1.0
-**Nombre del Producto:** Moonlight
+<h1 align="center">Desarrollo del Sistema Profile Manager</h1>
 
-Universidad EAFIT — Departamento de Informática y Sistemas — Ingeniería de Software
+<p align="center">
+  <strong>Nombre del Producto:</strong> Moonlight<br />
+  <strong>Equipo de trabajo:</strong> Pablo Manjarres, Valentina Barbosa<br />
+  <strong>Versión:</strong> 1.0
+</p>
+
+<p align="center">
+  <em>Universidad EAFIT — Departamento de Informática y Sistemas — Ingeniería de Software</em><br />
+  <em>Entrega 1 — 19 de agosto de 2026</em>
+</p>
+
+---
 
 ## Contenido
 
@@ -15,7 +26,7 @@ Universidad EAFIT — Departamento de Informática y Sistemas — Ingeniería de
   - [1.4. Descripción del proceso de interacción](#14-descripción-del-proceso-de-interacción)
 - [Sección 2. Exploración de antecedentes y aplicaciones similares](#sección-2-exploración-de-antecedentes-y-aplicaciones-similares)
 - [Sección 3. Artefactos y Actividades Ágiles](#sección-3-artefactos-y-actividades-ágiles)
-  - [3.1 Ceremonias Ágiles](#31-ceremonias-ágiles)
+  - [3.1. Ceremonias Ágiles](#31-ceremonias-ágiles)
   - [3.2. Visión de producto y User Story mapping](#32-visión-de-producto-y-user-story-mapping)
   - [3.3. Backlog de producto](#33-backlog-de-producto)
   - [3.4. Sprint Backlog](#34-sprint-backlog)
@@ -33,29 +44,33 @@ En la actualidad, muchas personas deben completar repetidamente la misma informa
 
 ### 1.2. Personas y roles del proyecto
 
-| Persona | Nombre | Descripción del Rol |
-| --- | --- | --- |
-| Scrum Master | Elizabeth Suescún (profesora) | Facilita el proceso, define el marco de trabajo y evalúa los avances del equipo. |
-| Product Owner | Juan Camilo, Luis Miguel | Representan a Magneto. Definen y priorizan las necesidades del producto y validan el entendimiento del problema. |
-| Líder Técnico | Santiago Manco | Asesoría técnica y revisión de los avances del equipo. |
-| Integrante 1 equipo | Pablo Manjarres | Líder del equipo. Dirige el proyecto, define la arquitectura y construye el producto. |
-| Integrante 2 equipo | Valentina Barbosa | Documentación y comunicación. Elabora el documento de la entrega, la presentación, los artefactos de apoyo, y define las condiciones de aceptación. |
+| Persona             | Nombre                        | Descripción del Rol                                                                                                                                 |
+| ------------------- | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Scrum Master        | Elizabeth Suescún (profesora) | Facilita el proceso, define el marco de trabajo y evalúa los avances del equipo.                                                                    |
+| Product Owner       | Juan Camilo, Luis Miguel      | Representan a Magneto. Definen y priorizan las necesidades del producto y validan el entendimiento del problema.                                    |
+| Líder Técnico       | Santiago Manco                | Asesoría técnica y revisión de los avances del equipo.                                                                                              |
+| Integrante 1 equipo | Pablo Manjarres               | Líder del equipo. Dirige el proyecto, define la arquitectura y construye el producto.                                                               |
+| Integrante 2 equipo | Valentina Barbosa             | Documentación y comunicación. Elabora el documento de la entrega, la presentación, los artefactos de apoyo, y define las condiciones de aceptación. |
 
 ### 1.3. Público objetivo y contexto
 
 ![Diagrama de contexto: candidato, reclutador, administrador, Moon Light, el dataset de vacantes, PostgreSQL y Magneto como sistema externo](images/1-3-diagrama-contexto.png)
 
+Archivo original: [Context Diagram.pdf](https://eafit-my.sharepoint.com/:b:/g/personal/vbarbosaq_eafit_edu_co/IQBrQBb97WkRRZ6O1kISAzcgAXgLGbW3EmpL-9KXQ-v4Jk4?e=KarJAx)
+
 ### 1.4. Descripción del proceso de interacción
 
 ![Proceso de interacción: las cinco pantallas del candidato y los endpoints que consulta cada una](images/1-4-proceso-interaccion.png)
 
-![Diagrama de contenedores: Moon Light Web, la API Express de la PoC, el worker de agentes y PostgreSQL](images/1-4-diagrama-contenedores.png)
+![Diagrama de contenedores: Moon Light Web, la API Express de la prueba de concepto, el worker de agentes y PostgreSQL](images/1-4-diagrama-contenedores.png)
+
+Archivo original: [diagrama_Inter.pdf](https://eafit-my.sharepoint.com/:b:/g/personal/vbarbosaq_eafit_edu_co/IQB0NhuMmKppTLoOHlRE_hjiAfMldn0FN5u_xW-0q71Tny8?e=aXa35P)
 
 ---
 
 ## Sección 2. Exploración de antecedentes y aplicaciones similares
 
-### 1. Jobscan — https://www.jobscan.co
+### 1. Jobscan — [jobscan.co](https://www.jobscan.co/)
 
 ![Captura de Jobscan: Match Rate del 76% sobre un currículum](images/2-1-jobscan.png)
 
@@ -68,7 +83,7 @@ Jobscan permite comparar un currículum con una oferta de empleo para calcular q
 - Almacena la información del usuario en una base de datos PostgreSQL.
 - Permite visualizar varias vacantes ordenadas según su compatibilidad, en lugar de analizar únicamente una oferta.
 
-### 2. Teal — https://www.tealhq.com
+### 2. Teal — [tealhq.com](https://www.tealhq.com/)
 
 ![Captura de Teal](images/2-2-teal.png)
 
@@ -81,7 +96,7 @@ Teal es una plataforma que ayuda a organizar la búsqueda de empleo. Permite cre
 - Identificar las habilidades faltantes para cada oferta.
 - Ofrecer una experiencia sencilla orientada al análisis del perfil, sin incluir un sistema completo de seguimiento de postulaciones.
 
-### 3. Resume Worded — https://resumeworded.com
+### 3. Resume Worded — [resumeworded.com](https://resumeworded.com/)
 
 ![Captura de Resume Worded](images/2-3-resume-worded.png)
 
@@ -98,7 +113,7 @@ Resume Worded evalúa currículums y perfiles de LinkedIn, proporcionando una pu
 
 ## Sección 3. Artefactos y Actividades Ágiles
 
-### 3.1 Ceremonias Ágiles
+### 3.1. Ceremonias Ágiles
 
 Durante el desarrollo de la primera entrega se realizaron tres reuniones presenciales entre los integrantes del equipo. En estas reuniones se discutió la idea para dar solución al reto planteado, se definieron los roles y responsabilidades de cada integrante, se distribuyeron las tareas y se estableció la forma de trabajo para el desarrollo del proyecto. Adicionalmente, se realizó una reunión con el Product Owner, en la que se revisó el avance del proyecto.
 
@@ -108,15 +123,17 @@ Durante el desarrollo de la primera entrega se realizaron tres reuniones presenc
 
 ![Visioning y Story Mapping: persona, actividades, tareas e historias por release](images/3-2-visioning-story-mapping.png)
 
+Archivo original: [Visioning y story mapping.pdf](https://eafit-my.sharepoint.com/:b:/g/personal/vbarbosaq_eafit_edu_co/IQACKT5rgfATSauy1D2VdMrmAZgFRvSvOiEB076GvGUt4zw?e=caG4T7)
+
 ### 3.3. Backlog de producto
 
-https://github.com/users/pablomanjarres/projects/3/views/1
+[Backlog de producto en GitHub Projects](https://github.com/users/pablomanjarres/projects/3/views/1)
 
 ![Backlog de producto en GitHub Projects, vista completa](images/3-3-backlog-producto.png)
 
 ### 3.4. Sprint Backlog
 
-https://github.com/users/pablomanjarres/projects/3/views/2
+[Sprint Backlog en GitHub Projects](https://github.com/users/pablomanjarres/projects/3/views/2)
 
 ![Sprint Backlog en GitHub Projects: Todo, In Progress y Done](images/3-4-sprint-backlog.png)
 
@@ -126,7 +143,8 @@ https://github.com/users/pablomanjarres/projects/3/views/2
 
 ![Las cinco pantallas: wizard de onboarding, dashboard, vacantes por puntaje, detalle de vacante y tablero de estados](images/4-sketches-pantallas.png)
 
-[PENDIENTE: boceto a mano alzada — `Bocetos_260819_194535.pdf`]
+- Boceto: [Bocetos_260819_194535.pdf](https://eafit-my.sharepoint.com/:b:/g/personal/vbarbosaq_eafit_edu_co/IQCXb1uF0Ia6TIFIGck8h9GJAVhaFq2koRjyKm9PFXcj70E?e=G0uZuG)
+- Interfaz: [Sketches.pdf](https://eafit-my.sharepoint.com/:b:/g/personal/vbarbosaq_eafit_edu_co/IQD1bifYUF-zSLBWkMapG14BAQLBrmJk6h1fSiBl9_iH_1M?e=bHkOEv)
 
 ---
 
@@ -152,3 +170,9 @@ Durante el desarrollo de este trabajo se utilizó ChatGPT (OpenAI) y Claude (Ant
 - Apoyar la redacción de la documentación.
 
 La información generada fue revisada, adaptada y validada por los integrantes del equipo antes de incorporarla al documento final.
+
+---
+
+<p align="center">
+  <em>Universidad EAFIT — Departamento de Informática y Sistemas — Ingeniería de Software</em>
+</p>
