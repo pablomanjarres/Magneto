@@ -150,7 +150,7 @@ Archivo original: [Visioning y story mapping.pdf](https://eafit-my.sharepoint.co
 
 El video correspondiente a la prueba de concepto de Moonlight estará disponible en el repositorio del proyecto, junto con los demás recursos asociados a la entrega.
 
-[PENDIENTE: enlace del video]
+[Video Link](https://drive.google.com/file/d/16w7AAP-eL1OzQAQ9xLQVKgxCGENB7U6v/view?usp=sharing)
 
 ---
 
