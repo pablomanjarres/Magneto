@@ -7,8 +7,8 @@ import { applicationCards, marketGaps, profileCompleteness, rankVacancies } from
 /**
  * Everything the server components read, in one place. Pages stay a layout and
  * nothing else; the queries stay testable and are not copied per route.
- * The ADR settled on reading the database directly here rather than fetching
- * our own HTTP routes — see docs/adr/0001-backend-choice.md.
+ * Pages read the database directly here rather than fetching our own HTTP
+ * routes, which is the whole reason the Next route handlers won the comparison.
  */
 
 /**

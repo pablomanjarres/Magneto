@@ -39,6 +39,3 @@ Plus `pnpm build` before you open the PR.
 
 Domain rules go in `packages/core` and nowhere else. SQL lives only in `packages/db`. `apps/*` are
 entrypoints, not second homes for logic.
-
-An architectural decision is recorded in [`docs/adr/`](docs/adr/), numbered, and never rewritten
-afterwards.
