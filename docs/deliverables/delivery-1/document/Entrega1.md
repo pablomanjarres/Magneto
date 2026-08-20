@@ -60,13 +60,9 @@ Archivo original: [Context Diagram.pdf](https://eafit-my.sharepoint.com/:b:/g/pe
 
 ### 1.4. Descripción del proceso de interacción
 
-**Flujo del candidato.** Registro → wizard de onboarding → vacantes ordenadas → postulación → seguimiento de estado.
+![Proceso de interacción: las cinco pantallas del candidato y los endpoints que consulta cada una](images/1-4-proceso-interaccion.png)
 
-![1.4 Proceso de interacción · candidato](images/1-4-proceso-candidato.png)
-
-**Flujo del administrador.** Curar el catálogo, migrar, sembrar, y el resto queda puntuado contra él.
-
-![1.4 Proceso de interacción · administrador](images/1-4-proceso-administrador.png)
+![Diagrama de contenedores: Moon Light Web, la API Express de la prueba de concepto, el worker de agentes y PostgreSQL](images/1-4-diagrama-contenedores.png)
 
 Archivo original: [diagrama_Inter.pdf](https://eafit-my.sharepoint.com/:b:/g/personal/vbarbosaq_eafit_edu_co/IQB0NhuMmKppTLoOHlRE_hjiAfMldn0FN5u_xW-0q71Tny8?e=aXa35P)
 
@@ -145,27 +141,7 @@ Archivo original: [Visioning y story mapping.pdf](https://eafit-my.sharepoint.co
 
 ## Sección 4. Sketches Iniciales
 
-Una pantalla por cada actividad del flujo.
-
-**1. Pasos del wizard de onboarding**
-
-![Wizard de onboarding, paso 2 de 5: habilidades, con la barra de completitud a la derecha](images/4-sketch-1-onboarding.png)
-
-**2. Dashboard con barra de completitud**
-
-![Dashboard: la barra de completitud, las mejores coincidencias y lo que pide el mercado](images/4-sketch-2-dashboard.png)
-
-**3. Lista de vacantes ordenada por puntaje**
-
-![Vacantes ordenadas por puntaje, con filtros de modalidad, ciudad y puntaje mínimo](images/4-sketch-3-vacantes.png)
-
-**4. Detalle de vacante con la explicación de la recomendación**
-
-![Detalle de vacante: la tabla de requisitos con sus pesos y el 10 / 11 que da el 91%](images/4-sketch-4-detalle-vacante.png)
-
-**5. Tablero de estados**
-
-![Tablero de estados: postulado, en revisión, entrevista y descartado](images/4-sketch-5-tablero-estados.png)
+![Las cinco pantallas: wizard de onboarding, dashboard, vacantes por puntaje, detalle de vacante y tablero de estados](images/4-sketches-pantallas.png)
 
 - Boceto: [Bocetos_260819_194535.pdf](https://eafit-my.sharepoint.com/:b:/g/personal/vbarbosaq_eafit_edu_co/IQCXb1uF0Ia6TIFIGck8h9GJAVhaFq2koRjyKm9PFXcj70E?e=G0uZuG)
 - Interfaz: [Sketches.pdf](https://eafit-my.sharepoint.com/:b:/g/personal/vbarbosaq_eafit_edu_co/IQD1bifYUF-zSLBWkMapG14BAQLBrmJk6h1fSiBl9_iH_1M?e=bHkOEv)
