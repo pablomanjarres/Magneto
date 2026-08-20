@@ -60,8 +60,6 @@ Archivo original: [Context Diagram.pdf](https://eafit-my.sharepoint.com/:b:/g/pe
 
 ### 1.4. Descripción del proceso de interacción
 
-![Proceso de interacción: las cinco pantallas del candidato y los endpoints que consulta cada una](images/1-4-proceso-interaccion.png)
-
 ![Diagrama de contenedores: Moon Light Web, la API Express de la prueba de concepto, el worker de agentes y PostgreSQL](images/1-4-diagrama-contenedores.png)
 
 Archivo original: [diagrama_Inter.pdf](https://eafit-my.sharepoint.com/:b:/g/personal/vbarbosaq_eafit_edu_co/IQB0NhuMmKppTLoOHlRE_hjiAfMldn0FN5u_xW-0q71Tny8?e=aXa35P)
