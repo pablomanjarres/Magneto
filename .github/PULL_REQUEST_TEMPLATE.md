@@ -17,7 +17,6 @@ Closes #
 ## Acceptance criteria
 
 - [ ] Every criterion on the issue is met
-- [ ] Meets the Definition of Done (`docs/definition-of-done.md`)
 
 ## Security
 

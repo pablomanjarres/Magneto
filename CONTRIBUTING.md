@@ -14,7 +14,7 @@ process below is the process the delivery document describes, so it is not optio
    No `Co-Authored-By` trailers, on any commit, ever.
 4. **Open a PR** against `main` and fill the template. Link the issue with `Closes #N`.
 5. **The other member reviews it.** Nobody merges their own PR.
-6. **CI green**, then **squash merge**, then the branch is deleted.
+6. **Squash merge**, then the branch is deleted.
 
 ## Before you push
 
@@ -22,8 +22,7 @@ process below is the process the delivery document describes, so it is not optio
 pnpm lint && pnpm typecheck && pnpm test && pnpm format:check
 ```
 
-The same four run in CI, plus a build and a migrate-and-seed against a real PostgreSQL. If they
-fail locally they will fail there.
+Plus `pnpm build` before you open the PR.
 
 ## What the repository will not accept
 
@@ -38,9 +37,8 @@ fail locally they will fail there.
 
 ## Where things go
 
-Read [`docs/architecture.md`](docs/architecture.md) before adding a file. The short version:
-domain rules go in `packages/core` and nowhere else, SQL lives only in `packages/db`, and
-`apps/*` are entrypoints rather than second homes for logic.
+Domain rules go in `packages/core` and nowhere else. SQL lives only in `packages/db`. `apps/*` are
+entrypoints, not second homes for logic.
 
 An architectural decision is recorded in [`docs/adr/`](docs/adr/), numbered, and never rewritten
-afterwards. Closing an issue means meeting [`docs/definition-of-done.md`](docs/definition-of-done.md).
+afterwards.
