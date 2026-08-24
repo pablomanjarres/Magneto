@@ -218,4 +218,4 @@ export function groupByStatus(
   }));
 }
 
-export { parseProfile } from "./parse-profile.js";
+export { DEFAULT_CURRENCY, parseProfile } from "./parse-profile.js";

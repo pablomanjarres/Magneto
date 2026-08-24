@@ -193,6 +193,22 @@ describe("parseProfile", () => {
     ]);
   });
 
+  it("gives an amount that arrived with no currency the default one", () => {
+    const { salaryMin, salaryMax } = valid.expectations;
+    const profile = ok({ ...valid, expectations: { salaryMin, salaryMax } });
+    expect(profile.expectations.currency).toBe("COP");
+  });
+
+  it("keeps the currency the candidate chose", () => {
+    const profile = ok({ ...valid, expectations: { ...valid.expectations, currency: "USD" } });
+    expect(profile.expectations.currency).toBe("USD");
+  });
+
+  it("leaves the currency out when no amount was stated", () => {
+    const profile = ok({ ...valid, expectations: { targetRole: "Dev" } });
+    expect(profile.expectations.currency).toBeUndefined();
+  });
+
   it("does not let an unknown key through to the database", () => {
     const profile = ok({ ...valid, isAdmin: true, __proto__: { hacked: true } });
     expect(Object.keys(profile).sort()).toEqual([

@@ -18,6 +18,9 @@ const MAX_YEAR = 2100;
 // times that, so only a typo or a broken client can reach it.
 const MAX_SALARY = 1_000_000_000;
 
+/** The money every vacancy in the dataset is priced in. */
+export const DEFAULT_CURRENCY = "COP";
+
 const isRecord = (v: unknown): v is Record<string, unknown> =>
   typeof v === "object" && v !== null && !Array.isArray(v);
 
@@ -124,6 +127,12 @@ export function parseProfile(input: unknown): { profile: Profile } | { errors: s
 
   const willRelocate = raw["willRelocate"] === true;
 
+  // An amount with no unit is not a salary. The wizard offers the peso as the
+  // currency already selected, so a candidate who never opens that list still
+  // expects it saved; without this their range came back priced in nothing.
+  const statedSalary = salaryMin !== undefined || salaryMax !== undefined;
+  const currency = optionalStr(raw["currency"]) ?? (statedSalary ? DEFAULT_CURRENCY : undefined);
+
   return {
     profile: {
       id,
@@ -141,7 +150,7 @@ export function parseProfile(input: unknown): { profile: Profile } | { errors: s
         targetRole: optionalStr(raw["targetRole"]),
         salaryMin,
         salaryMax,
-        currency: optionalStr(raw["currency"]),
+        currency,
         workModes: list(raw["workModes"]).filter((m): m is WorkMode =>
           WORK_MODES.includes(m as WorkMode),
         ),

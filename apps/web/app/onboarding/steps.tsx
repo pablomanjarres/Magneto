@@ -1,7 +1,7 @@
 "use client";
 
 import type { Expectations, Profile, Vacancy, WorkMode } from "@moonlight/types";
-import { marketGaps, normalizeSkill } from "@moonlight/core";
+import { DEFAULT_CURRENCY, marketGaps, normalizeSkill } from "@moonlight/core";
 
 import { Icon } from "../../components/Icon";
 import { Field } from "../../components/primitives";
@@ -9,7 +9,7 @@ import { WORK_MODES } from "../../components/work-modes";
 import { salaryRange, workModeLabel } from "../../lib/format";
 import { ChipInput, optionalNumber } from "./fields";
 
-const CURRENCIES = ["COP", "USD", "EUR"];
+const CURRENCIES = [DEFAULT_CURRENCY, "USD", "EUR"];
 
 export function BasicsStep({
   profile,
@@ -168,7 +168,7 @@ export function ExpectationsStep({
           <Field label="Currency">
             <select
               className="select"
-              value={expectations.currency ?? "COP"}
+              value={expectations.currency ?? DEFAULT_CURRENCY}
               onChange={(e) => onPatch({ currency: e.target.value })}
             >
               {CURRENCIES.map((code) => (
