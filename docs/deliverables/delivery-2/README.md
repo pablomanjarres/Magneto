@@ -1,4 +1,4 @@
-# Entrega 2 — {PENDIENTE: fecha de entrega}
+# Entrega 2
 
 - Backlog: https://github.com/pablomanjarres/Magneto/issues
 - Board: https://github.com/users/pablomanjarres/projects/3

@@ -12,7 +12,7 @@
 
 <p align="center">
   <em>Universidad EAFIT — Departamento de Informática y Sistemas — Ingeniería de Software</em><br />
-  <em>Entrega 2 — {PENDIENTE: fecha de entrega}</em>
+  <em>Entrega 2</em>
 </p>
 
 ---
