@@ -98,29 +98,25 @@ El backlog vive en [GitHub Issues](https://github.com/pablomanjarres/Magneto/iss
 en [GitHub Projects](https://github.com/users/pablomanjarres/projects/3). Las historias que siguen
 abiertas al cierre del Sprint 1 son las candidatas para este sprint:
 
-| HU      | Historia                                                                          | Impacto en la arquitectura                           |
-| ------- | --------------------------------------------------------------------------------- | ---------------------------------------------------- |
-| #3      | Sign up and log in                                                                | Introduce autenticación y sesión; hoy no existe      |
-| #4      | Submit my LinkedIn profile URL                                                    | Primera entrada de datos externa al wizard           |
-| #5      | Extract my work experience                                                        | Requiere el módulo de importación                    |
-| #6      | Extract my education                                                              | Requiere el módulo de importación                    |
-| #7      | Extract my skills                                                                 | Requiere el módulo de importación                    |
-| #8      | Upload my résumé                                                                  | Manejo de archivos y almacenamiento                  |
-| #9      | Review the imported information                                                   | Pantalla de confirmación previa al guardado          |
-| #10     | Edit the imported information                                                     | Reutiliza el wizard existente                        |
-| #12     | Set my target role                                                                | Campo de expectativas, ya contemplado en el modelo   |
-| #13     | Set my salary expectation                                                         | Campo de expectativas, ya contemplado en el modelo   |
-| #15     | State whether I can relocate                                                      | Campo de expectativas, ya contemplado en el modelo   |
-| #16     | See how complete my profile is                                                    | Ya implementado en el dashboard, pendiente de cierre |
-| #18     | Browse the available vacancies                                                    | Ya implementado en `/jobs`, pendiente de cierre      |
-| #22     | Compare a vacancy against my profile                                              | Extiende el detalle de vacante                       |
-| #28     | See a summary of the analysis                                                     | Vista agregada sobre el motor de puntaje             |
-| #31     | Get my profile tailored to a vacancy                                              | Nueva capacidad sobre el dominio existente           |
-| #32–#36 | Historias no funcionales (auth, validación, _rate limiting_, secretos, _logging_) | Transversales                                        |
-
-> **Nota para el equipo:** varias historias marcadas arriba como abiertas ya están construidas en
-> `main` (#16 y #18 al menos). Antes de la sustentación conviene cerrarlas para que el tablero
-> refleje el avance real.
+| HU      | Historia                                                                          | Impacto en la arquitectura                         |
+| ------- | --------------------------------------------------------------------------------- | -------------------------------------------------- |
+| #3      | Sign up and log in                                                                | Introduce autenticación y sesión; hoy no existe    |
+| #4      | Submit my LinkedIn profile URL                                                    | Primera entrada de datos externa al wizard         |
+| #5      | Extract my work experience                                                        | Requiere el módulo de importación                  |
+| #6      | Extract my education                                                              | Requiere el módulo de importación                  |
+| #7      | Extract my skills                                                                 | Requiere el módulo de importación                  |
+| #8      | Upload my résumé                                                                  | Manejo de archivos y almacenamiento                |
+| #9      | Review the imported information                                                   | Pantalla de confirmación previa al guardado        |
+| #10     | Edit the imported information                                                     | Reutiliza el wizard existente                      |
+| #12     | Set my target role                                                                | Campo de expectativas, ya contemplado en el modelo |
+| #13     | Set my salary expectation                                                         | Campo de expectativas, ya contemplado en el modelo |
+| #15     | State whether I can relocate                                                      | Campo de expectativas, ya contemplado en el modelo |
+| #16     | See how complete my profile is                                                    | Se apoya en el cálculo de completitud del dominio  |
+| #18     | Browse the available vacancies                                                    | Se apoya en el catálogo de vacantes                |
+| #22     | Compare a vacancy against my profile                                              | Extiende el detalle de vacante                     |
+| #28     | See a summary of the analysis                                                     | Vista agregada sobre el motor de puntaje           |
+| #31     | Get my profile tailored to a vacancy                                              | Nueva capacidad sobre el dominio existente         |
+| #32–#36 | Historias no funcionales (auth, validación, _rate limiting_, secretos, _logging_) | Transversales                                      |
 
 **Selección definitiva del Sprint 2:** {PENDIENTE: confirmar cuáles de las anteriores entran, con
 su estimación en _story points_}
@@ -179,8 +175,7 @@ La solución se organiza en tres paquetes de dominio e infraestructura y dos apl
   tocar la base de datos, de modo que una clave desconocida o un tipo incorrecto no alcanzan
   ninguna pantalla.
 
-**Diagrama de clases de diseño:** {PENDIENTE: images/5-2-diagrama-clases.png — elaborado por el
-equipo, no generado con IA}
+**Diagrama de clases de diseño:** {PENDIENTE: images/5-2-diagrama-clases.png}
 
 ### 5.3. Vista Lógica — Diagrama Entidad-Relación
 
@@ -201,8 +196,7 @@ Dos decisiones vale la pena sustentar:
    por campo, y separarlos habría significado cuatro tablas más sin ninguna consulta que las
    justifique.
 
-**Diagrama entidad-relación:** {PENDIENTE: images/5-3-diagrama-entidad-relacion.png — elaborado
-por el equipo, no generado con IA}
+**Diagrama entidad-relación:** {PENDIENTE: images/5-3-diagrama-entidad-relacion.png}
 
 ### 5.4. Vista Física — Diagrama de Componentes y Despliegue
 
@@ -220,11 +214,9 @@ El puerto `5433` es deliberado: una instalación nativa de PostgreSQL suele ocup
 En esta entrega el despliegue es local. {PENDIENTE: si se despliega en la nube antes de la
 sustentación, describir el proveedor y actualizar el diagrama}
 
-**Diagrama de componentes:** {PENDIENTE: images/5-4-diagrama-componentes.png — elaborado por el
-equipo, no generado con IA}
+**Diagrama de componentes:** {PENDIENTE: images/5-4-diagrama-componentes.png}
 
-**Diagrama de despliegue:** {PENDIENTE: images/5-4-diagrama-despliegue.png — elaborado por el
-equipo, no generado con IA}
+**Diagrama de despliegue:** {PENDIENTE: images/5-4-diagrama-despliegue.png}
 
 ---
 
@@ -315,9 +307,7 @@ Once _route handlers_ que atienden nueve rutas:
 Las pruebas del dominio pasan: 45 pruebas en tres archivos, más `typecheck` limpio en los cinco
 paquetes.
 
-{PENDIENTE: justificar el porcentaje del reto implementado. Ojo: el tablero muestra 13 de 34
-historias cerradas (38 %), pero hay historias construidas que siguen abiertas. Conviene cerrarlas
-antes de calcular el número que se va a defender.}
+{PENDIENTE: justificar el porcentaje del reto implementado}
 
 **Capturas de las funcionalidades:** {PENDIENTE: images/6-*.png}
 

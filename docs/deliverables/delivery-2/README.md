@@ -2,7 +2,6 @@
 
 - Backlog: https://github.com/pablomanjarres/Magneto/issues
 - Board: https://github.com/users/pablomanjarres/projects/3
-- Template: `.private/Entrega2_Template_Arquitectura.md`
 
 ## Document
 
@@ -36,8 +35,6 @@ The template ships its own spreadsheet, `Entrega2_Template_HistoriasUsuario.xlsx
 - [ ] Meeting with the PO or the Technical Lead (Pablo)
 - [ ] Planning poker evidence and the estimates (Valentina)
 - [ ] Sprint 2 backlog screenshot from GitHub Projects (Pablo)
-- [ ] Reconcile the board with what is actually built — several stories are done in
-      `main` but still open on the board (Pablo)
 
 ## 5 Aspectos estructurales y arquitectónicos
 
