@@ -1,7 +1,19 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import type { Profile, Vacancy } from "@moonlight/types";
 
-import { marketGaps, profileCompleteness, rankVacancies, scoreVacancy } from "../src/index.js";
+import {
+  marketGaps,
+  parseProfile,
+  profileCompleteness,
+  rankVacancies,
+  scoreVacancy,
+} from "../src/index.js";
+
+const ok = (result: ReturnType<typeof parseProfile>): Profile => {
+  if ("errors" in result) throw new Error(result.errors.join(", "));
+  return result.profile;
+};
 
 const profile = (skills: string[], over: Partial<Profile> = {}): Profile => ({
   id: "p1",
@@ -97,18 +109,48 @@ describe("profileCompleteness", () => {
     expect(profileCompleteness(profile(["TypeScript"])).percentage).toBe(100);
   });
 
-  it("names what is missing and never breaks on an empty profile", () => {
+  it("reads 0 and names what is missing on a profile with no data", () => {
     const bare = profile([], {
       fullName: "",
       city: "",
       experience: [],
       education: [],
-      expectations: { workModes: [], willRelocate: false, cities: [] },
+      expectations: { workModes: [], cities: [] },
     });
     const result = profileCompleteness(bare);
-    expect(result.percentage).toBe(11);
+    expect(result.percentage).toBe(0);
     expect(result.missing).toContain("At least one skill");
-    expect(result.missing).toContain("Target role");
+    expect(result.missing).toContain("Relocation");
+  });
+
+  it("counts only the name on a just-registered profile", () => {
+    const fresh = ok(parseProfile({ id: "p1", email: "a@b.co", fullName: "Ana" }));
+    expect(profileCompleteness(fresh).percentage).toBe(11);
+  });
+
+  it("counts relocation answered no as filled", () => {
+    const p = profile(["TypeScript"], {
+      expectations: { workModes: ["remote"], willRelocate: false, cities: [] },
+    });
+    expect(profileCompleteness(p).missing).not.toContain("Relocation");
+  });
+
+  it("rises when a missing field is filled", () => {
+    const fresh = ok(parseProfile({ id: "p1", email: "a@b.co", fullName: "Ana" }));
+    const withCity = ok(parseProfile({ id: "p1", email: "a@b.co", fullName: "Ana", city: "Cali" }));
+    expect(profileCompleteness(withCity).percentage).toBeGreaterThan(
+      profileCompleteness(fresh).percentage,
+    );
+  });
+
+  it("reaches 100 on the seeded candidate", () => {
+    const seed: unknown = JSON.parse(
+      readFileSync(
+        new URL("../../../data/sample-profiles/candidate.json", import.meta.url),
+        "utf8",
+      ),
+    );
+    expect(profileCompleteness(ok(parseProfile(seed))).percentage).toBe(100);
   });
 });
 
