@@ -69,6 +69,18 @@ export async function updateApplicationStatus(
   return row ? toApplication(row) : null;
 }
 
+export async function updateApplicationNote(
+  id: string,
+  note: string | null,
+): Promise<Application | null> {
+  const { rows } = await pool.query<ApplicationRow>(
+    "UPDATE applications SET note = $2, updated_at = now() WHERE id = $1 RETURNING *",
+    [id, note],
+  );
+  const row = rows[0];
+  return row ? toApplication(row) : null;
+}
+
 export async function deleteApplication(id: string): Promise<boolean> {
   const { rowCount } = await pool.query("DELETE FROM applications WHERE id = $1", [id]);
   return (rowCount ?? 0) > 0;

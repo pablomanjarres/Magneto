@@ -4,9 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { ApplicationCard, ApplicationStatus } from "@moonlight/types";
-import { ALLOWED_MOVES, STATUS_LABELS } from "@moonlight/core";
+import { ALLOWED_MOVES, NOTE_MAX_LENGTH, STATUS_LABELS } from "@moonlight/core";
 
-import { moveApplication, withdrawApplication } from "../../lib/client";
+import { Field } from "../../components/primitives";
+import { moveApplication, updateNextStep, withdrawApplication } from "../../lib/client";
 import { placeMeta, salaryRange, shortDate } from "../../lib/format";
 
 /** Withdrawing is destructive, so the button asks once. Reverts on its own. */
@@ -30,6 +31,8 @@ export function BoardCard({ card }: { card: ApplicationCard }) {
   const [pending, setPending] = useState(false);
   const [armed, setArmed] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState("");
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => () => clearTimer(timer), []);
@@ -61,6 +64,20 @@ export function BoardCard({ card }: { card: ApplicationCard }) {
     setArmed(true);
     clearTimer(timer);
     timer.current = setTimeout(() => setArmed(false), CONFIRM_MS);
+  }
+
+  function startEditing(): void {
+    setDraft(card.note ?? "");
+    setEditing(true);
+  }
+
+  async function onSaveNote(event: React.FormEvent<HTMLFormElement>): Promise<void> {
+    event.preventDefault();
+    // Close the form only when the save worked, so a refused note can be fixed in place.
+    await run(async () => {
+      await updateNextStep(card.id, draft);
+      setEditing(false);
+    });
   }
 
   const moves = ALLOWED_MOVES[card.status];
@@ -98,7 +115,7 @@ export function BoardCard({ card }: { card: ApplicationCard }) {
         </span>
       </div>
 
-      {card.note && (
+      {card.note && !editing && (
         <span
           style={{
             fontSize: 11,
@@ -109,8 +126,35 @@ export function BoardCard({ card }: { card: ApplicationCard }) {
             ...noteStyle(card.status),
           }}
         >
-          {card.note}
+          <strong>Next step:</strong> {card.note}
         </span>
+      )}
+
+      {editing && (
+        <form className="stack" style={{ gap: 6 }} onSubmit={(e) => void onSaveNote(e)}>
+          <Field label="Next step">
+            <textarea
+              className="textarea"
+              value={draft}
+              maxLength={NOTE_MAX_LENGTH}
+              autoFocus
+              onChange={(e) => setDraft(e.target.value)}
+            />
+          </Field>
+          <div className="chips" style={{ gap: 6 }}>
+            <button type="submit" className="btn btn--sm btn--primary" disabled={pending}>
+              Save
+            </button>
+            <button
+              type="button"
+              className="btn btn--sm"
+              disabled={pending}
+              onClick={() => setEditing(false)}
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
       )}
 
       {error && (
@@ -132,6 +176,11 @@ export function BoardCard({ card }: { card: ApplicationCard }) {
             {STATUS_LABELS[target]}
           </button>
         ))}
+        {!editing && (
+          <button type="button" className="btn btn--sm" disabled={pending} onClick={startEditing}>
+            Edit next step
+          </button>
+        )}
         <button
           type="button"
           className="btn btn--sm"
