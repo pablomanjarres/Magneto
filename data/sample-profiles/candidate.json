@@ -47,6 +47,8 @@
   ],
   "expectations": {
     "targetRole": "Full Stack Developer",
+    "targetArea": "Software development",
+    "targetSeniority": "Mid-level",
     "salaryMin": 7000000,
     "salaryMax": 11000000,
     "currency": "COP",
