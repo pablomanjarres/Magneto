@@ -28,7 +28,8 @@ export interface Expectations {
   salaryMax?: number | undefined;
   currency?: string | undefined;
   workModes: WorkMode[];
-  willRelocate: boolean;
+  /** Undefined means the candidate has not answered yet. */
+  willRelocate?: boolean | undefined;
   cities: string[];
 }
 
