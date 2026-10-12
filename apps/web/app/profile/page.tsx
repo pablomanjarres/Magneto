@@ -133,7 +133,11 @@ export default async function ProfilePage() {
               </Detail>
 
               <Detail label="Relocation">
-                {expectations.willRelocate ? "Willing to relocate" : "Staying put"}
+                {expectations.willRelocate === undefined
+                  ? "Not stated"
+                  : expectations.willRelocate
+                    ? "Willing to relocate"
+                    : "Staying put"}
               </Detail>
 
               {expectations.cities.length > 0 && (

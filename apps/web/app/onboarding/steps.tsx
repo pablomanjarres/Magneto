@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import type { Expectations, Profile, Vacancy, WorkMode } from "@moonlight/types";
 import { DEFAULT_CURRENCY, marketGaps, normalizeSkill } from "@moonlight/core";
 
@@ -186,58 +187,42 @@ export function ExpectationsStep({
       <div className="stack" style={{ gap: 9 }} role="group" aria-label="Work mode">
         <span className="field__label">Work mode</span>
         <div className="row" style={{ gap: 10, flexWrap: "wrap" }}>
-          {WORK_MODES.map((mode) => {
-            const on = expectations.workModes.includes(mode);
-            return (
-              <button
-                key={mode}
-                type="button"
-                className="chip chip--action"
-                aria-pressed={on}
-                onClick={() => onToggleWorkMode(mode)}
-                style={{ height: 40, padding: "0 18px", fontSize: 13.5 }}
-              >
-                {workModeLabel(mode)}
-              </button>
-            );
-          })}
+          {WORK_MODES.map((mode) => (
+            <ChoiceChip
+              key={mode}
+              on={expectations.workModes.includes(mode)}
+              onClick={() => onToggleWorkMode(mode)}
+            >
+              {workModeLabel(mode)}
+            </ChoiceChip>
+          ))}
         </div>
       </div>
 
-      {/* The question is inside the label, so the box is announced as "Willing
-          to relocate". The Yes/No beside it only repeats the checked state. */}
-      <label
-        className="row"
-        style={{
-          justifyContent: "space-between",
-          padding: "14px 16px",
-          border: "1px solid var(--line)",
-          borderRadius: 10,
-          background: "var(--panel)",
-          cursor: "pointer",
-        }}
-      >
-        <span className="stack" style={{ gap: 3 }}>
-          <span style={{ fontSize: 14 }}>Willing to relocate</span>
-          <span className="meta">Say yes and we ask which cities.</span>
-        </span>
-        <span className="check">
-          <input
-            type="checkbox"
-            checked={expectations.willRelocate}
-            // Saying no drops the cities: a relocation with none is an
-            // incomplete field, and a hidden one cannot be fixed.
-            onChange={(e) =>
-              onPatch(
-                e.target.checked ? { willRelocate: true } : { willRelocate: false, cities: [] },
-              )
-            }
-          />
-          {expectations.willRelocate ? "Yes" : "No"}
-        </span>
-      </label>
+      {/* Two buttons rather than a checkbox, so "not answered yet" can exist
+          and does not count toward completeness. */}
+      <div className="stack" style={{ gap: 9 }} role="group" aria-label="Willing to relocate">
+        <span className="field__label">Willing to relocate</span>
+        <span className="meta">Say yes and we ask which cities.</span>
+        <div className="row" style={{ gap: 10, flexWrap: "wrap" }}>
+          <ChoiceChip
+            on={expectations.willRelocate === true}
+            onClick={() => onPatch({ willRelocate: true })}
+          >
+            Yes
+          </ChoiceChip>
+          {/* Saying no drops the cities: a relocation with none is an
+              incomplete field, and a hidden one cannot be fixed. */}
+          <ChoiceChip
+            on={expectations.willRelocate === false}
+            onClick={() => onPatch({ willRelocate: false, cities: [] })}
+          >
+            No
+          </ChoiceChip>
+        </div>
+      </div>
 
-      {expectations.willRelocate && (
+      {expectations.willRelocate === true && (
         <ChipInput
           label="Cities you would move to"
           placeholder="Type a city and press Enter"
@@ -247,5 +232,28 @@ export function ExpectationsStep({
         />
       )}
     </div>
+  );
+}
+
+/** A pressable chip for picking one or more answers from a short list. */
+function ChoiceChip({
+  on,
+  onClick,
+  children,
+}: {
+  on: boolean;
+  onClick: () => void;
+  children: ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      className="chip chip--action"
+      aria-pressed={on}
+      onClick={onClick}
+      style={{ height: 40, padding: "0 18px", fontSize: 13.5 }}
+    >
+      {children}
+    </button>
   );
 }

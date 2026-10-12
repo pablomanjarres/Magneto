@@ -131,6 +131,15 @@ describe("parseProfile", () => {
     expect(profile.expectations.cities).toEqual([]);
   });
 
+  it("leaves relocation unanswered unless a yes or no arrives", () => {
+    const profile = ok({
+      ...valid,
+      expectations: { ...valid.expectations, willRelocate: "yes", cities: ["Bogotá"] },
+    });
+    expect(profile.expectations.willRelocate).toBeUndefined();
+    expect(profile.expectations.cities).toEqual([]);
+  });
+
   it("keeps cities when the candidate will relocate", () => {
     const profile = ok({
       ...valid,
