@@ -9,7 +9,7 @@ thing exists in this repository, not when it has been discussed.
 - Document: [`document/Entrega2.md`](document/Entrega2.md)
 - Spreadsheet: [`document/Entrega2_Template_HistoriasUsuario.xlsx`](document/Entrega2_Template_HistoriasUsuario.xlsx)
 
-**Status: 19 of 50 done.** Verified against the repository on 2026-10-12.
+**Status: 20 of 51 done.** Verified against the repository on 2026-10-12.
 
 ## Roles
 
@@ -25,21 +25,20 @@ The same as in Entrega 1.
 
 ## Sprint 2 — what gets built
 
-The template expects at least 60% of the challenge. The board shows 13 of 34 stories closed (38%),
-and an audit of the open stories against their acceptance criteria found only #13 already done.
-These close the gap with the least code:
+The template expects at least 60% of the challenge. The board showed 13 of 34 stories closed (38%),
+and an audit of the open stories against their acceptance criteria found only #13 already done, so
+#13 is now closed (14 of 34). These close the rest of the gap with the least code:
 
-| Story                                            | What is missing today                                                                         |
-| ------------------------------------------------ | --------------------------------------------------------------------------------------------- |
-| #13 Set my salary expectation                    | Nothing. Close it: it has been done since 19 Aug                                              |
-| #16 See how complete my profile is               | An empty profile reads 11%, not 0%, because "won't relocate" counts as answered               |
-| #12 Set my target role                           | No area and no seniority                                                                      |
-| #15 State whether I can relocate                 | Relocation never moves the score                                                              |
-| #18 Browse the available vacancies               | No paging: the list loads every vacancy at once                                               |
-| #22 Compare a vacancy against my profile         | An empty profile gets a 0% breakdown instead of "complete your profile first"                 |
-| #28 See a summary of the analysis                | The list rows lack the reason and the top three gaps                                          |
-| #35 Secrets kept out of the repository           | Without `DATABASE_URL` the app falls back to a built-in connection string instead of stopping |
-| New: write down the next step for an application | The board has no form that asks for data, which the demo below needs                          |
+| Story                                           | What is missing today                                                                         |
+| ----------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| #16 See how complete my profile is              | An empty profile reads 11%, not 0%, because "won't relocate" counts as answered               |
+| #12 Set my target role                          | No area and no seniority                                                                      |
+| #15 State whether I can relocate                | Relocation never moves the score                                                              |
+| #18 Browse the available vacancies              | No paging: the list loads every vacancy at once                                               |
+| #22 Compare a vacancy against my profile        | An empty profile gets a 0% breakdown instead of "complete your profile first"                 |
+| #28 See a summary of the analysis               | The list rows lack the reason and the top three gaps                                          |
+| #35 Secrets kept out of the repository          | Without `DATABASE_URL` the app falls back to a built-in connection string instead of stopping |
+| #43 Write down the next step for an application | The board has no form that asks for data, which the demo below needs                          |
 
 That is 22 of 35 stories closed, 63%. Sign-in and the other non-functional stories (#3, #32, #33, #34,
 #36), the LinkedIn and résumé import (#4–#10) and the tailored profile (#31) stay for Entrega 3.
@@ -63,8 +62,8 @@ From the first paragraph of the template.
 
 ## 1. Historias de Usuario y Cono de la Incertidumbre (.xls)
 
-The template ships its own spreadsheet. It is in [`document/`](document/), filled in Excel so its
-charts keep working.
+The template ships its own spreadsheet. It is in [`document/`](document/), still blank, to be filled
+in Excel so its charts keep working.
 
 - [ ] Fill the features against domain knowledge and technology knowledge: the open stories, with
       points from planning poker and their business uncertainty and technical complexity (Valentina)
@@ -97,9 +96,10 @@ A retrospective of sprint 1. All three items are empty.
 - [ ] Evidence of the meeting with the PO and the Technical Lead, the assigned monitor (Pablo)
 - [x] Sprint backlog link (Pablo)
 - [ ] Sprint backlog screenshot (Valentina)
-- [ ] Backlog changes reflected on the board: close #13, move the stories done in sprint 1 out of
-      Sprint 2, and put the Sprint 2 stories above in it. The template says Azure and this team uses
-      GitHub Projects; confirm with the monitor that this is accepted (Pablo)
+- [x] Backlog changes reflected on the board: #13 closed, the stories done in sprint 1 moved out of
+      Sprint 2, and the Sprint 2 stories above put in it (Pablo)
+- [ ] The template says Azure and this team uses GitHub Projects: confirm with the monitor that this
+      is accepted (Pablo)
 
 ## 5. Aspectos estructurales y arquitectónicos
 
