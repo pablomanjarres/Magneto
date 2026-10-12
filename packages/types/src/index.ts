@@ -24,6 +24,8 @@ export interface Education {
 
 export interface Expectations {
   targetRole?: string | undefined;
+  targetArea?: string | undefined;
+  targetSeniority?: string | undefined;
   salaryMin?: number | undefined;
   salaryMax?: number | undefined;
   currency?: string | undefined;
