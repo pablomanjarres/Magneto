@@ -40,11 +40,32 @@ El análisis se consigna en el archivo `Entrega2_Template_HistoriasUsuario.xlsx`
 contrastan las _features_ del proyecto contra el grado de conocimiento del dominio y de la
 tecnología.
 
-- Archivo diligenciado: {PENDIENTE: enlace al .xlsx}
-- Captura del cono: {PENDIENTE: images/1-cono-incertidumbre.png}
+- Archivo diligenciado: [`Entrega2_Template_HistoriasUsuario.xlsx`](Entrega2_Template_HistoriasUsuario.xlsx)
+- Captura del cono:
 
-{PENDIENTE: análisis de lo que muestra el cono. Qué features quedaron en la zona de mayor
-incertidumbre, por qué, y cómo eso afectó la priorización del Sprint 2.}
+![Cono de la incertidumbre](images/1-cono-incertidumbre.png)
+
+La hoja registra las 21 historias que seguían abiertas al planear el Sprint 2: las 8 del sprint
+(fase _Next_) y las 13 que quedan para la Entrega 3 (fase _Later_). Cada una lleva sus puntos, su
+incertidumbre de negocio (qué tan claro está lo que pide el dominio) y su complejidad técnica (qué
+tan bien conocemos la tecnología que exige). Las cinco historias no funcionales no tienen puntos
+en el backlog, así que no mueven el cono.
+
+**Zona de mayor incertidumbre.** Seis historias concentran casi todo el ancho del cono: la
+importación del perfil desde LinkedIn y desde la hoja de vida (#4 a #8) y el perfil adaptado a una
+vacante (#31). Todas tienen complejidad técnica alta: la importación depende de extraer datos de
+fuentes que no controlamos, y el perfil adaptado, de reescribir el perfil con un modelo de lenguaje
+sin que invente experiencia. #7 y #31 tienen además incertidumbre de negocio alta, porque todavía
+no está claro cómo llevar las habilidades extraídas al vocabulario de las vacantes, ni hasta dónde
+puede cambiar un perfil adaptado sin dejar de ser fiel. Entre el mejor y el peor caso hay 19 puntos
+(49,5 contra 68,5), y 16,6 de ellos vienen de esas seis historias.
+
+**Efecto en el Sprint 2.** Por eso el Sprint 2 tomó solo historias de incertidumbre baja o media
+sobre funcionalidades que ya existían: sus 22 puntos tienen un margen de 2,1 puntos entre el mejor
+y el peor caso. Con la velocidad del Sprint 1, 50 puntos, el cono da un sprint en el mejor caso y
+dos en el más probable y en el peor, así que lo abierto cabe en el Sprint 3 siempre que la
+importación no se desborde. Antes de estimar de nuevo esas seis historias, el equipo hará una
+prueba de concepto de la extracción y validará con Magneto el alcance de #7 y #31.
 
 ---
 
@@ -62,6 +83,15 @@ La arquitectura se documenta desde dos frentes:
   y el modelo de datos.
 - **Vista Física:** la distribución del procesamiento entre los dispositivos y procesos que
   componen la solución, incluyendo el contenedor de base de datos y los puertos que expone.
+
+### Aporte de cada integrante
+
+| Integrante        | Aporte en la Entrega 2                                                                                                                                                                                      |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Pablo Manjarres   | Arquitectura de la solución y su documentación (sección 5), código y pruebas del Sprint 2, justificación del porcentaje implementado                                                                        |
+| Valentina Barbosa | Historias de usuario y cono de la incertidumbre (sección 1), retrospectiva (sección 3), planificación del Sprint 2 y sus evidencias (sección 4), los cuatro diagramas, capturas, conclusiones y referencias |
+
+La demostración y la sustentación son de ambos.
 
 ---
 
@@ -117,7 +147,9 @@ Los puntos son la estimación del backlog; los de #35 salen del _planning poker_
 - **Planning con _poker planning_:** {PENDIENTE: images/4-planning-poker.png}
 - **Daily o weekly del equipo:** {PENDIENTE: images/4-daily.png}
 - **Reunión con el PO o el Líder Técnico:** {PENDIENTE: images/4-reunion-po.png}
-- **Sprint backlog en el tablero:** {PENDIENTE: images/4-sprint-backlog.png}
+- **Sprint backlog en el tablero:**
+
+  ![Vista Sprint Backlog #2 del tablero](images/4-sprint-backlog.png)
 
 ---
 
@@ -299,9 +331,35 @@ Once _route handlers_ que atienden nueve rutas:
 Las pruebas del dominio pasan: 78 pruebas en cuatro archivos, más `typecheck` limpio en los cinco
 paquetes.
 
-{PENDIENTE: justificar el porcentaje del reto implementado}
+**Porcentaje implementado.** El backlog del reto tiene 35 historias y 22 están cerradas, el 63 %.
+Medido en puntos, son 72 de 109, el 66 %. Falta la importación del perfil desde LinkedIn y desde la
+hoja de vida (#4 a #10), el inicio de sesión y la autenticación (#3 y #32), el perfil adaptado a
+una vacante (#31) y tres historias no funcionales (#33, #34 y #36). Ahí está la mayor
+incertidumbre del cono de la sección 1, y el equipo seguirá trabajando en esas historias en el
+Sprint 3 para cumplir el objetivo del reto.
 
-**Capturas de las funcionalidades:** {PENDIENTE: images/6-*.png}
+**Capturas de las funcionalidades**
+
+![Registro](images/6-registro.png)
+_`/register`: registro con nombre y correo._
+
+![Asistente del perfil](images/6-onboarding.png)
+_`/onboarding`: asistente que completa el perfil paso a paso._
+
+![Panel](images/6-dashboard.png)
+_`/dashboard`: completitud del perfil, mejores coincidencias y brechas contra el mercado._
+
+![Vacantes](images/6-vacantes.png)
+_`/jobs`: vacantes ordenadas por puntaje, de a diez._
+
+![Detalle de una vacante](images/6-detalle-vacante.png)
+_`/jobs/[id]`: puntaje, requisitos cubiertos y faltantes, y la deducción por ubicación._
+
+![Perfil](images/6-perfil.png)
+_`/profile`: perfil del candidato._
+
+![Postulaciones](images/6-postulaciones.png)
+_`/applications`: tablero de postulaciones con sus acciones._
 
 ---
 
