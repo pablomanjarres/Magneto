@@ -84,6 +84,15 @@ La arquitectura se documenta desde dos frentes:
 - **Vista Física:** la distribución del procesamiento entre los dispositivos y procesos que
   componen la solución, incluyendo el contenedor de base de datos y los puertos que expone.
 
+### Aporte de cada integrante
+
+| Integrante        | Aporte en la Entrega 2                                                                                                                                                                                      |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Pablo Manjarres   | Arquitectura de la solución y su documentación (sección 5), código y pruebas del Sprint 2, justificación del porcentaje implementado                                                                        |
+| Valentina Barbosa | Historias de usuario y cono de la incertidumbre (sección 1), retrospectiva (sección 3), planificación del Sprint 2 y sus evidencias (sección 4), los cuatro diagramas, capturas, conclusiones y referencias |
+
+La demostración y la sustentación son de ambos.
+
 ---
 
 ## Sección 3. Evaluación del Sprint anterior
