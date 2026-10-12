@@ -67,6 +67,16 @@ export function scoreVacancy(profile: Profile, vacancy: Vacancy): ScoreResult {
 }
 
 /**
+ * The gaps worth closing first: must-haves before nice-to-haves, since they
+ * move the score most, then by name so the order never wobbles. Pure.
+ */
+export function topGaps(result: ScoreResult, n = 3): Requirement[] {
+  return [...result.missing]
+    .sort((a, b) => WEIGHTS[b.kind] - WEIGHTS[a.kind] || a.skill.localeCompare(b.skill))
+    .slice(0, n);
+}
+
+/**
  * Rank every vacancy for a profile, best first.
  * Vacancies with no requirements carry no signal, so they are left out.
  * Ties break on must-haves met, then on vacancy id, so the order never wobbles.

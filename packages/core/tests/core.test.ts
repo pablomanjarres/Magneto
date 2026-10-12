@@ -9,6 +9,7 @@ import {
   profileCompleteness,
   rankVacancies,
   scoreVacancy,
+  topGaps,
 } from "../src/index.js";
 
 const ok = (result: ReturnType<typeof parseProfile>): Profile => {
@@ -83,6 +84,29 @@ describe("scoreVacancy", () => {
     const r = scoreVacancy(profile(["TypeScript"]), vacancy("v1", ["TypeScript", "Go"]));
     expect(r.reason).toBe("Meets 1 of 2 requirements, including 1 of 2 must-haves.");
     expect(r.missing.map((m) => m.skill)).toEqual(["Go"]);
+  });
+});
+
+describe("topGaps", () => {
+  const gaps = (skills: string[], must: string[], nice: string[] = []) =>
+    topGaps(scoreVacancy(profile(skills), vacancy("v1", must, nice))).map((r) => r.skill);
+
+  it("returns at most three", () => {
+    expect(gaps([], ["A", "B", "C", "D"], ["E"])).toHaveLength(3);
+  });
+
+  it("puts must-haves first, then orders by name", () => {
+    expect(gaps([], ["Rust", "Go"], ["Elixir"])).toEqual(["Go", "Rust", "Elixir"]);
+  });
+
+  it("returns nothing on a full match", () => {
+    expect(gaps(["Go"], ["Go"])).toEqual([]);
+  });
+
+  it("is stable", () => {
+    const r = scoreVacancy(profile([]), vacancy("v1", ["Rust", "Go"], ["Elixir", "Ada"]));
+    expect(topGaps(r)).toEqual(topGaps(r));
+    expect(r.missing.map((m) => m.skill)).toEqual(["Rust", "Go", "Elixir", "Ada"]);
   });
 });
 

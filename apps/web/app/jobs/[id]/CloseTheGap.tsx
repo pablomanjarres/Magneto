@@ -1,11 +1,7 @@
-import type { MarketGap, Requirement, ScoreResult } from "@moonlight/types";
-import { WEIGHTS, normalizeSkill } from "@moonlight/core";
+import type { MarketGap, ScoreResult } from "@moonlight/types";
+import { WEIGHTS, normalizeSkill, topGaps } from "@moonlight/core";
 
 import { Chip, EmptyState, ProgressBar } from "../../../components/primitives";
-
-/** Must-haves first: they are the ones that move the score most. */
-const byImpact = (a: Requirement, b: Requirement): number =>
-  WEIGHTS[b.kind] - WEIGHTS[a.kind] || a.skill.localeCompare(b.skill);
 
 /** How many gaps get a before-and-after row of their own; the rest stay chips. */
 const DETAILED = 3;
@@ -32,7 +28,8 @@ export function CloseTheGap({
     );
   }
 
-  const missing = [...result.missing].sort(byImpact);
+  // Every gap, in core's must-haves-first order; the first DETAILED get their own row.
+  const missing = topGaps(result, result.missing.length);
   if (missing.length === 0) {
     return (
       <div className="card stack" style={{ gap: 6 }}>
