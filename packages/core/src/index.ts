@@ -119,6 +119,16 @@ export function profileCompleteness(profile: Profile): CompletenessResult {
 }
 
 /**
+ * What must be filled before a comparison means anything. Scoring only reads
+ * skills, so a profile without them would score 0% everywhere.
+ */
+export function comparisonBlockers(profile: Profile): string[] {
+  return COMPLETENESS_FIELDS.filter(
+    (f) => f.label === "At least one skill" && !f.filled(profile),
+  ).map((f) => f.label);
+}
+
+/**
  * Gaps measured against the whole vacancy set rather than a single offer.
  * This is the differentiator: completeness follows what the market asks for,
  * so the candidate closes the gap that unlocks the most vacancies first.
