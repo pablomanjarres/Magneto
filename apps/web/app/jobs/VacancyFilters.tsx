@@ -1,6 +1,7 @@
 "use client";
 
 import { Fragment, useMemo, useState, type ReactNode } from "react";
+import { PAGE_SIZE, pageOf } from "@moonlight/core";
 import type { WorkMode } from "@moonlight/types";
 
 import { Icon } from "../../components/Icon";
@@ -42,6 +43,15 @@ export function VacancyFilters({
   const [city, setCity] = useState<string>(ANY);
   const [company, setCompany] = useState<string>(ANY);
   const [hideApplied, setHideApplied] = useState(false);
+  const [page, setPage] = useState(1);
+
+  // A new filter is a new list, so it starts again from its first page.
+  const refilter =
+    <T,>(set: (value: T) => void) =>
+    (value: T): void => {
+      set(value);
+      setPage(1);
+    };
 
   const visible = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -56,6 +66,7 @@ export function VacancyFilters({
     });
   }, [items, query, mode, city, company, hideApplied]);
 
+  const shown = pageOf(visible, page, PAGE_SIZE);
   const hidden = items.length - visible.length;
   const filtering =
     query.trim() !== "" || mode !== ANY || city !== ANY || company !== ANY || hideApplied;
@@ -66,6 +77,7 @@ export function VacancyFilters({
     setCity(ANY);
     setCompany(ANY);
     setHideApplied(false);
+    setPage(1);
   };
 
   return (
@@ -93,7 +105,7 @@ export function VacancyFilters({
                   type="search"
                   value={query}
                   placeholder="Title, company or a skill"
-                  onChange={(event) => setQuery(event.target.value)}
+                  onChange={(event) => refilter(setQuery)(event.target.value)}
                 />
               </span>
             </Field>
@@ -104,7 +116,7 @@ export function VacancyFilters({
               <select
                 className="select"
                 value={mode}
-                onChange={(event) => setMode(event.target.value)}
+                onChange={(event) => refilter(setMode)(event.target.value)}
               >
                 <option value={ANY}>Any mode</option>
                 {WORK_MODES.map((value) => (
@@ -121,7 +133,7 @@ export function VacancyFilters({
               <select
                 className="select"
                 value={company}
-                onChange={(event) => setCompany(event.target.value)}
+                onChange={(event) => refilter(setCompany)(event.target.value)}
               >
                 <option value={ANY}>Any company</option>
                 {companies.map((value) => (
@@ -138,7 +150,7 @@ export function VacancyFilters({
               <select
                 className="select"
                 value={city}
-                onChange={(event) => setCity(event.target.value)}
+                onChange={(event) => refilter(setCity)(event.target.value)}
               >
                 <option value={ANY}>Any city</option>
                 {cities.map((value) => (
@@ -154,7 +166,7 @@ export function VacancyFilters({
             <input
               type="checkbox"
               checked={hideApplied}
-              onChange={(event) => setHideApplied(event.target.checked)}
+              onChange={(event) => refilter(setHideApplied)(event.target.checked)}
             />
             Hide vacancies I already applied to
           </label>
@@ -187,9 +199,19 @@ export function VacancyFilters({
         </EmptyState>
       ) : (
         <div className="stack" style={{ gap: 10 }}>
-          {visible.map((item) => (
+          {shown.items.map((item) => (
             <Fragment key={item.id}>{item.row}</Fragment>
           ))}
+          {shown.hasMore && (
+            <button
+              type="button"
+              className="btn btn--sm"
+              style={{ alignSelf: "center" }}
+              onClick={() => setPage(page + 1)}
+            >
+              Load more
+            </button>
+          )}
         </div>
       )}
 

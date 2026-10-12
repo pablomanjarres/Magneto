@@ -240,4 +240,20 @@ export function groupByStatus(
   }));
 }
 
+/** How many vacancies the list reveals at a time. */
+export const PAGE_SIZE = 10;
+
+/**
+ * The first `page` pages of a list, so each "Load more" adds to what is
+ * already shown. A page below 1, or one that is not a number, is the first.
+ */
+export function pageOf<T>(
+  items: T[],
+  page: number,
+  size: number,
+): { items: T[]; hasMore: boolean } {
+  const end = (Number.isFinite(page) && page >= 1 ? Math.floor(page) : 1) * size;
+  return { items: items.slice(0, end), hasMore: items.length > end };
+}
+
 export { DEFAULT_CURRENCY, parseProfile } from "./parse-profile.js";
