@@ -9,7 +9,7 @@ thing exists in this repository, not when it has been discussed.
 - Document: [`document/Entrega2.md`](document/Entrega2.md)
 - Spreadsheet: [`document/Entrega2_Template_HistoriasUsuario.xlsx`](document/Entrega2_Template_HistoriasUsuario.xlsx)
 
-**Status: 23 of 51 done.** Verified against the repository on 2026-10-12.
+**Status: 32 of 51 done.** Verified against the repository on 2026-10-12.
 
 ## Roles
 
@@ -52,28 +52,28 @@ From the first paragraph of the template.
 - [ ] **Sustentación.** It is mandatory, and either member can be asked to present (Both)
 - [x] **At least 60% of the challenge implemented.** The Sprint 2 stories above are merged: 22 of
       35 stories closed, 63% (Pablo)
-- [ ] **Justify the percentage in writing** and state that the team will keep working toward the
+- [x] **Justify the percentage in writing** and state that the team will keep working toward the
       objective (Pablo)
-- [ ] **Replace every `[]` placeholder.** 23 `{PENDIENTE}` markers are still in `Entrega2.md` (Both)
+- [ ] **Replace every `[]` placeholder.** 17 lines with `{PENDIENTE}` are still in `Entrega2.md` (Both)
 - [x] Product name, team and version on the cover (Pablo)
 - [x] Table of contents covering the sections the template lists (Pablo)
 - [ ] Page numbers in the table of contents, and a header on every page. Only applies once the
       markdown is exported to PDF (Valentina)
-- [ ] State what each member contributed (Valentina)
+- [x] State what each member contributed (Valentina)
 
 ## 1. Historias de Usuario y Cono de la Incertidumbre (.xls)
 
-The template ships its own spreadsheet. It is in [`document/`](document/), still blank, to be filled
-in Excel so its charts keep working.
+The template ships its own spreadsheet. It is in [`document/`](document/), filled in Excel so its
+charts keep working.
 
-- [ ] Fill the features against domain knowledge and technology knowledge: the open stories, with
+- [x] Fill the features against domain knowledge and technology knowledge: the open stories, with
       points from planning poker and their business uncertainty and technical complexity (Valentina)
-- [ ] Fill the Team Shape sheet with the roles above. Pablo is Project Manager, Architect, Senior
+- [x] Fill the Team Shape sheet with the roles above. Pablo is Project Manager, Architect, Senior
       Developer, Developer and Tester; Valentina is Business Analyst, Senior Tester and Developer
       (Valentina)
-- [ ] Write the analysis of the results the cone produces: which features landed in the zone of
+- [x] Write the analysis of the results the cone produces: which features landed in the zone of
       greatest uncertainty and what the team will do about it (Valentina)
-- [ ] Link the file and add the cone screenshot to the document (Valentina)
+- [x] Link the file and add the cone screenshot to the document (Valentina)
 
 ## 2. Aspectos generales de la entrega
 
@@ -90,15 +90,15 @@ A retrospective of sprint 1. All three items are empty.
 
 ## 4. Planificación del Sprint actual
 
-- [x] User stories listed with the impact each has on the architecture (Pablo)
-- [x] Final sprint 2 selection, with the story points each one got (Both)
+- [x] User stories listed with the impact each has on the architecture (Valentina)
+- [x] Final sprint 2 selection, with the story points each one got (Valentina)
 - [ ] Planning ceremony evidence, using planning poker to estimate (Valentina)
-- [ ] Daily or weekly evidence for the team (Both)
-- [ ] Evidence of the meeting with the PO and the Technical Lead, the assigned monitor (Pablo)
-- [x] Sprint backlog link (Pablo)
-- [ ] Sprint backlog screenshot (Valentina)
+- [ ] Daily or weekly evidence for the team (Valentina)
+- [ ] Evidence of the meeting with the PO and the Technical Lead, the assigned monitor (Valentina)
+- [x] Sprint backlog link (Valentina)
+- [x] Sprint backlog screenshot (Valentina)
 - [x] Backlog changes reflected on the board: #13 closed, the stories done in sprint 1 moved out of
-      Sprint 2, and the Sprint 2 stories above put in it (Pablo)
+      Sprint 2, and the Sprint 2 stories above put in it (Valentina)
 - [ ] The template says Azure and this team uses GitHub Projects: confirm with the monitor that this
       is accepted (Pablo)
 
@@ -118,7 +118,7 @@ they go in `docs/diagrams/` and their exports in `document/images/`.
 ### Vista Lógica — Diagrama de Clases de Diseño
 
 - [x] Logical view described: packages, layers and the dependency rule (Pablo)
-- [ ] Design class diagram, drawn by the team (Pablo)
+- [ ] Design class diagram, drawn by the team (Valentina)
 
 ### Vista Lógica — Diagrama Entidad-Relación
 
@@ -128,7 +128,7 @@ they go in `docs/diagrams/` and their exports in `document/images/`.
 ### Vista Física — Diagrama de Componentes y Despliegue
 
 - [x] Physical view described: processes, container and ports (Pablo)
-- [ ] Component diagram, with nodes and components and how they communicate (Pablo)
+- [ ] Component diagram, with nodes and components and how they communicate (Valentina)
 - [ ] Deployment diagram, mapping the logical elements onto what actually runs (Valentina)
 
 ## 6. Avances en cuanto a funcionalidad y demostración
@@ -138,8 +138,8 @@ they go in `docs/diagrams/` and their exports in `document/images/`.
 - [x] Justification of how the proposed architecture was actually implemented (Pablo)
 - [x] The screens and endpoints that already work. Verified: 7 pages, 9 route files serving 11
       handlers, and 78 domain tests passing (Pablo)
-- [ ] Screenshots of the functionality already developed (Valentina)
-- [ ] The percentage justification, same item as section 0 (Pablo)
+- [x] Screenshots of the functionality already developed (Valentina)
+- [x] The percentage justification, same item as section 0 (Pablo)
 
 ### The demo the guide asks for
 
