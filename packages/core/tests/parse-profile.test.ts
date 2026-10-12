@@ -218,6 +218,29 @@ describe("parseProfile", () => {
     expect(profile.expectations.currency).toBeUndefined();
   });
 
+  it("keeps an area and a seniority from the lists", () => {
+    const profile = ok({
+      ...valid,
+      expectations: { ...valid.expectations, targetArea: "Data", targetSeniority: "Junior" },
+    });
+    expect(profile.expectations).toMatchObject({ targetArea: "Data", targetSeniority: "Junior" });
+  });
+
+  it("drops an area or a seniority that is not on the lists", () => {
+    const profile = ok({
+      ...valid,
+      expectations: { ...valid.expectations, targetArea: "Astronaut", targetSeniority: 3 },
+    });
+    expect(profile.expectations.targetArea).toBeUndefined();
+    expect(profile.expectations.targetSeniority).toBeUndefined();
+  });
+
+  it("leaves area and seniority out when none arrive", () => {
+    const profile = ok(valid);
+    expect(profile.expectations.targetArea).toBeUndefined();
+    expect(profile.expectations.targetSeniority).toBeUndefined();
+  });
+
   it("does not let an unknown key through to the database", () => {
     const profile = ok({ ...valid, isAdmin: true, __proto__: { hacked: true } });
     expect(Object.keys(profile).sort()).toEqual([
