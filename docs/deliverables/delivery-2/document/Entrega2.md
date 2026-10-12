@@ -40,11 +40,32 @@ El análisis se consigna en el archivo `Entrega2_Template_HistoriasUsuario.xlsx`
 contrastan las _features_ del proyecto contra el grado de conocimiento del dominio y de la
 tecnología.
 
-- Archivo diligenciado: {PENDIENTE: enlace al .xlsx}
-- Captura del cono: {PENDIENTE: images/1-cono-incertidumbre.png}
+- Archivo diligenciado: [`Entrega2_Template_HistoriasUsuario.xlsx`](Entrega2_Template_HistoriasUsuario.xlsx)
+- Captura del cono:
 
-{PENDIENTE: análisis de lo que muestra el cono. Qué features quedaron en la zona de mayor
-incertidumbre, por qué, y cómo eso afectó la priorización del Sprint 2.}
+![Cono de la incertidumbre](images/1-cono-incertidumbre.png)
+
+La hoja registra las 21 historias que seguían abiertas al planear el Sprint 2: las 8 del sprint
+(fase _Next_) y las 13 que quedan para la Entrega 3 (fase _Later_). Cada una lleva sus puntos, su
+incertidumbre de negocio (qué tan claro está lo que pide el dominio) y su complejidad técnica (qué
+tan bien conocemos la tecnología que exige). Las cinco historias no funcionales no tienen puntos
+en el backlog, así que no mueven el cono.
+
+**Zona de mayor incertidumbre.** Seis historias concentran casi todo el ancho del cono: la
+importación del perfil desde LinkedIn y desde la hoja de vida (#4 a #8) y el perfil adaptado a una
+vacante (#31). Todas tienen complejidad técnica alta: la importación depende de extraer datos de
+fuentes que no controlamos, y el perfil adaptado, de reescribir el perfil con un modelo de lenguaje
+sin que invente experiencia. #7 y #31 tienen además incertidumbre de negocio alta, porque todavía
+no está claro cómo llevar las habilidades extraídas al vocabulario de las vacantes, ni hasta dónde
+puede cambiar un perfil adaptado sin dejar de ser fiel. Entre el mejor y el peor caso hay 19 puntos
+(49,5 contra 68,5), y 16,6 de ellos vienen de esas seis historias.
+
+**Efecto en el Sprint 2.** Por eso el Sprint 2 tomó solo historias de incertidumbre baja o media
+sobre funcionalidades que ya existían: sus 22 puntos tienen un margen de 2,1 puntos entre el mejor
+y el peor caso. Con la velocidad del Sprint 1, 50 puntos, el cono da un sprint en el mejor caso y
+dos en el más probable y en el peor, así que lo abierto cabe en el Sprint 3 siempre que la
+importación no se desborde. Antes de estimar de nuevo esas seis historias, el equipo hará una
+prueba de concepto de la extracción y validará con Magneto el alcance de #7 y #31.
 
 ---
 
