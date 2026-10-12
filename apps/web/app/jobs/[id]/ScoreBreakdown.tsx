@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import type { ScoreResult } from "@moonlight/types";
-import { WEIGHTS } from "@moonlight/core";
+import { LOCATION_DEDUCTION, WEIGHTS, scoreFromWeights } from "@moonlight/core";
 
 import { Icon } from "../../../components/Icon";
 import { EmptyState } from "../../../components/primitives";
@@ -106,6 +106,21 @@ export function ScoreBreakdown({
               </div>
             ))}
 
+            {result.location && (
+              <div
+                style={{ ...ROW, borderTop: "1px solid var(--line)", background: "var(--tint)" }}
+              >
+                <span style={{ fontSize: 14 }}>
+                  Outside your city ({result.location.city}), you won&apos;t relocate
+                </span>
+                <span />
+                <span />
+                <span className="num meta" style={{ ...RIGHT, color: "var(--dim)" }}>
+                  −{result.location.points}
+                </span>
+              </div>
+            )}
+
             <div style={TOTAL_ROW}>
               <span style={{ color: "var(--muted)" }}>Weight earned</span>
               <span />
@@ -122,7 +137,10 @@ export function ScoreBreakdown({
             Every requirement you meet adds its weight to yours. You earn{" "}
             <strong style={{ color: "var(--ink-secondary)" }}>{earned}</strong> of the{" "}
             <strong style={{ color: "var(--ink-secondary)" }}>{total}</strong> weight this vacancy
-            puts on the table, and {earned} divided by {total} is {result.score}%.
+            puts on the table, and {earned} divided by {total} is {scoreFromWeights(earned, total)}
+            %.
+            {result.location &&
+              ` The vacancy is in ${result.location.city} and you won't relocate, so it loses ${result.location.points} points: ${result.score}%.`}
           </p>
 
           <div className="card stack" style={{ gap: 5 }}>
@@ -130,9 +148,10 @@ export function ScoreBreakdown({
             <p className="lead">
               Every requirement carries a weight: a must-have is worth {WEIGHTS["must-have"]}, a
               nice-to-have is worth {WEIGHTS["nice-to-have"]}. Your score is the weight you earn
-              divided by the weight on offer. No hidden factors and no ranking by company. Skill
-              names are matched loosely, so <code>Node.js</code>, <code>node js</code> and{" "}
-              <code>NodeJS</code> all count as one skill.
+              divided by the weight on offer. If you won&apos;t relocate, a vacancy that is not
+              remote and sits outside your city loses {LOCATION_DEDUCTION} points. No other factors
+              and no ranking by company. Skill names are matched loosely, so <code>Node.js</code>,{" "}
+              <code>node js</code> and <code>NodeJS</code> all count as one skill.
             </p>
           </div>
         </>

@@ -1,5 +1,5 @@
 import type { MarketGap, ScoreResult } from "@moonlight/types";
-import { WEIGHTS, normalizeSkill, topGaps } from "@moonlight/core";
+import { WEIGHTS, normalizeSkill, scoreFromWeights, topGaps } from "@moonlight/core";
 
 import { Chip, EmptyState, ProgressBar } from "../../../components/primitives";
 
@@ -64,7 +64,7 @@ export function CloseTheGap({
 
       {missing.slice(0, DETAILED).map((requirement) => {
         const weight = WEIGHTS[requirement.kind];
-        const potential = total === 0 ? 0 : Math.round(((earned + weight) / total) * 100);
+        const potential = scoreFromWeights(earned + weight, total, result.location);
         const gap = gapBySkill.get(normalizeSkill(requirement.skill));
         const others = gap ? gap.demandCount - 1 : 0;
 
