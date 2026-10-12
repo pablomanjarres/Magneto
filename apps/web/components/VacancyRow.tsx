@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ScoreResult, Vacancy } from "@moonlight/types";
+import { topGaps } from "@moonlight/core";
 
 import { salaryRange, vacancyMeta } from "../lib/format";
 import { Chip, Score } from "./primitives";
@@ -17,6 +18,10 @@ export function VacancyRow({
   result: ScoreResult;
   applied?: boolean;
 }) {
+  // A summary, not the detail: the top three gaps here, the rest on /jobs/[id].
+  const gaps = topGaps(result);
+  const more = result.missing.length - gaps.length;
+
   return (
     <Link href={`/jobs/${vacancy.id}`} className="card row" style={{ gap: 18, color: "inherit" }}>
       <Score score={result.score} />
@@ -30,13 +35,15 @@ export function VacancyRow({
         <span className="meta" style={{ color: "var(--muted)" }}>
           {vacancyMeta(vacancy)} · {salaryRange(vacancy)}
         </span>
-        {result.missing.length > 0 && (
+        <p className="lead">{result.reason}</p>
+        {gaps.length > 0 && (
           <div className="chips" style={{ paddingTop: 2 }}>
-            {result.missing.map((m) => (
+            {gaps.map((m) => (
               <Chip key={m.skill} tone="missing">
                 {m.skill}
               </Chip>
             ))}
+            {more > 0 && <span className="meta">+{more} more</span>}
           </div>
         )}
       </div>
