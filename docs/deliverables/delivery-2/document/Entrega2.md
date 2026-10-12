@@ -338,7 +338,28 @@ una vacante (#31) y tres historias no funcionales (#33, #34 y #36). Ahí está l
 incertidumbre del cono de la sección 1, y el equipo seguirá trabajando en esas historias en el
 Sprint 3 para cumplir el objetivo del reto.
 
-**Capturas de las funcionalidades:** {PENDIENTE: images/6-*.png}
+**Capturas de las funcionalidades**
+
+![Registro](images/6-registro.png)
+_`/register`: registro con nombre y correo._
+
+![Asistente del perfil](images/6-onboarding.png)
+_`/onboarding`: asistente que completa el perfil paso a paso._
+
+![Panel](images/6-dashboard.png)
+_`/dashboard`: completitud del perfil, mejores coincidencias y brechas contra el mercado._
+
+![Vacantes](images/6-vacantes.png)
+_`/jobs`: vacantes ordenadas por puntaje, de a diez._
+
+![Detalle de una vacante](images/6-detalle-vacante.png)
+_`/jobs/[id]`: puntaje, requisitos cubiertos y faltantes, y la deducción por ubicación._
+
+![Perfil](images/6-perfil.png)
+_`/profile`: perfil del candidato._
+
+![Postulaciones](images/6-postulaciones.png)
+_`/applications`: tablero de postulaciones con sus acciones._
 
 ---
 
