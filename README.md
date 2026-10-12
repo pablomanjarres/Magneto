@@ -17,17 +17,17 @@
 
 Our answer to the Profile Manager challenge from **Magneto**, for Ingeniería de Software (SI2005) at Universidad EAFIT, 2026-2.
 
-Candidates leave their profile half-filled and wait to be contacted, which wrecks match quality for everyone. Moon Light takes a résumé and a set of expectations, says exactly what is missing to reach 100%, and ranks jobs by a weighted score with its reasons attached. The MVP runs locally against our own dataset, since the challenge gives no access to real Magneto postings.
+Candidates leave their profile half-filled and wait to be contacted, which wrecks match quality for everyone. Moon Light takes the candidate's profile and expectations, says exactly what is missing to reach 100%, and ranks jobs by a weighted score with its reasons attached. The MVP runs locally against our own dataset, since the challenge gives no access to real Magneto postings.
 
 In this delivery the candidate registers and fills their own profile. The LinkedIn and résumé
 import is release 2, and the wizard it will pre-fill is already the screen the candidate confirms
 by hand today.
 
-The delivery document is [`docs/deliverables/delivery-1/document/Entrega1.md`](docs/deliverables/delivery-1/document/Entrega1.md).
+The delivery document is [`docs/deliverables/delivery-2/document/Entrega2.md`](docs/deliverables/delivery-2/document/Entrega2.md).
 
-Status: the MVP runs. A seeded candidate, 20 vacancies, five screens and a scored, explained
-ranking. Delivery 1 is due **19 August 2026**, checklist in
-[`docs/deliverables/delivery-1/`](docs/deliverables/delivery-1/README.md).
+Status: a seeded candidate, 20 vacancies, seven screens and a scored, explained ranking. Delivery 2
+is due **14 October 2026**, checklist in
+[`docs/deliverables/delivery-2/`](docs/deliverables/delivery-2/README.md).
 
 ## Layout
 

@@ -95,31 +95,22 @@ Continue_ o _Mad, Sad, Glad_}
 ### Historias seleccionadas
 
 El backlog vive en [GitHub Issues](https://github.com/pablomanjarres/Magneto/issues) y el tablero
-en [GitHub Projects](https://github.com/users/pablomanjarres/projects/3). Las historias que siguen
-abiertas al cierre del Sprint 1 son las candidatas para este sprint:
+en [GitHub Projects](https://github.com/users/pablomanjarres/projects/3). Las historias del Sprint 2 se eligieron para superar el 60 % del reto con el menor código
+posible. Las demás (autenticación, validación, _rate limiting_, _logging_, la importación desde
+LinkedIn y la hoja de vida, y el perfil adaptado) pasan a la Entrega 3.
 
-| HU      | Historia                                                                          | Impacto en la arquitectura                         |
-| ------- | --------------------------------------------------------------------------------- | -------------------------------------------------- |
-| #3      | Sign up and log in                                                                | Introduce autenticación y sesión; hoy no existe    |
-| #4      | Submit my LinkedIn profile URL                                                    | Primera entrada de datos externa al wizard         |
-| #5      | Extract my work experience                                                        | Requiere el módulo de importación                  |
-| #6      | Extract my education                                                              | Requiere el módulo de importación                  |
-| #7      | Extract my skills                                                                 | Requiere el módulo de importación                  |
-| #8      | Upload my résumé                                                                  | Manejo de archivos y almacenamiento                |
-| #9      | Review the imported information                                                   | Pantalla de confirmación previa al guardado        |
-| #10     | Edit the imported information                                                     | Reutiliza el wizard existente                      |
-| #12     | Set my target role                                                                | Campo de expectativas, ya contemplado en el modelo |
-| #13     | Set my salary expectation                                                         | Campo de expectativas, ya contemplado en el modelo |
-| #15     | State whether I can relocate                                                      | Campo de expectativas, ya contemplado en el modelo |
-| #16     | See how complete my profile is                                                    | Se apoya en el cálculo de completitud del dominio  |
-| #18     | Browse the available vacancies                                                    | Se apoya en el catálogo de vacantes                |
-| #22     | Compare a vacancy against my profile                                              | Extiende el detalle de vacante                     |
-| #28     | See a summary of the analysis                                                     | Vista agregada sobre el motor de puntaje           |
-| #31     | Get my profile tailored to a vacancy                                              | Nueva capacidad sobre el dominio existente         |
-| #32–#36 | Historias no funcionales (auth, validación, _rate limiting_, secretos, _logging_) | Transversales                                      |
+| HU  | Historia                                    | Puntos | Impacto en la arquitectura                                                 |
+| --- | ------------------------------------------- | ------ | -------------------------------------------------------------------------- |
+| #12 | Set my target role                          | 3      | Áreas y _seniorities_ como listas del dominio, guardadas en `expectations` |
+| #15 | State whether I can relocate                | 2      | Nueva regla de puntaje: −20 fuera de la ciudad si el candidato no se muda  |
+| #16 | See how complete my profile is              | 5      | La reubicación pasa a ser opcional en el modelo                            |
+| #18 | Browse the available vacancies              | 3      | Regla de paginación en el dominio; la lista carga más sin recargar         |
+| #22 | Compare a vacancy against my profile        | 3      | Regla del dominio que bloquea la comparación sin habilidades               |
+| #28 | See a summary of the analysis               | 3      | El orden de las brechas vive en un solo lugar del dominio                  |
+| #35 | Secrets kept out of the repository          | —      | La aplicación no arranca sin `DATABASE_URL`                                |
+| #43 | Write down the next step for an application | 3      | `PATCH` de la postulación acepta la nota; formulario en el tablero         |
 
-**Selección definitiva del Sprint 2:** {PENDIENTE: confirmar cuáles de las anteriores entran, con
-su estimación en _story points_}
+Los puntos son la estimación del backlog; los de #35 salen del _planning poker_.
 
 ### Ceremonias
 
@@ -134,13 +125,13 @@ su estimación en _story points_}
 
 ### 5.1. Estilos arquitectónicos usados
 
-|                            |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Tipo Aplicación:**       | Web                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| **Estilo Arquitectónico:** | **Layered (Estructura).** El código está separado en capas con una regla de dependencia en un solo sentido: `types` ← `core` ← `db` ← `apps`. `packages/core` no importa nada distinto de `packages/types`, de modo que las reglas de negocio no pueden alcanzar la infraestructura. Implicación: el motor de puntaje se prueba sin base de datos y sin servidor.<br><br>**Component-Based (Estructura).** Cada capa es un paquete publicable del monorepo con su propio `package.json`, sus pruebas y su frontera explícita. Implicación: un cambio en el acceso a datos no obliga a recompilar el dominio.<br><br>**Client/Server, 3-Tiers (Implementación).** Navegador → servidor Next.js → PostgreSQL. Tres niveles con responsabilidades separadas: presentación, lógica de aplicación y persistencia. Implicación: la base de datos nunca se expone al cliente.<br><br>_Se descartaron SOA y Message Bus:_ la solución es un único servicio para dos personas, e introducir mensajería añadiría operación sin resolver ningún requisito del reto. |
-| **Lenguaje programación**  | TypeScript, sobre Node.js 22                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| **Aspectos técnicos**      | PostgreSQL 17 como base de datos relacional. Los sub-objetos del perfil (habilidades, experiencia, educación, expectativas) se guardan en columnas `JSONB` porque se leen y escriben completos y nunca se consultan campo por campo. Migraciones _forward-only_: una migración ejecutada no se edita, se agrega la siguiente. Base de datos levantada con Docker Compose.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| **Frameworks**             | Next.js 15 con App Router y React 19 para la interfaz y los _route handlers_; Turborepo y pnpm _workspaces_ para el monorepo; Vitest para las pruebas del dominio; Express en `apps/api` únicamente como evidencia de la PoC de comparación.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+|                            |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Tipo Aplicación:**       | Web                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **Estilo Arquitectónico:** | **Layered (Estructura).** El código está separado en capas con una regla de dependencia en un solo sentido: `core` y `db` dependen sólo de `types`, y `apps` depende de los tres. `packages/core` no importa nada distinto de `packages/types`, de modo que las reglas de negocio no pueden alcanzar la infraestructura. Implicación: el motor de puntaje se prueba sin base de datos y sin servidor.<br><br>**Component-Based (Estructura).** Cada capa es un paquete del monorepo con su propio `package.json`, sus pruebas y su frontera explícita. Implicación: un cambio en el acceso a datos no toca el dominio.<br><br>**Client/Server, 3-Tiers (Implementación).** Navegador → servidor Next.js → PostgreSQL. Tres niveles con responsabilidades separadas: presentación, lógica de aplicación y persistencia. Implicación: la base de datos nunca se expone al cliente.<br><br>_Se descartaron SOA y Message Bus:_ la solución es un único servicio para dos personas, e introducir mensajería añadiría operación sin resolver ningún requisito del reto. |
+| **Lenguaje programación**  | TypeScript, sobre Node.js 22                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| **Aspectos técnicos**      | PostgreSQL 17 como base de datos relacional. Los sub-objetos del perfil (habilidades, experiencia, educación, expectativas) se guardan en columnas `JSONB` porque se leen y escriben completos y nunca se consultan campo por campo. Migraciones _forward-only_: una migración ejecutada no se edita, se agrega la siguiente. Base de datos levantada con Docker Compose. La aplicación no arranca si falta `DATABASE_URL` y lo dice al iniciar.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| **Frameworks**             | Next.js 15 con App Router y React 19 para la interfaz y los _route handlers_; Turborepo y pnpm _workspaces_ para el monorepo; Vitest para las pruebas del dominio; Express en `apps/api` únicamente como evidencia de la PoC de comparación.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 
 ### 5.2. Vista Lógica — Diagrama de Clases de Diseño
 
@@ -157,21 +148,25 @@ La solución se organiza en tres paquetes de dominio e infraestructura y dos apl
 **Reglas de negocio que viven en `packages/core`:**
 
 - **Puntaje de una vacante.** Cada requisito pesa 3 si es `must-have` y 1 si es `nice-to-have`.
-  El puntaje es el porcentaje del peso total que el candidato cubre, redondeado. La función es
+  El puntaje es el porcentaje del peso total que el candidato cubre, redondeado. Si el candidato
+  dijo que no se muda, una vacante no remota en otra ciudad pierde 20 puntos, y la pantalla lo
+  muestra como una línea aparte. La función es
   pura: sin entrada/salida, sin reloj y sin aleatoriedad, por lo que las mismas entradas siempre
   producen el mismo resultado y la pantalla puede explicar el número.
 - **Ordenamiento.** Las vacantes se ordenan por puntaje; los empates se rompen por cantidad de
   `must-have` cubiertos y luego por identificador, de modo que el orden nunca oscila. Las vacantes
   sin requisitos no aportan señal y quedan fuera del ranking.
 - **Completitud del perfil.** Nueve campos cuentan hacia el 100 %, y el resultado incluye la lista
-  exacta de los que faltan, no sólo el porcentaje.
+  exacta de los que faltan, no sólo el porcentaje. Una pregunta sin responder cuenta como faltante.
+- **Paginación y resumen.** La lista de vacantes se muestra de a diez, y cada fila resume la razón
+  del puntaje y las tres brechas principales, ordenadas por una sola regla del dominio.
 - **Brechas de mercado.** Es el diferenciador del producto: las habilidades faltantes se miden
   contra todo el conjunto de vacantes, no contra una sola oferta, e informan cuántas vacantes
-  desbloquea cada una.
+  la piden.
 - **Máquina de estados de la postulación.** Cuatro estados y una tabla explícita de transiciones
   permitidas: `applied` → `in-review` o `rejected`; `in-review` → `interview` o `rejected`;
   `interview` → `rejected`; `rejected` → `applied`.
-- **Frontera del perfil.** Todo lo que llega por HTTP se reconstruye campo por campo antes de
+- **Frontera del perfil.** Todo perfil que llega por HTTP se reconstruye campo por campo antes de
   tocar la base de datos, de modo que una clave desconocida o un tipo incorrecto no alcanzan
   ninguna pantalla.
 
@@ -191,7 +186,7 @@ El modelo relacional lo definen las migraciones de `packages/db/migrations/`:
 Dos decisiones vale la pena sustentar:
 
 1. **Los requisitos son una tabla aparte y no un arreglo.** El motor de puntaje recorre requisito
-   por requisito y el catálogo se consulta por habilidad, así que la normalización paga.
+   por requisito y compara habilidad por habilidad en el dominio, así que la normalización paga.
 2. **Los sub-objetos del perfil son `JSONB`.** Se leen y se escriben completos, nunca se filtran
    por campo, y separarlos habría significado cuatro tablas más sin ninguna consulta que las
    justifique.
@@ -200,19 +195,19 @@ Dos decisiones vale la pena sustentar:
 
 ### 5.4. Vista Física — Diagrama de Componentes y Despliegue
 
-En ejecución la solución son dos procesos:
+En desarrollo corren tres procesos, más la migración y la semilla, que se ejecutan una vez:
 
 | Nodo / Proceso                  | Contenido                                                                                                           | Comunicación                                                          |
 | ------------------------------- | ------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| Navegador del candidato         | Interfaz React 19 renderizada por Next.js                                                                           | HTTP contra el mismo origen                                           |
+| Navegador del candidato         | Interfaz React 19 renderizada por Next.js                                                                           | HTTP contra el mismo origen; fuentes desde Google Fonts               |
 | Servidor de aplicación          | Proceso Next.js 15 sobre Node.js 22: páginas y _route handlers_ bajo `/api`                                         | TCP/SQL contra PostgreSQL                                             |
+| Servicio Express (`apps/api`)   | Evidencia de la PoC de comparación, puerto `4000`                                                                   | TCP/SQL contra PostgreSQL                                             |
 | Contenedor `moonlight-postgres` | PostgreSQL 17 (imagen `postgres:17-alpine`), volumen persistente `moonlight-pgdata`, `healthcheck` con `pg_isready` | Publica el puerto `5433` del anfitrión hacia el `5432` del contenedor |
 
 El puerto `5433` es deliberado: una instalación nativa de PostgreSQL suele ocupar ya el `5432`, y
 `localhost` resolvería hacia ella antes que hacia el contenedor.
 
-En esta entrega el despliegue es local. {PENDIENTE: si se despliega en la nube antes de la
-sustentación, describir el proveedor y actualizar el diagrama}
+En esta entrega el despliegue es local, como lo permite el reto.
 
 **Diagrama de componentes:** {PENDIENTE: images/5-4-diagrama-componentes.png}
 
@@ -229,7 +224,7 @@ sustentación, describir el proveedor y actualizar el diagrama}
 ```
 moonlight/
 ├── apps/
-│   ├── agents/     # reservado para el importador de hoja de vida (Sprint 2)
+│   ├── agents/     # reservado para el importador de hoja de vida (Entrega 3)
 │   ├── api/        # servicio Express: evidencia de la PoC de comparación
 │   └── web/        # Next.js: interfaz y API de la aplicación
 ├── packages/
@@ -251,7 +246,7 @@ moonlight/
 
 La regla de capas de la sección 5.1 no es una intención, es verificable en el repositorio:
 `packages/core` declara como única dependencia a `packages/types`, de modo que el dominio no puede
-importar el acceso a datos aunque alguien lo intente. Las 45 pruebas del proyecto viven todas en
+importar el acceso a datos aunque alguien lo intente. Las 78 pruebas del proyecto viven todas en
 `packages/core` y corren sin base de datos.
 
 La decisión de usar _route handlers_ de Next en lugar de un servicio Express independiente está
@@ -291,20 +286,17 @@ Once _route handlers_ que atienden nueve rutas:
 
 ### Demostración pedida por la guía
 
-- **Una lista con registros de la base de datos y una acción por registro:** `/jobs` muestra las
-  20 vacantes sembradas, leídas de la tabla `vacancies` y ordenadas por el puntaje que calcula el
-  dominio. Cada fila abre el detalle de su vacante, y desde allí el botón _Apply_ crea la
-  postulación. El tablero de `/applications` es el caso más completo: cada tarjeta lleva sus
-  propias acciones de mover y retirar.
-- **Un formulario que manipule datos:** el asistente de `/onboarding` cubre las tres operaciones
-  que pide la guía. **Inserción y actualización:** guarda el perfil contra `POST /api/profiles`,
-  que valida campo por campo antes de escribir y resuelve como _upsert_. **Borrado:** desde
-  `/applications` se retira una postulación con `DELETE`. El mismo tablero además cambia el estado
-  de una postulación respetando las transiciones permitidas por el dominio.
+- **Una lista con registros de la base de datos y una acción por registro:** el tablero de
+  `/applications` muestra las postulaciones leídas de la tabla `applications`, y cada tarjeta lleva
+  sus acciones: mover de columna (respetando las transiciones del dominio) y retirar.
+- **Un formulario lanzado desde la lista que manipula datos:** cada tarjeta abre "Edit next step",
+  que pide el siguiente paso y lo guarda con `PATCH /api/applications/[id]` (**actualización**).
+  "Withdraw" la borra con `DELETE` (**borrado**), y "Mark as applied", en el detalle de una vacante,
+  crea la postulación con `POST /api/applications` (**inserción**).
 
 ### Estado de la implementación
 
-Las pruebas del dominio pasan: 45 pruebas en tres archivos, más `typecheck` limpio en los cinco
+Las pruebas del dominio pasan: 78 pruebas en cuatro archivos, más `typecheck` limpio en los cinco
 paquetes.
 
 {PENDIENTE: justificar el porcentaje del reto implementado}
