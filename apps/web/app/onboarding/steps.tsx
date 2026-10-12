@@ -2,7 +2,13 @@
 
 import type { ReactNode } from "react";
 import type { Expectations, Profile, Vacancy, WorkMode } from "@moonlight/types";
-import { DEFAULT_CURRENCY, marketGaps, normalizeSkill } from "@moonlight/core";
+import {
+  DEFAULT_CURRENCY,
+  SENIORITIES,
+  TARGET_AREAS,
+  marketGaps,
+  normalizeSkill,
+} from "@moonlight/core";
 
 import { Icon } from "../../components/Icon";
 import { Field } from "../../components/primitives";
@@ -121,14 +127,32 @@ export function ExpectationsStep({
 }) {
   return (
     <div className="stack" style={{ gap: 20 }}>
-      <Field label="Target role">
-        <input
-          className="input"
-          value={expectations.targetRole ?? ""}
-          onChange={(e) => onPatch({ targetRole: e.target.value })}
-          placeholder="Full Stack Developer"
+      <div className="two-fields">
+        <div style={{ gridColumn: "span 2" }}>
+          <Field label="Target role">
+            <input
+              className="input"
+              value={expectations.targetRole ?? ""}
+              onChange={(e) => onPatch({ targetRole: e.target.value })}
+              placeholder="Full Stack Developer"
+            />
+          </Field>
+        </div>
+        <SelectField
+          label="Area"
+          value={expectations.targetArea ?? ""}
+          options={TARGET_AREAS}
+          placeholder="Choose an area"
+          onChange={(value) => onPatch({ targetArea: value || undefined })}
         />
-      </Field>
+        <SelectField
+          label="Seniority"
+          value={expectations.targetSeniority ?? ""}
+          options={SENIORITIES}
+          placeholder="Choose a level"
+          onChange={(value) => onPatch({ targetSeniority: value || undefined })}
+        />
+      </div>
 
       <div className="stack" style={{ gap: 9 }}>
         <div className="split">
@@ -166,19 +190,12 @@ export function ExpectationsStep({
               placeholder="11000000"
             />
           </Field>
-          <Field label="Currency">
-            <select
-              className="select"
-              value={expectations.currency ?? DEFAULT_CURRENCY}
-              onChange={(e) => onPatch({ currency: e.target.value })}
-            >
-              {CURRENCIES.map((code) => (
-                <option key={code} value={code}>
-                  {code}
-                </option>
-              ))}
-            </select>
-          </Field>
+          <SelectField
+            label="Currency"
+            value={expectations.currency ?? DEFAULT_CURRENCY}
+            options={CURRENCIES}
+            onChange={(currency) => onPatch({ currency })}
+          />
         </div>
       </div>
 
@@ -232,6 +249,34 @@ export function ExpectationsStep({
         />
       )}
     </div>
+  );
+}
+
+/** One answer from a fixed list. A placeholder adds an empty choice that means "not chosen". */
+function SelectField({
+  label,
+  value,
+  options,
+  placeholder,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  options: readonly string[];
+  placeholder?: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <Field label={label}>
+      <select className="select" value={value} onChange={(e) => onChange(e.target.value)}>
+        {placeholder !== undefined && <option value="">{placeholder}</option>}
+        {options.map((option) => (
+          <option key={option} value={option}>
+            {option}
+          </option>
+        ))}
+      </select>
+    </Field>
   );
 }
 

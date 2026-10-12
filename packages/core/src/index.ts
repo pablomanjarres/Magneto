@@ -273,4 +273,4 @@ export function pageOf<T>(
   return { items: items.slice(0, end), hasMore: items.length > end };
 }
 
-export { DEFAULT_CURRENCY, parseProfile } from "./parse-profile.js";
+export { DEFAULT_CURRENCY, SENIORITIES, TARGET_AREAS, parseProfile } from "./parse-profile.js";

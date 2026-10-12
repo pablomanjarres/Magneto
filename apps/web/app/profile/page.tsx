@@ -119,6 +119,8 @@ export default async function ProfilePage() {
           <ProfileSection title="Expectations" hint="What you are looking for, and where.">
             <div className="stack" style={{ gap: 12 }}>
               <Detail label="Target role">{expectations.targetRole ?? "Not stated"}</Detail>
+              <Detail label="Area">{expectations.targetArea ?? "Not stated"}</Detail>
+              <Detail label="Seniority">{expectations.targetSeniority ?? "Not stated"}</Detail>
 
               <Detail label="Salary, monthly">
                 <span className="num">{hasSalary ? salaryRange(expectations) : "Not stated"}</span>

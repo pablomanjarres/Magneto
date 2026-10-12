@@ -11,6 +11,19 @@ import type { Education, Experience, Profile, WorkMode } from "@moonlight/types"
 
 const WORK_MODES: readonly WorkMode[] = ["remote", "hybrid", "onsite"];
 
+/** Fixed lists, so recommendations can match on them; free text could not be. */
+export const TARGET_AREAS: readonly string[] = [
+  "Software development",
+  "Data",
+  "Design",
+  "Product",
+  "Quality assurance",
+  "Infrastructure and DevOps",
+  "Other",
+];
+
+export const SENIORITIES: readonly string[] = ["Intern", "Junior", "Mid-level", "Senior", "Lead"];
+
 const MIN_YEAR = 1900;
 const MAX_YEAR = 2100;
 
@@ -27,6 +40,11 @@ const isRecord = (v: unknown): v is Record<string, unknown> =>
 const str = (v: unknown): string => (typeof v === "string" ? v.trim() : "");
 const optionalStr = (v: unknown): string | undefined => str(v) || undefined;
 const list = (v: unknown): unknown[] => (Array.isArray(v) ? v : []);
+
+const oneOf = (v: unknown, allowed: readonly string[]): string | undefined => {
+  const s = str(v);
+  return allowed.includes(s) ? s : undefined;
+};
 
 const optionalNumber = (v: unknown): number | undefined =>
   typeof v === "number" && Number.isFinite(v) ? v : undefined;
@@ -149,6 +167,8 @@ export function parseProfile(input: unknown): { profile: Profile } | { errors: s
       education,
       expectations: {
         targetRole: optionalStr(raw["targetRole"]),
+        targetArea: oneOf(raw["targetArea"], TARGET_AREAS),
+        targetSeniority: oneOf(raw["targetSeniority"], SENIORITIES),
         salaryMin,
         salaryMax,
         currency,
