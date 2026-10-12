@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getVacancy, listApplications } from "@moonlight/db";
-import { STATUS_LABELS, scoreVacancy } from "@moonlight/core";
+import { STATUS_LABELS, comparisonBlockers, scoreVacancy } from "@moonlight/core";
 
 import { AppShell } from "../../../components/AppShell";
 import { Icon } from "../../../components/Icon";
-import { Chip, Score } from "../../../components/primitives";
+import { Chip, EmptyState, Score } from "../../../components/primitives";
 import { salaryRange, shortDate, workModeLabel } from "../../../lib/format";
 import { loadRanked, requireProfile } from "../../../lib/queries";
 import { ApplyButton } from "./ApplyButton";
@@ -32,6 +32,7 @@ export default async function VacancyPage({ params }: { params: Promise<{ id: st
   const total = result.breakdown.reduce((sum, line) => sum + line.weight, 0);
   const earned = result.breakdown.reduce((sum, line) => sum + (line.met ? line.weight : 0), 0);
   const priced = vacancy.salaryMin !== undefined || vacancy.salaryMax !== undefined;
+  const blockers = comparisonBlockers(profile);
 
   return (
     <AppShell
@@ -71,63 +72,71 @@ export default async function VacancyPage({ params }: { params: Promise<{ id: st
           </div>
         </div>
 
-        <div
-          className="stack"
-          style={{
-            alignItems: "center",
-            gap: 8,
-            maxWidth: 190,
-            paddingLeft: 28,
-            borderLeft: "1px solid var(--line)",
-          }}
-        >
-          <Score score={result.score} large />
-          <span className="meta" style={{ textAlign: "center", textWrap: "pretty" }}>
-            {rank > 0
-              ? `Match number ${rank} out of the ${ranked.length} scored vacancies.`
-              : "Left out of the ranking: this vacancy lists no requirements."}
-          </span>
-        </div>
+        {blockers.length === 0 && (
+          <div
+            className="stack"
+            style={{
+              alignItems: "center",
+              gap: 8,
+              maxWidth: 190,
+              paddingLeft: 28,
+              borderLeft: "1px solid var(--line)",
+            }}
+          >
+            <Score score={result.score} large />
+            <span className="meta" style={{ textAlign: "center", textWrap: "pretty" }}>
+              {rank > 0
+                ? `Match number ${rank} out of the ${ranked.length} scored vacancies.`
+                : "Left out of the ranking: this vacancy lists no requirements."}
+            </span>
+          </div>
+        )}
       </section>
 
-      <div className="two-col">
-        <ScoreBreakdown result={result} earned={earned} total={total} />
+      {blockers.length > 0 ? (
+        <EmptyState title="Complete your profile before comparing">
+          Still missing: {blockers.join(", ")}. <Link href="/onboarding">Finish my profile</Link>
+        </EmptyState>
+      ) : (
+        <div className="two-col">
+          <ScoreBreakdown result={result} earned={earned} total={total} />
 
-        <section className="stack" style={{ gap: 14 }}>
-          <span
-            className="meta"
-            style={{ letterSpacing: "1.3px", textTransform: "uppercase", color: "var(--faint)" }}
-          >
-            Close the gap
-          </span>
+          <section className="stack" style={{ gap: 14 }}>
+            <span
+              className="meta"
+              style={{ letterSpacing: "1.3px", textTransform: "uppercase", color: "var(--faint)" }}
+            >
+              Close the gap
+            </span>
 
-          <CloseTheGap
-            result={result}
-            earned={earned}
-            total={total}
-            gaps={gaps}
-            vacancyCount={vacancies.length}
-          />
+            <CloseTheGap
+              result={result}
+              earned={earned}
+              total={total}
+              gaps={gaps}
+              vacancyCount={vacancies.length}
+            />
 
-          <div className="card stack" style={{ gap: 12 }}>
-            {application ? (
-              <>
-                <div className="split">
-                  <span style={{ fontSize: 15 }}>You already applied</span>
-                  <Chip tone="met">{STATUS_LABELS[application.status]}</Chip>
-                </div>
-                <span className="meta">Recorded on {shortDate(application.appliedAt)}.</span>
-                <Link href="/applications" className="btn">
-                  Track it on the board
-                  <Icon name="arrowRight" size={16} strokeWidth={2.4} />
-                </Link>
-              </>
-            ) : (
-              <ApplyButton profileId={profile.id} vacancyId={vacancy.id} />
-            )}
-          </div>
-        </section>
-      </div>
+            <div className="card stack" style={{ gap: 12 }}>
+              {application ? (
+                <>
+                  <div className="split">
+                    <span style={{ fontSize: 15 }}>You already applied</span>
+                    <Chip tone="met">{STATUS_LABELS[application.status]}</Chip>
+                  </div>
+                  <span className="meta">Recorded on {shortDate(application.appliedAt)}.</span>
+                  <Link href="/applications" className="btn">
+                    Track it on the board
+                    <Icon name="arrowRight" size={16} strokeWidth={2.4} />
+                  </Link>
+                </>
+              ) : (
+                <ApplyButton profileId={profile.id} vacancyId={vacancy.id} />
+              )}
+            </div>
+          </section>
+        </div>
+      )}
     </AppShell>
   );
 }
