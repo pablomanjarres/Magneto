@@ -31,6 +31,12 @@ export const moveApplication = (
 ): Promise<{ application: Application }> =>
   send(`/api/applications/${id}`, { method: "PATCH", body: JSON.stringify({ status }) });
 
+export const updateNextStep = (
+  id: string,
+  note: string | null,
+): Promise<{ application: Application }> =>
+  send(`/api/applications/${id}`, { method: "PATCH", body: JSON.stringify({ note }) });
+
 export const withdrawApplication = (id: string): Promise<null> =>
   send(`/api/applications/${id}`, { method: "DELETE" });
 

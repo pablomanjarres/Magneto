@@ -1,20 +1,36 @@
-import { deleteApplication, getApplication, updateApplicationStatus } from "@moonlight/db";
-import { ALLOWED_MOVES, canMove, isApplicationStatus } from "@moonlight/core";
+import {
+  deleteApplication,
+  getApplication,
+  updateApplicationNote,
+  updateApplicationStatus,
+} from "@moonlight/db";
+import { ALLOWED_MOVES, canMove, isApplicationStatus, parseNote } from "@moonlight/core";
 
 export const dynamic = "force-dynamic";
 
-/** PATCH /api/applications/:id — move one application to another column. */
+/**
+ * PATCH /api/applications/:id — move one application to another column with
+ * `{ status }`, or write its next step with `{ note }`.
+ */
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ): Promise<Response> {
   const { id } = await params;
 
-  let body: { status?: unknown };
+  let body: { status?: unknown; note?: unknown };
   try {
     body = (await request.json()) as typeof body;
   } catch {
     return Response.json({ error: "body is not valid JSON" }, { status: 400 });
+  }
+
+  if (body !== null && typeof body === "object" && "note" in body) {
+    const parsed = parseNote(body.note);
+    if ("error" in parsed) return Response.json({ error: parsed.error }, { status: 400 });
+    const application = await updateApplicationNote(id, parsed.note);
+    if (!application) return Response.json({ error: "application not found" }, { status: 404 });
+    return Response.json({ application });
   }
 
   if (!isApplicationStatus(body?.status)) {
