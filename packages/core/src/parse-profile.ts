@@ -125,7 +125,8 @@ export function parseProfile(input: unknown): { profile: Profile } | { errors: s
 
   if (errors.length > 0) return { errors };
 
-  const willRelocate = raw["willRelocate"] === true;
+  // Anything but a yes or a no leaves the question unanswered.
+  const willRelocate = typeof raw["willRelocate"] === "boolean" ? raw["willRelocate"] : undefined;
 
   // An amount with no unit is not a salary. The wizard offers the peso as the
   // currency already selected, so a candidate who never opens that list still
@@ -156,7 +157,7 @@ export function parseProfile(input: unknown): { profile: Profile } | { errors: s
         ),
         willRelocate,
         // Cities only mean something when the candidate would move.
-        cities: willRelocate ? list(raw["cities"]).map(str).filter(Boolean) : [],
+        cities: willRelocate === true ? list(raw["cities"]).map(str).filter(Boolean) : [],
       },
     },
   };

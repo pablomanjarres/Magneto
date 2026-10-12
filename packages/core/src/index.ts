@@ -102,7 +102,9 @@ export const COMPLETENESS_FIELDS: ReadonlyArray<{
   { label: "Work mode", filled: (p) => p.expectations.workModes.length > 0 },
   {
     label: "Relocation",
-    filled: (p) => !p.expectations.willRelocate || p.expectations.cities.length > 0,
+    filled: (p) =>
+      p.expectations.willRelocate === false ||
+      (p.expectations.willRelocate === true && p.expectations.cities.length > 0),
   },
 ];
 
