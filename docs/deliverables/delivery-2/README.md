@@ -9,7 +9,7 @@ thing exists in this repository, not when it has been discussed.
 - Document: [`document/Entrega2.md`](document/Entrega2.md)
 - Spreadsheet: [`document/Entrega2_Template_HistoriasUsuario.xlsx`](document/Entrega2_Template_HistoriasUsuario.xlsx)
 
-**Status: 20 of 51 done.** Verified against the repository on 2026-10-12.
+**Status: 23 of 51 done.** Verified against the repository on 2026-10-12.
 
 ## Roles
 
@@ -50,10 +50,11 @@ That is 22 of 35 stories closed, 63%. Sign-in and the other non-functional stori
 From the first paragraph of the template.
 
 - [ ] **Sustentación.** It is mandatory, and either member can be asked to present (Both)
-- [ ] **At least 60% of the challenge implemented.** Build the Sprint 2 stories above (Pablo)
+- [x] **At least 60% of the challenge implemented.** The Sprint 2 stories above are merged: 22 of
+      35 stories closed, 63% (Pablo)
 - [ ] **Justify the percentage in writing** and state that the team will keep working toward the
       objective (Pablo)
-- [ ] **Replace every `[]` placeholder.** 31 `{PENDIENTE}` markers are still in `Entrega2.md` (Both)
+- [ ] **Replace every `[]` placeholder.** 23 `{PENDIENTE}` markers are still in `Entrega2.md` (Both)
 - [x] Product name, team and version on the cover (Pablo)
 - [x] Table of contents covering the sections the template lists (Pablo)
 - [ ] Page numbers in the table of contents, and a header on every page. Only applies once the
@@ -90,7 +91,7 @@ A retrospective of sprint 1. All three items are empty.
 ## 4. Planificación del Sprint actual
 
 - [x] User stories listed with the impact each has on the architecture (Pablo)
-- [ ] Final sprint 2 selection, with the story points each one got (Both)
+- [x] Final sprint 2 selection, with the story points each one got (Both)
 - [ ] Planning ceremony evidence, using planning poker to estimate (Valentina)
 - [ ] Daily or weekly evidence for the team (Both)
 - [ ] Evidence of the meeting with the PO and the Technical Lead, the assigned monitor (Pablo)
@@ -136,7 +137,7 @@ they go in `docs/diagrams/` and their exports in `document/images/`.
 - [x] Directory tree of the project (Pablo)
 - [x] Justification of how the proposed architecture was actually implemented (Pablo)
 - [x] The screens and endpoints that already work. Verified: 7 pages, 9 route files serving 11
-      handlers, and 45 domain tests passing (Pablo)
+      handlers, and 78 domain tests passing (Pablo)
 - [ ] Screenshots of the functionality already developed (Valentina)
 - [ ] The percentage justification, same item as section 0 (Pablo)
 
@@ -144,8 +145,8 @@ they go in `docs/diagrams/` and their exports in `document/images/`.
 
 - [x] A list in the view with records coming from a database table (`/applications`, reading
       `applications`) and an action per record (move it to another column, or withdraw it) (Pablo)
-- [ ] A form launched from that list that asks the user for data and inserts, updates or deletes.
-      Today no form on the board asks for data; the next-step story above adds one (Pablo)
+- [x] A form launched from that list that asks the user for data and inserts, updates or deletes:
+      "Edit next step" on each card updates, Withdraw deletes, Mark as applied inserts (Pablo)
 - [ ] Rehearse the demo end to end, from a clean database (Both)
 - [ ] Book the slot with the PO for the review (Both)
 
