@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { Profile, Vacancy } from "@moonlight/types";
 
 import {
+  comparisonBlockers,
   marketGaps,
   parseProfile,
   profileCompleteness,
@@ -151,6 +152,16 @@ describe("profileCompleteness", () => {
       ),
     );
     expect(profileCompleteness(ok(parseProfile(seed))).percentage).toBe(100);
+  });
+});
+
+describe("comparisonBlockers", () => {
+  it("blocks the comparison while the profile has no skills", () => {
+    expect(comparisonBlockers(profile([]))).toEqual(["At least one skill"]);
+  });
+
+  it("lets a profile with one skill compare", () => {
+    expect(comparisonBlockers(profile(["TypeScript"]))).toEqual([]);
   });
 });
 
