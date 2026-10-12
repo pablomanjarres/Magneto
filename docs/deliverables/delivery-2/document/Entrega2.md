@@ -331,7 +331,12 @@ Once _route handlers_ que atienden nueve rutas:
 Las pruebas del dominio pasan: 78 pruebas en cuatro archivos, más `typecheck` limpio en los cinco
 paquetes.
 
-{PENDIENTE: justificar el porcentaje del reto implementado}
+**Porcentaje implementado.** El backlog del reto tiene 35 historias y 22 están cerradas, el 63 %.
+Medido en puntos, son 72 de 109, el 66 %. Falta la importación del perfil desde LinkedIn y desde la
+hoja de vida (#4 a #10), el inicio de sesión y la autenticación (#3 y #32), el perfil adaptado a
+una vacante (#31) y tres historias no funcionales (#33, #34 y #36). Ahí está la mayor
+incertidumbre del cono de la sección 1, y el equipo seguirá trabajando en esas historias en el
+Sprint 3 para cumplir el objetivo del reto.
 
 **Capturas de las funcionalidades:** {PENDIENTE: images/6-*.png}
 
