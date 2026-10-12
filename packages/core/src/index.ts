@@ -204,6 +204,23 @@ export function isApplicationStatus(value: unknown): value is ApplicationStatus 
   return typeof value === "string" && APPLICATION_STATUSES.includes(value as ApplicationStatus);
 }
 
+/** Long enough for a next step, short enough to stay readable on a board card. */
+export const NOTE_MAX_LENGTH = 500;
+
+/**
+ * Validate the next step written on an application. Null or blank text clears
+ * it, so the stored value is either real text or nothing.
+ */
+export function parseNote(value: unknown): { note: string | null } | { error: string } {
+  if (value === null) return { note: null };
+  if (typeof value !== "string") return { error: "note must be text or null" };
+  const note = value.trim();
+  if (note.length > NOTE_MAX_LENGTH) {
+    return { error: `note must be at most ${NOTE_MAX_LENGTH} characters` };
+  }
+  return { note: note === "" ? null : note };
+}
+
 /**
  * Join applications to the vacancies behind them and score each one, so the
  * board shows the same number the ranked list does. Pure: both the Next route
