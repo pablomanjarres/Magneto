@@ -56,7 +56,7 @@ Docker and Node 22 are the only prerequisites.
 
 ```bash
 pnpm install
-cp .env.example .env.local   # optional: the defaults already match db:up
+cp .env.example .env.local   # required: the app fails at start without DATABASE_URL
 
 pnpm db:up                   # PostgreSQL 17 on :5433
 pnpm db:migrate              # forward-only, re-runnable

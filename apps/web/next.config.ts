@@ -1,5 +1,13 @@
+import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import type { NextConfig } from "next";
+
+// Next only reads env files from apps/web; the project keeps one at the repository root.
+const rootEnv = resolve(process.cwd(), "..", "..", ".env.local");
+if (existsSync(rootEnv)) process.loadEnvFile(rootEnv);
+if (!process.env["DATABASE_URL"]) {
+  throw new Error("DATABASE_URL is not set. Copy .env.example to .env.local.");
+}
 
 // The workspace packages ship TypeScript source, so Next compiles them itself.
 const config: NextConfig = {
