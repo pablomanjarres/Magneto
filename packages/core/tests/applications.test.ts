@@ -8,6 +8,8 @@ import {
   canMove,
   groupByStatus,
   isApplicationStatus,
+  NOTE_MAX_LENGTH,
+  parseNote,
 } from "../src/index.js";
 
 const profile: Profile = {
@@ -67,6 +69,28 @@ describe("the status machine", () => {
     expect(isApplicationStatus("hired")).toBe(false);
     expect(isApplicationStatus(null)).toBe(false);
     expect(isApplicationStatus(3)).toBe(false);
+  });
+});
+
+describe("parseNote", () => {
+  it("trims the next step and keeps it", () => {
+    expect(parseNote("  Send the portfolio link  ")).toEqual({ note: "Send the portfolio link" });
+  });
+
+  it("clears the note on null, an empty string or whitespace", () => {
+    expect(parseNote(null)).toEqual({ note: null });
+    expect(parseNote("")).toEqual({ note: null });
+    expect(parseNote("   ")).toEqual({ note: null });
+  });
+
+  it("accepts exactly the limit and refuses one character more", () => {
+    expect(parseNote("a".repeat(NOTE_MAX_LENGTH))).toEqual({ note: "a".repeat(NOTE_MAX_LENGTH) });
+    expect(parseNote("a".repeat(NOTE_MAX_LENGTH + 1))).toHaveProperty("error");
+  });
+
+  it("refuses anything that is not a string or null", () => {
+    expect(parseNote(undefined)).toHaveProperty("error");
+    expect(parseNote(42)).toHaveProperty("error");
   });
 });
 
