@@ -1,8 +1,8 @@
 import { readFileSync } from "node:fs";
 import { Pool } from "pg";
 
-const connectionString =
-  process.env["DATABASE_URL"] ?? "postgresql://moonlight:moonlight@localhost:5433/moonlight";
+const connectionString = process.env["DATABASE_URL"];
+if (!connectionString) throw new Error("DATABASE_URL is not set. Copy .env.example to .env.local.");
 
 export const pool = new Pool({ connectionString });
 
