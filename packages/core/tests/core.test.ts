@@ -8,6 +8,7 @@ import {
   parseProfile,
   profileCompleteness,
   rankVacancies,
+  scoreFromWeights,
   scoreVacancy,
   topGaps,
 } from "../src/index.js";
@@ -126,6 +127,78 @@ describe("rankVacancies", () => {
       vacancy("a", ["TypeScript"]),
     ]);
     expect(ranked.map((r) => r.vacancyId)).toEqual(["a", "b"]);
+  });
+
+  it("ranks a vacancy outside the city lower when the candidate won't relocate", () => {
+    const ranked = rankVacancies(profile(["TypeScript", "React"]), [
+      { ...vacancy("bogota", ["TypeScript"]), city: "Bogotá", workMode: "onsite" },
+      vacancy("medellin", ["TypeScript", "React"], ["Go"]),
+    ]);
+    expect(ranked.map((r) => [r.vacancyId, r.score])).toEqual([
+      ["medellin", 86],
+      ["bogota", 80],
+    ]);
+  });
+});
+
+describe("scoreVacancy location", () => {
+  const bogota = (workMode: Vacancy["workMode"], must: string[] = ["TypeScript"]): Vacancy => ({
+    ...vacancy("bog", must),
+    city: "Bogotá",
+    workMode,
+  });
+  const expectations = profile([]).expectations;
+
+  it("takes 20 points off an onsite vacancy in another city", () => {
+    const result = scoreVacancy(profile(["TypeScript"]), bogota("onsite"));
+    expect(result.score).toBe(80);
+    expect(result.location).toEqual({ city: "Bogotá", points: 20 });
+  });
+
+  it("takes 20 points off a hybrid vacancy in another city", () => {
+    expect(scoreVacancy(profile(["TypeScript"]), bogota("hybrid")).score).toBe(80);
+  });
+
+  it("leaves a remote vacancy alone", () => {
+    const result = scoreVacancy(profile(["TypeScript"]), bogota("remote"));
+    expect(result.score).toBe(100);
+    expect(result.location).toBeUndefined();
+  });
+
+  it("treats Medellin and Medellín as the same city", () => {
+    const result = scoreVacancy(profile(["TypeScript"], { city: " medellin " }), {
+      ...vacancy("med", ["TypeScript"]),
+      workMode: "onsite",
+    });
+    expect(result.score).toBe(100);
+    expect(result.location).toBeUndefined();
+  });
+
+  it("leaves the score alone unless the candidate said no and has a city", () => {
+    const willing = profile(["TypeScript"], {
+      expectations: { ...expectations, willRelocate: true },
+    });
+    const unanswered = profile(["TypeScript"], {
+      expectations: { ...expectations, willRelocate: undefined },
+    });
+    const noCity = profile(["TypeScript"], { city: undefined });
+    for (const p of [willing, unanswered, noCity]) {
+      const result = scoreVacancy(p, bogota("onsite"));
+      expect(result.score).toBe(100);
+      expect(result.location).toBeUndefined();
+    }
+  });
+
+  it("builds the same number from weights that scoreVacancy shows", () => {
+    expect(scoreFromWeights(4, 5)).toBe(80);
+    expect(scoreFromWeights(4, 5, { city: "Bogotá", points: 20 })).toBe(60);
+    expect(scoreFromWeights(1, 10, { city: "Bogotá", points: 20 })).toBe(0);
+    expect(scoreFromWeights(0, 0)).toBe(0);
+  });
+
+  it("never goes below 0", () => {
+    const result = scoreVacancy(profile(["Go"]), bogota("onsite"));
+    expect(result.score).toBe(0);
   });
 });
 

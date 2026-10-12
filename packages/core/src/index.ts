@@ -29,6 +29,42 @@ export const WEIGHTS: Record<RequirementKind, number> = {
   "nice-to-have": 1,
 };
 
+/** What a vacancy outside the city loses when the candidate will not relocate. */
+export const LOCATION_DEDUCTION = 20;
+
+/** One spelling rule for cities, so "Medellin" and "Medellín" are the same place. */
+export function normalizeCity(raw: string): string {
+  return raw
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
+/**
+ * Only a firm "no" moves the score. A remote job needs no move, and an
+ * unanswered question or a missing city is not evidence either way.
+ */
+const outsideCity = (profile: Profile, vacancy: Vacancy): boolean =>
+  profile.expectations.willRelocate === false &&
+  vacancy.workMode !== "remote" &&
+  profile.city !== undefined &&
+  normalizeCity(profile.city) !== "" &&
+  normalizeCity(vacancy.city) !== normalizeCity(profile.city);
+
+/**
+ * Weight earned over weight on offer, as a percentage, minus any location
+ * deduction and never below 0. The job page uses it to show what-ifs.
+ */
+export function scoreFromWeights(
+  earned: number,
+  total: number,
+  location?: ScoreResult["location"],
+): number {
+  const percent = total === 0 ? 0 : Math.round((earned / total) * 100);
+  return Math.max(0, percent - (location?.points ?? 0));
+}
+
 const heldSkills = (profile: Profile): Set<string> =>
   new Set(profile.skills.map((s) => normalizeSkill(s.name)));
 
@@ -48,7 +84,10 @@ export function scoreVacancy(profile: Profile, vacancy: Vacancy): ScoreResult {
 
   const total = breakdown.reduce((sum, l) => sum + l.weight, 0);
   const earned = breakdown.reduce((sum, l) => sum + (l.met ? l.weight : 0), 0);
-  const score = total === 0 ? 0 : Math.round((earned / total) * 100);
+  const location = outsideCity(profile, vacancy)
+    ? { city: vacancy.city, points: LOCATION_DEDUCTION }
+    : undefined;
+  const score = scoreFromWeights(earned, total, location);
 
   const matched: Requirement[] = [];
   const missing: Requirement[] = [];
@@ -63,7 +102,9 @@ export function scoreVacancy(profile: Profile, vacancy: Vacancy): ScoreResult {
       ? `Meets ${matched.length} of ${breakdown.length} requirements. None are mandatory.`
       : `Meets ${matched.length} of ${breakdown.length} requirements, including ${mustsMet} of ${musts.length} must-haves.`;
 
-  return { vacancyId: vacancy.id, score, matched, missing, reason, breakdown };
+  const result: ScoreResult = { vacancyId: vacancy.id, score, matched, missing, reason, breakdown };
+  if (location) result.location = location;
+  return result;
 }
 
 /**

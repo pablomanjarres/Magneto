@@ -53,7 +53,7 @@ const STEPS = [
     label: "Expectations",
     title: "What you are looking for",
     blurb:
-      "The last three fields. They filter the list you are about to see, so be honest about the floor.",
+      "The last three fields. Nothing is filtered out, but if you won't relocate, vacancies outside your city score lower.",
   },
 ] as const;
 

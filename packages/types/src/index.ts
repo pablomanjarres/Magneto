@@ -78,6 +78,8 @@ export interface ScoreResult {
   missing: Requirement[];
   reason: string;
   breakdown: ScoreLine[];
+  /** Present only when the vacancy lost points for being outside the candidate's city. */
+  location?: { city: string; points: number } | undefined;
 }
 
 /** Where an application sits in the candidate's own pipeline. */
