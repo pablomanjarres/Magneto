@@ -195,7 +195,7 @@ La solución se organiza en tres paquetes de dominio e infraestructura y dos apl
   tocar la base de datos, de modo que una clave desconocida o un tipo incorrecto no alcanzan
   ninguna pantalla.
 
-**Diagrama de clases de diseño:** {PENDIENTE: images/5-2-diagrama-clases.png}
+![Diagrama de clases de diseño](images/5-clases.svg)
 
 ### 5.3. Vista Lógica — Diagrama Entidad-Relación
 
