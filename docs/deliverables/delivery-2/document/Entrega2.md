@@ -241,9 +241,9 @@ El puerto `5433` es deliberado: una instalación nativa de PostgreSQL suele ocup
 
 En esta entrega el despliegue es local, como lo permite el reto.
 
-**Diagrama de componentes:** {PENDIENTE: images/5-4-diagrama-componentes.png}
+![Diagrama Componentes ](images/5-componentes.jpeg)
 
-**Diagrama de despliegue:** {PENDIENTE: images/5-4-diagrama-despliegue.png}
+![Diagrama despliegue](images/5-despliegue.jpeg)
 
 ---
 
