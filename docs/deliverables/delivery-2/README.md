@@ -9,7 +9,7 @@ thing exists in this repository, not when it has been discussed.
 - Document: [`document/Entrega2.md`](document/Entrega2.md)
 - Spreadsheet: [`document/Entrega2_Template_HistoriasUsuario.xlsx`](document/Entrega2_Template_HistoriasUsuario.xlsx)
 
-**Status: 32 of 51 done.** Verified against the repository on 2026-10-12.
+**Status: 37 of 51 done.** Verified against the repository on 2026-10-13.
 
 ## Roles
 
@@ -54,7 +54,7 @@ From the first paragraph of the template.
       35 stories closed, 63% (Pablo)
 - [x] **Justify the percentage in writing** and state that the team will keep working toward the
       objective (Pablo)
-- [ ] **Replace every `[]` placeholder.** 17 lines with `{PENDIENTE}` are still in `Entrega2.md` (Both)
+- [ ] **Replace every `[]` placeholder.** 8 lines with `{PENDIENTE}` are still in `Entrega2.md` (Both)
 - [x] Product name, team and version on the cover (Pablo)
 - [x] Table of contents covering the sections the template lists (Pablo)
 - [ ] Page numbers in the table of contents, and a header on every page. Only applies once the
@@ -82,10 +82,10 @@ charts keep working.
 
 ## 3. Evaluación del Sprint anterior
 
-A retrospective of sprint 1. All three items are empty.
+A retrospective of sprint 1. Only the evidence is missing.
 
-- [ ] Name the technique the retrospective was run under (Valentina)
-- [ ] List the improvement actions that fix the problems sprint 1 hit (Valentina)
+- [x] Name the technique the retrospective was run under (Valentina)
+- [x] List the improvement actions that fix the problems sprint 1 hit (Valentina)
 - [ ] Evidence of the ceremony: screenshot or photo (Valentina)
 
 ## 4. Planificación del Sprint actual
@@ -104,8 +104,9 @@ A retrospective of sprint 1. All three items are empty.
 
 ## 5. Aspectos estructurales y arquitectónicos
 
-The table is filled. The four diagrams are not. Diagrams are made by the team, never AI-generated;
-they go in `docs/diagrams/` and their exports in `document/images/`.
+The table is filled. Three of the four diagrams are in; the class diagram is not. Diagrams are
+made by the team, never AI-generated; they go in `docs/diagrams/` and their exports in
+`document/images/`.
 
 ### Estilos arquitectónicos usados
 
@@ -118,7 +119,7 @@ they go in `docs/diagrams/` and their exports in `document/images/`.
 ### Vista Lógica — Diagrama de Clases de Diseño
 
 - [x] Logical view described: packages, layers and the dependency rule (Pablo)
-- [x] Design class diagram, drawn by the team (Valentina)
+- [ ] Design class diagram, drawn by the team (Valentina)
 
 ### Vista Lógica — Diagrama Entidad-Relación
 
