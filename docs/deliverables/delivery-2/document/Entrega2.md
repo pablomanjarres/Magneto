@@ -223,7 +223,7 @@ Dos decisiones vale la pena sustentar:
    por campo, y separarlos habría significado cuatro tablas más sin ninguna consulta que las
    justifique.
 
-![Diagrama entidad-relación](images/diagrama entidad_relacion.jpeg)
+![Diagrama entidad-relación](images/5-entidad-relacion.jpeg)
 
 ### 5.4. Vista Física — Diagrama de Componentes y Despliegue
 
