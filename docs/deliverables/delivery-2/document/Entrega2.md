@@ -97,9 +97,7 @@ La demostración y la sustentación son de ambos.
 
 ## Sección 3. Evaluación del Sprint anterior
 
-Técnica utilizada para la retrospectiva:
-Técnica de la retrospectiva:
-La retrospectiva del Sprint 1 se realizó utilizando la técnica de "Start, Stop, Continue" (Empezar a hacer, Dejar de hacer y Continuar haciendo). Se seleccionó esta metodología porque permite categorizar de manera estructurada las lecciones aprendidas por el equipo y definir acciones de mejora aplicables inmediatamente al siguiente ciclo de desarrollo.
+**Técnica de la retrospectiva:** La retrospectiva del Sprint 1 se realizó utilizando la técnica de "Start, Stop, Continue" (Empezar a hacer, Dejar de hacer y Continuar haciendo). Se seleccionó esta metodología porque permite categorizar de manera estructurada las lecciones aprendidas por el equipo y definir acciones de mejora aplicables inmediatamente al siguiente ciclo de desarrollo.
 
 Acciones de mejora frente a las dificultades del Sprint 1:
 A partir del análisis del primer sprint, se identificaron cuellos de botella relacionados con la estimación del tamaño de las tareas y los tiempos de integración del sistema. Para resolver esto, el equipo definió las siguientes acciones:
