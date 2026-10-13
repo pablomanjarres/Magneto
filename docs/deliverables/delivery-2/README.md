@@ -118,18 +118,18 @@ they go in `docs/diagrams/` and their exports in `document/images/`.
 ### Vista Lógica — Diagrama de Clases de Diseño
 
 - [x] Logical view described: packages, layers and the dependency rule (Pablo)
-- [ ] Design class diagram, drawn by the team (Valentina)
+- [x] Design class diagram, drawn by the team (Valentina)
 
 ### Vista Lógica — Diagrama Entidad-Relación
 
 - [x] Data model described: the tables, their keys and their constraints (Pablo)
-- [ ] Entity-relationship diagram, drawn by the team (Valentina)
+- [x] Entity-relationship diagram, drawn by the team (Valentina)
 
 ### Vista Física — Diagrama de Componentes y Despliegue
 
 - [x] Physical view described: processes, container and ports (Pablo)
-- [ ] Component diagram, with nodes and components and how they communicate (Valentina)
-- [ ] Deployment diagram, mapping the logical elements onto what actually runs (Valentina)
+- [x] Component diagram, with nodes and components and how they communicate (Valentina)
+- [x] Deployment diagram, mapping the logical elements onto what actually runs (Valentina)
 
 ## 6. Avances en cuanto a funcionalidad y demostración
 
