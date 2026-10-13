@@ -97,24 +97,19 @@ La demostración y la sustentación son de ambos.
 
 ## Sección 3. Evaluación del Sprint anterior
 
-**Técnica de la retrospectiva:** {PENDIENTE: nombre de la técnica, por ejemplo _Start, Stop,
-Continue_ o _Mad, Sad, Glad_}
+###Técnica utilizada para la retrospectiva:
+Técnica de la retrospectiva:
+La retrospectiva del Sprint 1 se realizó utilizando la técnica de "Start, Stop, Continue" (Empezar a hacer, Dejar de hacer y Continuar haciendo). Se seleccionó esta metodología porque permite categorizar de manera estructurada las lecciones aprendidas por el equipo y definir acciones de mejora aplicables inmediatamente al siguiente ciclo de desarrollo.
 
-**Qué funcionó bien**
+Acciones de mejora frente a las dificultades del Sprint 1:
+A partir del análisis del primer sprint, se identificaron cuellos de botella relacionados con la estimación del tamaño de las tareas y los tiempos de integración del sistema. Para resolver esto, el equipo definió las siguientes acciones:
 
-- {PENDIENTE}
+Start (Empezar a hacer): Aumentar la granularidad en la división de las Historias de Usuario durante la fase de planeación. Se evidenció que algunas tareas técnicas eran demasiado extensas, por lo que ahora se dividirán en subtareas más manejables para asegurar un ritmo de desarrollo constante y facilitar la revisión del código.
 
-**Qué no funcionó**
+Stop (Dejar de hacer): Postergar la conexión entre el frontend (Next.js) y el backend (Node.js) para los últimos días del sprint. Esta práctica generó dificultades de integración de última hora. En adelante, se adoptará un enfoque de integración temprana por cada endpoint finalizado.
 
-- {PENDIENTE}
+Continue (Continuar haciendo): Mantener la trazabilidad de las tareas mediante la actualización constante del tablero Kanban en GitHub Projects. Esta herramienta demostró ser efectiva para tener claridad sobre el progreso del equipo y detectar impedimentos técnicos a tiempo.
 
-**Acciones de mejora para el Sprint 2**
-
-| #   | Acción de mejora | Responsable | Cómo se verifica |
-| --- | ---------------- | ----------- | ---------------- |
-| 1   | {PENDIENTE}      | {PENDIENTE} | {PENDIENTE}      |
-| 2   | {PENDIENTE}      | {PENDIENTE} | {PENDIENTE}      |
-| 3   | {PENDIENTE}      | {PENDIENTE} | {PENDIENTE}      |
 
 **Evidencia de la ceremonia:** {PENDIENTE: images/3-retrospectiva.png}
 
