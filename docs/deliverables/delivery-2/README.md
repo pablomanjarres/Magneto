@@ -152,10 +152,10 @@ AI-generated; they go in `docs/diagrams/` and their exports in `document/images/
 
 ## Conclusiones y lecciones aprendidas
 
-- [ ] Conclusions and lessons from sprint 2 (Valentina)
+- [x] Conclusions and lessons from sprint 2 (Valentina)
 
 ## Referencias
 
-- [ ] Sources used to support the decisions taken, such as videos and tutorials, listed and
+- [x] Sources used to support the decisions taken, such as videos and tutorials, listed and
       described in the document (Valentina)
-- [ ] AI tools used, with the prompts they were used with (Valentina)
+- [x] AI tools used, with the prompts they were used with (Valentina)
