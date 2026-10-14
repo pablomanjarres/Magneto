@@ -138,8 +138,8 @@ Los puntos son la estimación del backlog; los de #35 salen del _planning poker_
 ### Ceremonias
 
 - **Planning con _poker planning_:** {PENDIENTE: images/4-planning-poker.png}
-- **Daily o weekly del equipo:** {PENDIENTE: images/4-daily.png}
-- **Reunión con el PO o el Líder Técnico:** {PENDIENTE: images/4-reunion-po.png}
+- **Daily o weekly del equipo: ![weekly](images/4-semanal.png)
+- **Reunión con el PO o el Líder Técnico:![Reunión](images/4-reunion.png)
 - **Sprint backlog en el tablero:**
 
   ![Vista Sprint Backlog #2 del tablero](images/4-sprint-backlog.png)
