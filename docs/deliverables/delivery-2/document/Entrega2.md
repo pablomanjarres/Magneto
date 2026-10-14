@@ -366,9 +366,16 @@ Integración continua como mitigador de bloqueos: Con base a las lecciones apren
 
 ## Referencias y fuentes
 
-{PENDIENTE: fuentes consultadas durante el sprint}
+Fuentes: 
+Documentación oficial de Express.js: Utilizada como guía para estructurar las rutas de la API, el manejo de peticiones (requests) y respuestas (responses). https://expressjs.com/
+
+Documentación oficial de Docker: Revisada para la creación básica del archivo docker, los volúmenes para guardar datos y la exposición de puertos. https://docs.docker.com/compose/
 
 {PENDIENTE: herramientas de IA utilizadas y los _prompts_ con los que se usaron}
+- Gemini : Para consultas rápidas de configuración: "¿Cuál es la estructura básica de un archivo docker-compose para levantar una imagen de PostgreSQL localmente?"
+- Gemini: Para validaciones en base de datos: "¿Cómo se define una llave foránea (foreign key) con restricción de eliminación en Cascada (CASCADE) en PostgreSQL?"
+- Claude: Para validación de tipos o errores de compilación 
+
 
 - Microsoft. _Architectural Patterns and Styles_. <http://msdn.microsoft.com/en-us/library/ee658117.aspx>
 - Lucidchart. _Qué es un diagrama entidad-relación_. <https://www.lucidchart.com/pages/es/que-es-un-diagrama-entidad-relacion>
