@@ -358,9 +358,11 @@ _`/applications`: tablero de postulaciones con sus acciones._
 
 ## Conclusiones y lecciones aprendidas
 
-{PENDIENTE: conclusiones y lecciones del Sprint 2, escritas por el equipo}
+Gestión de riesgos mediante el Cono de la Incertidumbre: Una de las lecciones más valiosas del sprint fue utilizar las estimaciones para identificar las zonas de mayor riesgo técnico. Al mapear la incertidumbre, el equipo tomó la decisión estratégica de postergar las funcionalidades de extracción de datos (como la importación de LinkedIn y la lectura de hojas de vida) para el Sprint 3. Esto permitió asegurar primero el flujo principal (MVP) sin comprometer la estabilidad de la arquitectura.
 
----
+Importancia de la calidad del código desde etapas tempranas: La implementación estricta de pruebas automatizadas (78 pruebas de dominio exitosas) y el mantenimiento de un tipado limpio (typecheck) en los cinco paquetes del proyecto demostraron que invertir tiempo en la configuración inicial de calidad previene errores críticos durante la integración entre el frontend y el backend.
+
+Integración continua como mitigador de bloqueos: Con base a las lecciones aprendidas del primer sprint, la decisión de integrar tempranamente las vistas de Next.js con los controladores de Node.js agilizó significativamente el ritmo de desarrollo, confirmando que en arquitecturas desacopladas la comunicación constante entre capas debe validarse diariamente.
 
 ## Referencias y fuentes
 
