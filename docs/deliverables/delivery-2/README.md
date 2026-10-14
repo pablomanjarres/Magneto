@@ -86,15 +86,15 @@ A retrospective of sprint 1. Only the evidence is missing.
 
 - [x] Name the technique the retrospective was run under (Valentina)
 - [x] List the improvement actions that fix the problems sprint 1 hit (Valentina)
-- [ ] Evidence of the ceremony: screenshot or photo (Valentina)
+- [x] Evidence of the ceremony: screenshot or photo (Valentina)
 
 ## 4. Planificación del Sprint actual
 
 - [x] User stories listed with the impact each has on the architecture (Valentina)
 - [x] Final sprint 2 selection, with the story points each one got (Valentina)
 - [ ] Planning ceremony evidence, using planning poker to estimate (Valentina)
-- [ ] Daily or weekly evidence for the team (Valentina)
-- [ ] Evidence of the meeting with the PO and the Technical Lead, the assigned monitor (Valentina)
+- [x] Daily or weekly evidence for the team (Valentina)
+- [x] Evidence of the meeting with the PO and the Technical Lead, the assigned monitor (Valentina)
 - [x] Sprint backlog link (Valentina)
 - [x] Sprint backlog screenshot (Valentina)
 - [x] Backlog changes reflected on the board: #13 closed, the stories done in sprint 1 moved out of
