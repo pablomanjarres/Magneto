@@ -23,11 +23,7 @@ In this delivery the candidate registers and fills their own profile. The Linked
 import is release 2, and the wizard it will pre-fill is already the screen the candidate confirms
 by hand today.
 
-The delivery document is [`docs/deliverables/delivery-2/document/Entrega2.md`](docs/deliverables/delivery-2/document/Entrega2.md).
 
-Status: a seeded candidate, 20 vacancies, seven screens and a scored, explained ranking. Delivery 2
-is due **14 October 2026**, checklist in
-[`docs/deliverables/delivery-2/`](docs/deliverables/delivery-2/README.md).
 
 ## Layout
 
