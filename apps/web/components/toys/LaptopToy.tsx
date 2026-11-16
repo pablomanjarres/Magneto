@@ -718,3 +718,64 @@ function LaptopToy({ text, writing, keystrokes, profile, onActivate, prompt }: L
               geometry={g.hinge}
               material={m.hinges}
               position={[x, HINGE_Y, -D / 2]}
+              rotation={[0, 0, Math.PI / 2]}
+            />
+          ))}
+          <group ref={lid} position={[0, HINGE_Y, -D / 2]}>
+            <mesh geometry={g.lid} material={m.body} position={[0, LID_T / 2, D / 2]} />
+            <mesh
+              geometry={g.screen}
+              material={m.screen}
+              position={[0, -0.004, SCREEN_Z]}
+              rotation={[Math.PI / 2, 0, 0]}
+            />
+            <mesh
+              ref={words}
+              geometry={g.words}
+              material={m.words}
+              position={[0, -0.008, SCREEN_Z]}
+              rotation={[Math.PI / 2, 0, 0]}
+            />
+            {/* The back of the lid faces +y; stickers read upright from behind the laptop. */}
+            <mesh
+              geometry={g.tag}
+              material={m.tag}
+              position={[0.18, LID_T + 0.004, D / 2 - 0.12]}
+              rotation={[-Math.PI / 2, 0, Math.PI + 0.05]}
+            />
+            {STICKERS.map((sticker) => (
+              <group
+                key={sticker.shape}
+                position={[-sticker.u, LID_T + 0.01, D / 2 + sticker.v]}
+                rotation={[-Math.PI / 2, 0, Math.PI + sticker.angle]}
+              >
+                <mesh geometry={g[sticker.shape]} material={m[sticker.shape]} />
+                {sticker.shape === "dot" && (
+                  <>
+                    <mesh geometry={g.eye} material={m.smiley} position={[-0.055, 0.035, 0.04]} />
+                    <mesh geometry={g.eye} material={m.smiley} position={[0.055, 0.035, 0.04]} />
+                    <mesh
+                      geometry={g.smile}
+                      material={m.smiley}
+                      position={[0, 0.005, 0.042]}
+                      rotation={[0, 0, Math.PI]}
+                    />
+                  </>
+                )}
+              </group>
+            ))}
+          </group>
+        </group>
+      </group>
+    </group>
+  );
+}
+
+/** The laptop on its stage. `Laptop` loads this in the browser only: three.js needs WebGL. */
+export default function LaptopScene(props: LaptopToyProps) {
+  return (
+    <ToyCanvas>
+      <LaptopToy {...props} />
+    </ToyCanvas>
+  );
+}
