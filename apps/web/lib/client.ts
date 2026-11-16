@@ -42,6 +42,3 @@ export const withdrawApplication = (id: string): Promise<null> =>
 
 export const saveProfile = (profile: Profile): Promise<{ profile: Profile }> =>
   send("/api/profiles", { method: "POST", body: JSON.stringify(profile) });
-
-export const registerCandidate = (fullName: string, email: string): Promise<{ profile: Profile }> =>
-  send("/api/candidates", { method: "POST", body: JSON.stringify({ fullName, email }) });
