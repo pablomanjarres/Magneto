@@ -41,48 +41,7 @@ export function ExperienceStep({
 
       {items.map((item, index) => (
         <EntryCard key={index} removeLabel="Quitar cargo" onRemove={() => onRemove(index)}>
-          <FieldGrid>
-            <Field label="Empresa">
-              <input
-                className={inputClass}
-                value={item.company}
-                onChange={(e) => onUpdate(index, { company: e.target.value })}
-                placeholder="Sofka Technologies"
-              />
-            </Field>
-            <Field label="Cargo">
-              <input
-                className={inputClass}
-                value={item.title}
-                onChange={(e) => onUpdate(index, { title: e.target.value })}
-                placeholder="Desarrollador frontend"
-              />
-            </Field>
-            <Field label="Fecha de inicio">
-              <input
-                className={inputClass}
-                type="month"
-                value={item.startDate}
-                onChange={(e) => onUpdate(index, { startDate: e.target.value })}
-              />
-            </Field>
-            <Field label="Fecha de fin" hint="Déjala vacía si aún trabajas aquí.">
-              <input
-                className={inputClass}
-                type="month"
-                value={item.endDate ?? ""}
-                onChange={(e) => onUpdate(index, { endDate: optionalText(e.target.value) })}
-              />
-            </Field>
-          </FieldGrid>
-          <Field label="Descripción">
-            <textarea
-              className={`${inputClass} h-auto min-h-24 rounded-3xl py-3`}
-              value={item.description ?? ""}
-              onChange={(e) => onUpdate(index, { description: optionalText(e.target.value) })}
-              placeholder="React y TypeScript en un portal bancario interno."
-            />
-          </Field>
+          <ExperienceFields value={item} onChange={(changes) => onUpdate(index, changes)} />
         </EntryCard>
       ))}
 
@@ -112,48 +71,119 @@ export function EducationStep({
 
       {items.map((item, index) => (
         <EntryCard key={index} removeLabel="Quitar estudio" onRemove={() => onRemove(index)}>
-          <FieldGrid>
-            <Field label="Institución">
-              <input
-                className={inputClass}
-                value={item.institution}
-                onChange={(e) => onUpdate(index, { institution: e.target.value })}
-                placeholder="Universidad EAFIT"
-              />
-            </Field>
-            <Field label="Título">
-              <input
-                className={inputClass}
-                value={item.degree}
-                onChange={(e) => onUpdate(index, { degree: e.target.value })}
-                placeholder="Ingeniería de Sistemas"
-              />
-            </Field>
-            <Field label="Año de inicio">
-              <input
-                className={`${inputClass} tabular-nums`}
-                type="number"
-                min={1950}
-                max={2100}
-                value={item.startYear === 0 ? "" : item.startYear}
-                onChange={(e) => onUpdate(index, { startYear: Number(e.target.value) || 0 })}
-              />
-            </Field>
-            <Field label="Año de fin" hint="Déjalo vacío si aún no terminas.">
-              <input
-                className={`${inputClass} tabular-nums`}
-                type="number"
-                min={1950}
-                max={2100}
-                value={item.endYear ?? ""}
-                onChange={(e) => onUpdate(index, { endYear: optionalNumber(e.target.value) })}
-              />
-            </Field>
-          </FieldGrid>
+          <EducationFields value={item} onChange={(changes) => onUpdate(index, changes)} />
         </EntryCard>
       ))}
 
       <AddButton label="Agregar estudio" onClick={onAdd} />
     </div>
+  );
+}
+
+/** The fields of one job, shared by the wizard and the import review. */
+export function ExperienceFields({
+  value,
+  onChange,
+}: {
+  value: Experience;
+  onChange: (changes: Partial<Experience>) => void;
+}) {
+  return (
+    <>
+      <FieldGrid>
+        <Field label="Empresa">
+          <input
+            className={inputClass}
+            value={value.company}
+            onChange={(e) => onChange({ company: e.target.value })}
+            placeholder="Sofka Technologies"
+          />
+        </Field>
+        <Field label="Cargo">
+          <input
+            className={inputClass}
+            value={value.title}
+            onChange={(e) => onChange({ title: e.target.value })}
+            placeholder="Desarrollador frontend"
+          />
+        </Field>
+        <Field label="Fecha de inicio">
+          <input
+            className={inputClass}
+            type="month"
+            value={value.startDate}
+            onChange={(e) => onChange({ startDate: e.target.value })}
+          />
+        </Field>
+        <Field label="Fecha de fin" hint="Déjala vacía si aún trabajas aquí.">
+          <input
+            className={inputClass}
+            type="month"
+            value={value.endDate ?? ""}
+            onChange={(e) => onChange({ endDate: optionalText(e.target.value) })}
+          />
+        </Field>
+      </FieldGrid>
+      <Field label="Descripción">
+        <textarea
+          className={`${inputClass} h-auto min-h-24 rounded-3xl py-3`}
+          value={value.description ?? ""}
+          onChange={(e) => onChange({ description: optionalText(e.target.value) })}
+          placeholder="React y TypeScript en un portal bancario interno."
+        />
+      </Field>
+    </>
+  );
+}
+
+/** The fields of one degree, shared by the wizard and the import review. */
+export function EducationFields({
+  value,
+  onChange,
+}: {
+  value: Education;
+  onChange: (changes: Partial<Education>) => void;
+}) {
+  return (
+    <>
+      <FieldGrid>
+        <Field label="Institución">
+          <input
+            className={inputClass}
+            value={value.institution}
+            onChange={(e) => onChange({ institution: e.target.value })}
+            placeholder="Universidad EAFIT"
+          />
+        </Field>
+        <Field label="Título">
+          <input
+            className={inputClass}
+            value={value.degree}
+            onChange={(e) => onChange({ degree: e.target.value })}
+            placeholder="Ingeniería de Sistemas"
+          />
+        </Field>
+        <Field label="Año de inicio">
+          <input
+            className={`${inputClass} tabular-nums`}
+            type="number"
+            min={1950}
+            max={2100}
+            value={value.startYear === 0 ? "" : value.startYear}
+            onChange={(e) => onChange({ startYear: Number(e.target.value) || 0 })}
+          />
+        </Field>
+        <Field label="Año de fin" hint="Déjalo vacío si aún no terminas.">
+          <input
+            className={`${inputClass} tabular-nums`}
+            type="number"
+            min={1950}
+            max={2100}
+            value={value.endYear ?? ""}
+            onChange={(e) => onChange({ endYear: optionalNumber(e.target.value) })}
+          />
+        </Field>
+      </FieldGrid>
+    </>
   );
 }
