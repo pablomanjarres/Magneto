@@ -358,3 +358,65 @@ function align<T extends { key: string }>(before: T[], after: T[]): Pair<T>[] {
   return pairs;
 }
 
+/** A diffed text that is not the same on both sides. */
+export const differs = (parts: DiffPart[]): boolean => parts.some((p) => p.kind !== "same");
+/** An entry that came, went, changed or moved: each one counts once in `changes`. */
+export const touched = (e: CvEntryDiff): boolean => e.status !== "same" || e.moved !== 0;
+const statusOf = (pair: Pair<unknown>, changed: boolean): DiffStatus =>
+  !pair.before ? "added" : !pair.after ? "removed" : changed ? "changed" : "same";
+
+/** Stands in for the missing side of an added or removed entry. */
+const NO_ENTRY: CvEntry = { key: "", title: "", place: "", subtitle: "", dates: "", bullets: [] };
+
+function diffEntries(before: CvEntry[], after: CvEntry[]): CvEntryDiff[] {
+  const pairs = align(before, after);
+  // The old positions of the entries both versions share, in their new order.
+  const shared = pairs.filter((p) => p.before && p.after).map((p) => p.index);
+  return pairs.map((pair) => {
+    const b = pair.before ?? NO_ENTRY;
+    const a = pair.after ?? NO_ENTRY;
+    const title = diffWords(b.title, a.title);
+    const place = diffWords(b.place, a.place);
+    const subtitle = diffWords(b.subtitle, a.subtitle);
+    const dates = diffWords(b.dates, a.dates);
+    const bullets = diffLines(b.bullets, a.bullets);
+    const changed = [title, place, subtitle, dates, ...bullets].some(differs);
+    const moved =
+      pair.before && pair.after
+        ? shared.indexOf(pair.index) - shared.filter((i) => i < pair.index).length
+        : 0;
+    const status = statusOf(pair, changed);
+    return { key: pair.item.key, status, moved, title, place, subtitle, dates, bullets };
+  });
+}
+
+function diffSections(before: CvSection[], after: CvSection[]): CvSectionDiff[] {
+  return align(before, after).map((pair) => {
+    const lines = diffLines(pair.before?.lines ?? [], pair.after?.lines ?? []);
+    const entries = diffEntries(pair.before?.entries ?? [], pair.after?.entries ?? []);
+    const changed = lines.some(differs) || entries.some(touched);
+    const { key, title } = pair.item;
+    return { key, title, status: statusOf(pair, changed), lines, entries };
+  });
+}
+
+/** Everything that changed between two CVs, entry by entry and word by word. */
+export function diffCv(before: CvDocument, after: CvDocument): CvDiff {
+  const sections = diffSections(before.sections, after.sections);
+  // One change per entry that differs or moved and per line that differs; a
+  // section added or removed with nothing inside counts once on its own.
+  const changes = sections.reduce(
+    (n, s) =>
+      n +
+      s.entries.filter(touched).length +
+      s.lines.filter(differs).length +
+      Number(s.status !== "same" && s.entries.length + s.lines.length === 0),
+    0,
+  );
+  return {
+    name: diffWords(before.name, after.name),
+    contact: diffWords(before.contact.join(" • "), after.contact.join(" • ")),
+    sections,
+    changes,
+  };
+}
