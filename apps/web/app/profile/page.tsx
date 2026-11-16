@@ -1,20 +1,28 @@
-import Link from "next/link";
+import { profileCompleteness } from "@moonlight/core";
 
 import { AppShell } from "../../components/AppShell";
-import { CompletenessPanel, filledFieldsLabel } from "../../components/CompletenessPanel";
-import { Chip, EmptyState } from "../../components/primitives";
+import { CompletenessPanel } from "../../components/CompletenessPanel";
+import {
+  ButtonLink,
+  Card,
+  Chip,
+  EmptyState,
+  Eyebrow,
+  PageHeader,
+} from "../../components/primitives";
 import { Icon } from "../../components/Icon";
 import { requireProfile } from "../../lib/queries";
-import { salaryRange, shortDate, workModeLabel } from "../../lib/format";
-import { profileCompleteness } from "@moonlight/core";
+import { initials, salaryRange, shortDate, workModeLabel } from "../../lib/format";
 import { Detail, type Entry, EntryList, ProfileSection } from "./ProfileSection";
 
 export const dynamic = "force-dynamic";
 
+const NOT_STATED = "Sin definir";
+
 /** Profile dates carry month precision ("2023-02"), so printing a day would invent one. */
 const monthLabel = (iso: string): string =>
   /^\d{4}-\d{2}$/.test(iso)
-    ? new Date(`${iso}-01`).toLocaleDateString("en-GB", {
+    ? new Date(`${iso}-01`).toLocaleDateString("es-CO", {
         month: "short",
         year: "numeric",
         timeZone: "UTC",
@@ -22,9 +30,10 @@ const monthLabel = (iso: string): string =>
     : shortDate(iso);
 
 const period = (start: string, end: string | undefined): string =>
-  `${monthLabel(start)} – ${end ? monthLabel(end) : "Present"}`;
+  `${monthLabel(start)} – ${end ? monthLabel(end) : "Actualidad"}`;
 
-const years = (start: number, end: number | undefined): string => `${start} – ${end ?? "Present"}`;
+const years = (start: number, end: number | undefined): string =>
+  `${start} – ${end ?? "Actualidad"}`;
 
 export default async function ProfilePage() {
   const profile = await requireProfile();
@@ -33,7 +42,7 @@ export default async function ProfilePage() {
   const expectations = profile.expectations;
   const hasSalary = expectations.salaryMin !== undefined || expectations.salaryMax !== undefined;
 
-  // Newest first, so the hint on each card holds whatever order the wizard saved.
+  // Newest first, whatever order the wizard saved.
   const experience: Entry[] = [...profile.experience]
     .sort((a, b) => b.startDate.localeCompare(a.startDate))
     .map((job) => ({
@@ -53,62 +62,97 @@ export default async function ProfilePage() {
       subtitle: degree.institution,
     }));
 
+  const facts = [
+    { icon: "mapPin", text: profile.city || "Ciudad sin definir" },
+    { icon: "target", text: expectations.targetRole || "Cargo objetivo sin definir" },
+  ] as const;
+
   return (
-    <AppShell title="Profile" meta={filledFieldsLabel(completeness)}>
-      <section
-        className="panel"
-        style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 300px", gap: 32 }}
-      >
-        <div className="stack" style={{ gap: 14 }}>
-          <div className="stack" style={{ gap: 6 }}>
-            <h1 className="display">{profile.fullName}</h1>
-            <span className="meta" style={{ color: "var(--muted)" }}>
-              {profile.email}
-              {profile.city ? ` · ${profile.city}` : ""}
-            </span>
+    <AppShell>
+      <PageHeader
+        eyebrow="Mi perfil"
+        title={profile.fullName}
+        lead="Este es el perfil con el que se construyen tus postulaciones. Si cambias algo, cada vacante se vuelve a evaluar."
+        actions={
+          <ButtonLink href="/onboarding">
+            <Icon name="edit" size={16} />
+            Editar perfil
+          </ButtonLink>
+        }
+      />
+
+      <Card className="grid animate-rise gap-8 p-6 [animation-delay:80ms] sm:p-8 lg:grid-cols-[minmax(0,1fr)_380px]">
+        <div className="flex items-center gap-5">
+          <span className="flex size-20 shrink-0 items-center justify-center rounded-full bg-brand-wash text-2xl font-black text-brand">
+            {initials(profile.fullName)}
+          </span>
+          <div className="min-w-0">
+            <p className="truncate text-2xl font-black text-slate">{profile.fullName}</p>
+            <p className="truncate text-sm text-muted">{profile.email}</p>
+            <ul className="mt-3 flex flex-wrap gap-2">
+              {facts.map((fact) => (
+                <li
+                  key={fact.icon}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-surface px-3 py-1 text-[13px] font-bold text-ink"
+                >
+                  <span className="text-brand">
+                    <Icon name={fact.icon} size={14} />
+                  </span>
+                  {fact.text}
+                </li>
+              ))}
+            </ul>
           </div>
-
-          <CompletenessPanel
-            completeness={completeness}
-            heading={<span className="meta">Profile completeness</span>}
-            detail={`${completeness.percentage}%`}
-          />
         </div>
 
-        <div
-          className="stack"
-          style={{ justifyContent: "center", borderLeft: "1px solid var(--line)", paddingLeft: 32 }}
-        >
-          <p className="lead">
-            This is the profile your applications are built from. Change anything here and every
-            vacancy is scored again.
-          </p>
-          <Link href="/onboarding" className="btn btn--primary">
-            Edit my profile
-            <Icon name="arrowRight" size={16} strokeWidth={2.4} />
-          </Link>
+        <div className="lg:border-l lg:border-line lg:pl-8">
+          <div className="mb-3">
+            <Eyebrow>Completitud del perfil</Eyebrow>
+          </div>
+          <CompletenessPanel completeness={completeness} />
         </div>
-      </section>
+      </Card>
 
-      <div className="two-col">
-        <div className="stack" style={{ gap: 22 }}>
-          <ProfileSection title="Experience" hint="Most recent first.">
-            <EntryList entries={experience} empty="No positions listed yet" />
+      <div className="grid items-start gap-6 lg:grid-cols-2">
+        <div className="flex flex-col gap-6">
+          <ProfileSection
+            title="Experiencia"
+            hint="Lo más reciente primero."
+            icon="briefcase"
+            className="[animation-delay:150ms]"
+          >
+            <EntryList entries={experience} empty="Aún no tienes cargos">
+              Agrégalos desde Editar perfil.
+            </EntryList>
           </ProfileSection>
 
-          <ProfileSection title="Education" hint="Degrees and the years you studied them.">
-            <EntryList entries={education} empty="No education listed yet" />
+          <ProfileSection
+            title="Educación"
+            hint="Tus títulos y los años en que los estudiaste."
+            icon="graduation"
+            className="[animation-delay:220ms]"
+          >
+            <EntryList entries={education} empty="Aún no tienes estudios">
+              Con uno basta, aunque no lo hayas terminado.
+            </EntryList>
           </ProfileSection>
         </div>
 
-        <div className="stack" style={{ gap: 22 }}>
-          <ProfileSection title="Skills" hint="Every match score is calculated from this list.">
+        <div className="flex flex-col gap-6">
+          <ProfileSection
+            title="Habilidades"
+            hint="Cada puntaje de coincidencia se calcula con esta lista."
+            icon="sparkles"
+            className="[animation-delay:190ms]"
+          >
             {profile.skills.length === 0 ? (
-              <EmptyState title="No skills listed yet" />
+              <EmptyState title="Aún no tienes habilidades">
+                Son la base de tu puntaje: agrégalas desde Editar perfil.
+              </EmptyState>
             ) : (
-              <div className="chips">
+              <div className="flex flex-wrap gap-2">
                 {profile.skills.map((skill) => (
-                  <Chip key={skill.name} tone="met">
+                  <Chip key={skill.name} tone="brand">
                     {skill.name}
                   </Chip>
                 ))}
@@ -116,40 +160,47 @@ export default async function ProfilePage() {
             )}
           </ProfileSection>
 
-          <ProfileSection title="Expectations" hint="What you are looking for, and where.">
-            <div className="stack" style={{ gap: 12 }}>
-              <Detail label="Target role">{expectations.targetRole ?? "Not stated"}</Detail>
-              <Detail label="Area">{expectations.targetArea ?? "Not stated"}</Detail>
-              <Detail label="Seniority">{expectations.targetSeniority ?? "Not stated"}</Detail>
+          <ProfileSection
+            title="Expectativas"
+            hint="Qué buscas y dónde."
+            icon="money"
+            className="[animation-delay:260ms]"
+          >
+            <dl className="flex flex-col gap-3">
+              <Detail label="Cargo objetivo">{expectations.targetRole || NOT_STATED}</Detail>
+              <Detail label="Área">{expectations.targetArea ?? NOT_STATED}</Detail>
+              <Detail label="Nivel">{expectations.targetSeniority ?? NOT_STATED}</Detail>
 
-              <Detail label="Salary, monthly">
-                <span className="num">{hasSalary ? salaryRange(expectations) : "Not stated"}</span>
+              <Detail label="Salario mensual">
+                <span className="font-black text-navy tabular-nums">
+                  {hasSalary ? salaryRange(expectations) : NOT_STATED}
+                </span>
               </Detail>
 
-              <Detail label="Work mode">
+              <Detail label="Modalidad">
                 {expectations.workModes.length === 0
-                  ? "Not stated"
+                  ? NOT_STATED
                   : expectations.workModes.map((mode) => (
                       <Chip key={mode}>{workModeLabel(mode)}</Chip>
                     ))}
               </Detail>
 
-              <Detail label="Relocation">
+              <Detail label="Reubicación">
                 {expectations.willRelocate === undefined
-                  ? "Not stated"
+                  ? NOT_STATED
                   : expectations.willRelocate
-                    ? "Willing to relocate"
-                    : "Staying put"}
+                    ? "Dispuesto a reubicarme"
+                    : "Prefiero no reubicarme"}
               </Detail>
 
               {expectations.cities.length > 0 && (
-                <Detail label="Cities">
+                <Detail label="Ciudades">
                   {expectations.cities.map((city) => (
                     <Chip key={city}>{city}</Chip>
                   ))}
                 </Detail>
               )}
-            </div>
+            </dl>
           </ProfileSection>
         </div>
       </div>
