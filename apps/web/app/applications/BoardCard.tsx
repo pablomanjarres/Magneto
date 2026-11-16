@@ -7,7 +7,7 @@ import type { ApplicationCard } from "@moonlight/types";
 import { ALLOWED_MOVES, NOTE_MAX_LENGTH, STATUS_LABELS } from "@moonlight/core";
 
 import { Icon } from "../../components/Icon";
-import { Field, buttonClass, inputClass, liftCard } from "../../components/primitives";
+import { Field, buttonClass, liftCard, textareaClass } from "../../components/primitives";
 import { moveApplication, updateNextStep, withdrawApplication } from "../../lib/client";
 import { shortDate } from "../../lib/format";
 
@@ -112,7 +112,7 @@ export function BoardCard({ card }: { card: ApplicationCard }) {
         <form className="flex flex-col gap-2" onSubmit={(e) => void onSaveNote(e)}>
           <Field label="Próximo paso">
             <textarea
-              className={`${inputClass} h-auto min-h-20 rounded-3xl py-3 text-sm`}
+              className={`${textareaClass} min-h-20 text-sm`}
               value={draft}
               maxLength={NOTE_MAX_LENGTH}
               placeholder="Ej.: Enviar portafolio el viernes"
