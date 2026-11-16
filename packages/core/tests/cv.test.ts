@@ -358,3 +358,183 @@ describe("toHarvardCv", () => {
       "exp:freelance|desarrolladoraweb|2019-03",
     ]);
     expect(keys(tailored)).toEqual([
+      "exp:globant|frontenddeveloper|2021-02",
+      "exp:rappi|softwareengineer|2023-02",
+    ]);
+    expect(section(plain, "education").entries[2]?.key).toBe(
+      "edu:universidadeafit|ingenieríadesistemas",
+    );
+  });
+
+  it("gives a repeated entry its own key, the same in the plain and the tailored CV", () => {
+    const rappi = { company: "Rappi", title: "Dev", startDate: "2020-01", description: "Uno." };
+    const profile: Profile = {
+      ...EMPTY,
+      experience: [rappi, { ...rappi }],
+      education: [
+        { institution: "SENA", degree: "Curso", startYear: 2015, endYear: 2015 },
+        { institution: "SENA", degree: "Curso", startYear: 2018, endYear: 2018 },
+      ],
+    };
+    const keys = (cv: CvDocument, key: CvSectionKey) => section(cv, key).entries.map((e) => e.key);
+    const twice = toHarvardCv(profile, {
+      ...TAILORED,
+      experience: [rappi, rappi, rappi],
+      skills: [],
+    });
+    const once = toHarvardCv(profile, { ...TAILORED, experience: [rappi], skills: [] });
+
+    expect(keys(toHarvardCv(profile), "experience")).toEqual([
+      "exp:rappi|dev|2020-01",
+      "exp:rappi|dev|2020-01#2",
+    ]);
+    // A third mention has no third position to show.
+    expect(keys(twice, "experience")).toEqual(["exp:rappi|dev|2020-01", "exp:rappi|dev|2020-01#2"]);
+    expect(keys(once, "experience")).toEqual(["exp:rappi|dev|2020-01"]);
+    expect(keys(once, "education")).toEqual(["edu:sena|curso#2", "edu:sena|curso"]);
+    expect(section(once, "education").entries.map((e) => e.dates)).toEqual(["2018", "2015"]);
+
+    const rows = sectionDiff(diffCv(toHarvardCv(profile), once), "experience").entries;
+    expect(rows.map((e) => [e.key, e.status])).toEqual([
+      ["exp:rappi|dev|2020-01", "same"],
+      ["exp:rappi|dev|2020-01#2", "removed"],
+    ]);
+  });
+
+  it("takes order and wording from the tailored profile and every fact from the profile", () => {
+    const cv = toHarvardCv(PROFILE, {
+      ...TAILORED,
+      experience: [
+        ...TAILORED.experience,
+        { company: "Google", title: "Staff Engineer", startDate: "2020-01", description: "Nada." },
+      ],
+      skills: ["react", "Go", "TypeScript", "React"],
+    });
+    expect(section(cv, "experience").entries).toEqual([
+      expect.objectContaining({ title: "Globant", subtitle: "Frontend Developer" }),
+      {
+        key: "exp:rappi|softwareengineer|2023-02",
+        title: "Rappi",
+        place: "",
+        subtitle: "Software Engineer",
+        dates: "Febrero 2023 – Actualidad",
+        bullets: ["Reduje la latencia un 30%.", "Diseñé APIs REST en Node.js."],
+      },
+    ]);
+    expect(section(cv, "skills").lines).toEqual(["Técnicas: React, TypeScript"]);
+  });
+});
+
+describe("diffWords", () => {
+  const PAIRS: Array<[string, string]> = [
+    ["Educacion superior", "Educación superior"],
+    ["React, Node.js y SQL.", "React; Node.js, SQL y Go!"],
+    ["", "Texto nuevo"],
+    ["Texto viejo", ""],
+    ["Diseñé interfaces en React", "Construí APIs REST con Node.js"],
+    ["Lideré el equipo", "Lideré todo el equipo"],
+    ["  espacios   raros ", "espacios raros"],
+    ["línea uno\nlínea dos", "línea uno\n\nlínea dos y tres"],
+    ["añadí ñandú", "añadí ñandú"],
+    ["Diseñé APIs REST.", "Diseñé APIs REST"],
+    ["a b a b a b", "b a b a b a"],
+    ["Técnicas: React, SQL", "Técnicas: SQL, React"],
+    [" ", ""],
+    ["\n", " "],
+  ];
+
+  it("rebuilds both texts from every diff, with no empty or unmerged parts", () => {
+    for (const [before, after] of PAIRS) {
+      const parts = diffWords(before, after);
+      expect(read(parts, "before")).toBe(before);
+      expect(read(parts, "after")).toBe(after);
+      expect(parts.filter((p) => p.text === "")).toEqual([]);
+      expect(parts.filter((p, k) => p.kind === parts[k - 1]?.kind)).toEqual([]);
+    }
+  });
+
+  it("returns one same part for identical text and nothing for two empty strings", () => {
+    expect(diffWords("Lideré el equipo", "Lideré el equipo")).toEqual([
+      { kind: "same", text: "Lideré el equipo" },
+    ]);
+    expect(diffWords("", "")).toEqual([]);
+    expect(diffWords("", "Hola")).toEqual([{ kind: "added", text: "Hola" }]);
+  });
+
+  it("marks a single inserted word and nothing else", () => {
+    expect(diffWords("Lideré el equipo", "Lideré todo el equipo")).toEqual([
+      { kind: "same", text: "Lideré " },
+      { kind: "added", text: "todo " },
+      { kind: "same", text: "el equipo" },
+    ]);
+  });
+
+  it("replaces only the word whose accent changed", () => {
+    expect(diffWords("Educacion superior", "Educación superior")).toEqual([
+      { kind: "removed", text: "Educacion" },
+      { kind: "added", text: "Educación" },
+      { kind: "same", text: " superior" },
+    ]);
+  });
+
+  it("shows a total rewrite as one deletion and one insertion, not word by word", () => {
+    expect(diffWords("Diseñé interfaces en React", "Construí APIs REST con Node.js")).toEqual([
+      { kind: "removed", text: "Diseñé interfaces en React" },
+      { kind: "added", text: "Construí APIs REST con Node.js" },
+    ]);
+  });
+
+  it("stays exact and quick on a text of twenty thousand words", () => {
+    const words = (salt: string) =>
+      Array.from({ length: 20_000 }, (_, i) => `palabra${(i * 7919) % 1000}${salt}`);
+    const list = words("");
+    const long = list.join(" ");
+    const inserted = [...list.slice(0, 10_000), "nueva", ...list.slice(10_000)].join(" ");
+    const started = performance.now();
+
+    expect(diffWords(long, inserted)).toEqual([
+      { kind: "same", text: `${list.slice(0, 10_000).join(" ")} ` },
+      { kind: "added", text: "nueva " },
+      { kind: "same", text: list.slice(10_000).join(" ") },
+    ]);
+    expect(diffWords(long, words("x").join(" "))).toEqual([
+      { kind: "removed", text: long },
+      { kind: "added", text: words("x").join(" ") },
+    ]);
+    // Seconds and gigabytes before the shared ends were skipped and the table capped.
+    expect(performance.now() - started).toBeLessThan(1000);
+  });
+});
+
+describe("diffCv", () => {
+  // Every position reordered, every bullet reworded, the skills reversed.
+  const rewritten = toHarvardCv(PROFILE, {
+    ...TAILORED,
+    headline: "Otra cosa",
+    summary: "Todo distinto.",
+    experience: [...PROFILE.experience].reverse().map((e, i) => ({
+      ...e,
+      description: `Logro ${i} reescrito por completo.\nOtro logro ${i} nuevo.`,
+    })),
+    skills: PROFILE.skills.map((s) => s.name).reverse(),
+  });
+
+  it("finds nothing to report between identical CVs", () => {
+    const diff = diffCv(tailored, tailored);
+    expect(diff.changes).toBe(0);
+    expect(diff.sections.map((s) => s.status)).toEqual(["same", "same", "same", "same"]);
+    expect(
+      diff.sections.flatMap((s) => s.entries).every((e) => e.status === "same" && e.moved === 0),
+    ).toBe(true);
+    expect(diff.name).toEqual([{ kind: "same", text: "Laura Restrepo" }]);
+    expect(diff.contact).toEqual([{ kind: "same", text: "Medellín • laura@example.com" }]);
+  });
+
+  it("reports how far each reordered entry moved without calling it changed", () => {
+    const experience = section(plain, "experience");
+    const [rappi, globant, freelance] = experience.entries;
+    const reordered: CvDocument = {
+      ...plain,
+      sections: plain.sections.map((s) =>
+        s === experience ? { ...s, entries: [freelance!, rappi!, globant!] } : s,
+      ),
