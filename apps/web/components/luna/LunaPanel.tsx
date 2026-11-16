@@ -2,9 +2,9 @@
 
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 
-import type { ChatMessage } from "../../lib/client";
 import { Icon } from "../Icon";
 import { buttonClass } from "../primitives";
+import type { LunaMessage } from "./Assistant";
 import { LunaFace } from "./LunaFace";
 
 /** What Luna offers to do first, by the page the candidate is on. */
@@ -29,19 +29,32 @@ export function LunaPanel({
   pending,
   error,
   onSend,
+  onUndo,
   onClose,
 }: {
   path: string;
-  messages: ChatMessage[];
+  messages: LunaMessage[];
   pending: boolean;
   error: string | null;
   onSend: (text: string) => Promise<boolean>;
+  onUndo: (index: number) => Promise<boolean>;
   onClose: () => void;
 }) {
   const [draft, setDraft] = useState("");
   const input = useRef<HTMLTextAreaElement>(null);
   const end = useRef<HTMLDivElement>(null);
   const lastReply = messages.filter((m) => m.role === "assistant").at(-1)?.content ?? "";
+  // Only the latest change can be undone: going back further would also wipe the ones after it.
+  const lastChange = messages.reduce((last, m, i) => (m.before ? i : last), -1);
+  const [undoing, setUndoing] = useState(false);
+  const [undoFailed, setUndoFailed] = useState(false);
+
+  async function undo(index: number): Promise<void> {
+    setUndoing(true);
+    setUndoFailed(false);
+    setUndoFailed(!(await onUndo(index)));
+    setUndoing(false);
+  }
 
   useEffect(() => {
     input.current?.focus();
@@ -111,16 +124,44 @@ export function LunaPanel({
           llevarte a cualquier página. ¿Qué hacemos?
         </p>
         {messages.map((m, i) => (
-          <p
+          <div
             key={i}
-            className={`${BUBBLE} ${
-              m.role === "user"
-                ? "self-end rounded-br-sm bg-brand text-white"
-                : "self-start rounded-bl-sm bg-surface text-ink"
-            }`}
+            className={`flex flex-col gap-1.5 ${m.role === "user" ? "items-end" : "items-start"}`}
           >
-            {m.content}
-          </p>
+            <p
+              className={`${BUBBLE} ${
+                m.role === "user"
+                  ? "rounded-br-sm bg-brand text-white"
+                  : "rounded-bl-sm bg-surface text-ink"
+              }`}
+            >
+              {m.content}
+            </p>
+            {m.undone ? (
+              <p className="flex items-center gap-1 px-1 text-xs font-bold text-muted">
+                <Icon name="undo" size={12} strokeWidth={2.4} />
+                Deshice estos cambios
+              </p>
+            ) : (
+              i === lastChange && (
+                <button
+                  type="button"
+                  className={buttonClass("quiet", "sm")}
+                  onClick={() => void undo(i)}
+                  disabled={undoing || pending}
+                  aria-busy={undoing}
+                >
+                  <Icon name="undo" size={14} strokeWidth={2.4} />
+                  {undoing ? "Deshaciendo…" : "Deshacer estos cambios"}
+                </button>
+              )
+            )}
+            {i === lastChange && undoFailed && (
+              <p role="alert" className="px-1 text-xs font-bold text-danger">
+                No pude deshacerlos. Intenta de nuevo.
+              </p>
+            )}
+          </div>
         ))}
         {pending && (
           <p className={`${BUBBLE} flex items-center gap-1.5 self-start rounded-bl-sm bg-surface`}>

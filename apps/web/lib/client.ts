@@ -61,7 +61,9 @@ export type ChatMessage = { role: "user" | "assistant"; content: string };
 export type AssistantAction =
   | { type: "navigate"; path: string }
   | { type: "refresh" }
-  | { type: "tailored"; tailored: TailoredProfile };
+  | { type: "tailored"; tailored: TailoredProfile }
+  /** The profile changed; `before` is how it was, so the change can be undone. */
+  | { type: "saved"; before: Profile };
 
 /** One turn with Luna: the conversation so far, the page it is on and the last adapted CV. */
 export const askAssistant = (
@@ -81,6 +83,10 @@ export const askAssistant = (
       },
     }),
   });
+
+/** Which profile the app acts as; there is no sign-in, only this choice. */
+export const chooseProfile = (profileId: string): Promise<unknown> =>
+  send("/api/session", { method: "POST", body: JSON.stringify({ profileId }) });
 
 export const saveProfile = (profile: Profile): Promise<{ profile: Profile }> =>
   send("/api/profiles", { method: "POST", body: JSON.stringify(profile) });

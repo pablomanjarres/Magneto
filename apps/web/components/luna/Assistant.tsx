@@ -2,9 +2,14 @@
 
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import type { TailoredProfile } from "@moonlight/types";
+import type { Profile, TailoredProfile } from "@moonlight/types";
 
-import { askAssistant, type AssistantAction, type ChatMessage } from "../../lib/client";
+import {
+  askAssistant,
+  saveProfile,
+  type AssistantAction,
+  type ChatMessage,
+} from "../../lib/client";
 import { LunaFace } from "./LunaFace";
 import { LunaPanel } from "./LunaPanel";
 
@@ -17,6 +22,9 @@ type AssistantState = {
 const AssistantContext = createContext<AssistantState>({ tailored: null, clearTailored: () => {} });
 
 export const useAssistant = (): AssistantState => useContext(AssistantContext);
+
+/** A message in the panel; a reply that changed the profile carries the profile from before it. */
+export type LunaMessage = ChatMessage & { before?: Profile; undone?: boolean };
 
 /** Remembered once the candidate opens Luna, so the greeting never comes back. */
 const GREETED = "luna-greeted";
@@ -32,7 +40,7 @@ export function Assistant({ children }: { children: ReactNode }) {
   const button = useRef<HTMLButtonElement>(null);
   const [open, setOpen] = useState(false);
   const [greet, setGreet] = useState(false);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [messages, setMessages] = useState<LunaMessage[]>([]);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [tailored, setTailored] = useState<TailoredProfile | null>(null);
@@ -58,7 +66,7 @@ export function Assistant({ children }: { children: ReactNode }) {
     for (const action of actions) {
       if (action.type === "navigate") router.push(action.path);
       else if (action.type === "refresh") router.refresh();
-      else {
+      else if (action.type === "tailored") {
         setTailored(action.tailored);
         if (path !== "/cv") router.push("/cv");
       }
@@ -67,17 +75,21 @@ export function Assistant({ children }: { children: ReactNode }) {
 
   /** Sends one message; on failure it is taken back so the panel can return the text to the input. */
   async function send(text: string): Promise<boolean> {
-    const history = [...messages, { role: "user" as const, content: text }];
+    const history: LunaMessage[] = [...messages, { role: "user", content: text }];
     setMessages(history);
     setPending(true);
     setError(null);
     try {
       const { reply, actions } = await askAssistant(
-        history.slice(-20),
+        history.slice(-20).map(({ role, content }) => ({ role, content })),
         path,
         tailored ?? undefined,
       );
-      setMessages([...history, { role: "assistant", content: reply }]);
+      const saved = actions.find((a) => a.type === "saved");
+      setMessages([
+        ...history,
+        { role: "assistant", content: reply, ...(saved ? { before: saved.before } : {}) },
+      ]);
       run(actions);
       return true;
     } catch (cause) {
@@ -86,6 +98,20 @@ export function Assistant({ children }: { children: ReactNode }) {
       return false;
     } finally {
       setPending(false);
+    }
+  }
+
+  /** Puts the profile back as it was before that reply; the conversation keeps a note of it. */
+  async function undo(index: number): Promise<boolean> {
+    const before = messages[index]?.before;
+    if (!before) return false;
+    try {
+      await saveProfile(before);
+      setMessages((list) => list.map((m, i) => (i === index ? { ...m, undone: true } : m)));
+      router.refresh();
+      return true;
+    } catch {
+      return false;
     }
   }
 
@@ -102,6 +128,7 @@ export function Assistant({ children }: { children: ReactNode }) {
             pending={pending}
             error={error}
             onSend={send}
+            onUndo={undo}
             onClose={close}
           />
         )}
