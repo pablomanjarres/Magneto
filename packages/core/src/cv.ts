@@ -178,3 +178,183 @@ export function toHarvardCv(profile: Profile, tailored?: TailoredProfile): CvDoc
         .sort(([a], [b]) => byLatestEducation(a, b))
         .map(educationEntry),
       lines: [],
+    },
+    { key: "experience", title: "Experiencia", entries: experience, lines: [] },
+    {
+      key: "skills",
+      title: "Habilidades",
+      entries: [],
+      lines: skills.length > 0 ? [`Técnicas: ${skills.join(", ")}`] : [],
+    },
+  ];
+
+  return {
+    name: clean(profile.fullName),
+    contact: present([profile.city, profile.email]),
+    sections: sections.filter((s) => s.entries.length > 0 || s.lines.length > 0),
+  };
+}
+
+/** Every text as a part of one kind. */
+const all = (kind: DiffKind, texts: string[]): DiffPart[] => texts.map((text) => ({ kind, text }));
+
+/** 16 MB of table. Past it, the changed middle shows as one removal and one insertion. */
+const MAX_CELLS = 1 << 22;
+
+/**
+ * Each item kept, removed or added, walking a longest common subsequence of the
+ * two lists. A tie removes first, so of two swapped bullets the first one moves.
+ * The shared start and end need no table, so a small edit to a long text is cheap.
+ */
+function lcsEdits(before: string[], after: string[]): DiffPart[] {
+  let head = 0;
+  while (head < before.length && head < after.length && before[head] === after[head]) head++;
+  let tail = 0;
+  while (
+    tail < Math.min(before.length, after.length) - head &&
+    before[before.length - 1 - tail] === after[after.length - 1 - tail]
+  ) {
+    tail++;
+  }
+  const b = before.slice(head, before.length - tail);
+  const a = after.slice(head, after.length - tail);
+  const start = all("same", before.slice(0, head));
+  const end = all("same", before.slice(before.length - tail));
+  if ((b.length + 1) * (a.length + 1) > MAX_CELLS) {
+    return [...start, ...all("removed", b), ...all("added", a), ...end];
+  }
+
+  const width = a.length + 1;
+  // common[i * width + j]: the LCS length of b[i..] and a[j..].
+  const common = new Uint32Array((b.length + 1) * width);
+  const at = (i: number, j: number): number => common[i * width + j] ?? 0;
+  for (let i = b.length - 1; i >= 0; i--) {
+    for (let j = a.length - 1; j >= 0; j--) {
+      common[i * width + j] =
+        b[i] === a[j] ? at(i + 1, j + 1) + 1 : Math.max(at(i + 1, j), at(i, j + 1));
+    }
+  }
+
+  const edits = start;
+  let i = 0;
+  let j = 0;
+  while (i < b.length || j < a.length) {
+    const removed = b[i];
+    const added = a[j];
+    if (removed !== undefined && removed === added) {
+      edits.push({ kind: "same", text: removed });
+      i++;
+      j++;
+    } else if (removed !== undefined && (added === undefined || at(i + 1, j) >= at(i, j + 1))) {
+      edits.push({ kind: "removed", text: removed });
+      i++;
+    } else if (added !== undefined) {
+      edits.push({ kind: "added", text: added });
+      j++;
+    }
+  }
+  return edits.concat(end);
+}
+
+/**
+ * Token edits merged into runs. Inside a run of changes the removed text goes
+ * first, and a space between a removal and an addition belongs to both, so a
+ * reworded phrase reads as one deletion and one insertion, not word by word.
+ */
+function toRuns(edits: DiffPart[]): DiffPart[] {
+  const parts: DiffPart[] = [];
+  const pending = { removed: "", added: "" };
+  const flush = (): void => {
+    for (const kind of ["removed", "added"] as const) {
+      if (pending[kind]) parts.push({ kind, text: pending[kind] });
+      pending[kind] = "";
+    }
+  };
+  edits.forEach((edit, k) => {
+    const around = new Set([edits[k - 1]?.kind, edits[k + 1]?.kind]);
+    const glue = !edit.text.trim() && around.has("removed") && around.has("added");
+    if (edit.kind === "same" && !glue) {
+      flush();
+      const last = parts.at(-1);
+      if (last?.kind === "same") last.text += edit.text;
+      else parts.push({ ...edit });
+    } else {
+      if (edit.kind !== "added") pending.removed += edit.text;
+      if (edit.kind !== "removed") pending.added += edit.text;
+    }
+  });
+  flush();
+  return parts;
+}
+
+const tokens = (text: string): string[] => text.match(/\s+|\S+/g) ?? [];
+
+/** A word-level diff: same + added rebuilds `after`, same + removed rebuilds `before`. */
+export function diffWords(before: string, after: string): DiffPart[] {
+  if (before === after) return before ? [{ kind: "same", text: before }] : [];
+  return toRuns(lcsEdits(tokens(before), tokens(after)));
+}
+
+/** Lines matched by position and word-diffed; a line with no partner is fully added or removed. */
+const byPosition = (before: string[], after: string[]): DiffPart[][] =>
+  Array.from({ length: Math.max(before.length, after.length) }, (_, k) =>
+    diffWords(before[k] ?? "", after[k] ?? ""),
+  );
+
+/**
+ * Bullets or lines kept whole are matched first. Between two of them, the
+ * removed and added ones pair up in order and are word-diffed; any left over is
+ * fully removed or added.
+ */
+function diffLines(before: string[], after: string[]): DiffPart[][] {
+  const lines: DiffPart[][] = [];
+  const pending = { removed: [] as string[], added: [] as string[] };
+  const flush = (): void => {
+    lines.push(...byPosition(pending.removed, pending.added));
+    pending.removed = [];
+    pending.added = [];
+  };
+  for (const { kind, text } of lcsEdits(before, after)) {
+    if (kind === "same") {
+      flush();
+      lines.push(diffWords(text, text));
+    } else pending[kind].push(text);
+  }
+  flush();
+  return lines;
+}
+
+/** One item in two versions; a side is undefined when the item only exists in the other. */
+interface Pair<T> {
+  /** The after version, or the before one when the item was removed. */
+  item: T;
+  before: T | undefined;
+  after: T | undefined;
+  /** Its position in before, -1 when it is new. */
+  index: number;
+}
+
+/**
+ * Pairs items by key, in the after order. An item only in before goes back
+ * right above the item that followed it there, or at the end when it was last.
+ */
+function align<T extends { key: string }>(before: T[], after: T[]): Pair<T>[] {
+  const taken = new Set<number>();
+  const pairs = after.map((item): Pair<T> => {
+    const index = before.findIndex((b, k) => !taken.has(k) && b.key === item.key);
+    if (index >= 0) taken.add(index);
+    return { item, before: before[index], after: item, index };
+  });
+  for (const [index, item] of [...before.entries()].reverse()) {
+    if (taken.has(index)) continue;
+    const next = pairs.findIndex((p) => p.index === index + 1);
+    pairs.splice(next < 0 ? pairs.length : next, 0, {
+      item,
+      before: item,
+      after: undefined,
+      index,
+    });
+  }
+  return pairs;
+}
+
