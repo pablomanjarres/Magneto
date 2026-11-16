@@ -1,54 +1,51 @@
-import type { ReactNode } from "react";
 import type { CompletenessResult } from "@moonlight/types";
 import { COMPLETENESS_FIELDS } from "@moonlight/core";
 
 import { Chip, ProgressBar } from "./primitives";
 
-/** "7 of 9 fields", spelled the same way everywhere it is printed. */
+/** "7 de 9 campos", spelled the same way everywhere it is printed. */
 export function filledFieldsLabel(completeness: CompletenessResult): string {
   const filled = COMPLETENESS_FIELDS.length - completeness.missing.length;
-  return `${filled} of ${COMPLETENESS_FIELDS.length} fields`;
+  return `${filled} de ${COMPLETENESS_FIELDS.length} campos`;
 }
 
-/**
- * The completeness readout: a heading row, the bar, and the fields still empty.
- * Dashboard and profile ask the same question in different words, so the two
- * halves of the heading row are props and nothing below them is.
- */
+/** The bar and the fields still empty. Dashboard, profile and wizard share it. */
 export function CompletenessPanel({
   completeness,
-  heading,
-  detail,
+  dark = false,
 }: {
   completeness: CompletenessResult;
-  heading: ReactNode;
-  detail: string;
+  dark?: boolean;
 }) {
   return (
-    <div className="stack" style={{ gap: 14 }}>
-      <div className="split">
-        {heading}
-        <span className="meta num" style={{ whiteSpace: "nowrap" }}>
-          {detail}
+    <div className="flex flex-col gap-3">
+      <div className="flex items-center justify-between text-sm">
+        <span className={`font-bold ${dark ? "text-white" : "text-ink"}`}>
+          {filledFieldsLabel(completeness)}
+        </span>
+        <span className={`font-black tabular-nums ${dark ? "text-mint" : "text-brand"}`}>
+          {completeness.percentage}%
         </span>
       </div>
-
-      <ProgressBar percentage={completeness.percentage} label="Profile completeness" />
-
-      <div className="chips">
-        <span className="meta" style={{ color: "var(--muted)" }}>
-          Missing:
-        </span>
+      <ProgressBar percentage={completeness.percentage} label="Completitud del perfil" />
+      <div className="flex flex-wrap items-center gap-2">
         {completeness.missing.length === 0 ? (
-          <span className="meta" style={{ color: "var(--gold-deep)" }}>
-            nothing — every field is filled.
-          </span>
+          <Chip tone="met">Todos los campos completos</Chip>
         ) : (
-          completeness.missing.map((label) => (
-            <Chip key={label} tone="dashed">
-              {label}
-            </Chip>
-          ))
+          completeness.missing.map((label) =>
+            dark ? (
+              <span
+                key={label}
+                className="rounded-full border border-dashed border-white/40 px-3 py-1 text-[13px] font-bold text-white/85"
+              >
+                {label}
+              </span>
+            ) : (
+              <Chip key={label} tone="dashed">
+                {label}
+              </Chip>
+            ),
+          )
         )}
       </div>
     </div>
