@@ -178,3 +178,29 @@ export const hasEducation = (profile: Profile, e: Education): boolean =>
  */
 export function mergeImport(
   profile: Profile,
+  imported: ImportedProfile,
+): { profile: Profile; added: { experience: number; education: number; skills: number } } {
+  const experience = imported.experience.filter((e) => !hasExperience(profile, e));
+  const education = imported.education.filter((e) => !hasEducation(profile, e));
+  const skills = dedupeSkills(imported.skills.map((s) => s.name))
+    .filter((name) => !hasSkill(profile, name))
+    .map((name) => ({ name, source: imported.source }));
+
+  return {
+    profile: {
+      ...profile,
+      fullName: profile.fullName.trim() || imported.fullName || profile.fullName,
+      city: profile.city?.trim() ? profile.city : (imported.city ?? profile.city),
+      experience: [
+        ...profile.experience,
+        ...experience.map((e) => ({ ...e, source: imported.source })),
+      ],
+      education: [
+        ...profile.education,
+        ...education.map((e) => ({ ...e, source: imported.source })),
+      ],
+      skills: [...profile.skills, ...skills],
+    },
+    added: { experience: experience.length, education: education.length, skills: skills.length },
+  };
+}
