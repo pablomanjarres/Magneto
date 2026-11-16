@@ -316,3 +316,7 @@ export function pageOf<T>(
 
 export { DEFAULT_CURRENCY, SENIORITIES, TARGET_AREAS, parseProfile } from "./parse-profile.js";
 export { ApplicationEvents, describeEvent } from "./activity.js";
+export * from "./import.js";
+export * from "./tailor.js";
+export { takeToken } from "./rate-limit.js";
+export { diffCv, diffWords, differs, toHarvardCv, touched } from "./cv.js";
