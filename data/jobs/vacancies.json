@@ -1358,5 +1358,185 @@
         "kind": "must-have"
       },
       {
+        "skill": "GCP",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Python",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v044",
+    "title": "Senior Python Developer",
+    "company": "BairesDev",
+    "city": "Remote",
+    "workMode": "remote",
+    "salaryMin": 12000000,
+    "salaryMax": 17000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Python",
+        "kind": "must-have"
+      },
+      {
+        "skill": "FastAPI",
+        "kind": "must-have"
+      },
+      {
+        "skill": "PostgreSQL",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Docker",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "AWS",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v045",
+    "title": "Product Manager",
+    "company": "Habi",
+    "city": "Bogotá",
+    "workMode": "hybrid",
+    "salaryMin": 11000000,
+    "salaryMax": 15000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Product Discovery",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Scrum",
+        "kind": "must-have"
+      },
+      {
+        "skill": "SQL",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Jira",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Figma",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v046",
+    "title": "Data Engineer",
+    "company": "Tecnoquímicas",
+    "city": "Cali",
+    "workMode": "hybrid",
+    "salaryMin": 8000000,
+    "salaryMax": 11500000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Python",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Spark",
+        "kind": "must-have"
+      },
+      {
+        "skill": "SQL",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Databricks",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Azure",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v047",
+    "title": "React Native Developer",
+    "company": "Globant",
+    "city": "Medellín",
+    "workMode": "hybrid",
+    "salaryMin": 8000000,
+    "salaryMax": 12000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "React Native",
+        "kind": "must-have"
+      },
+      {
+        "skill": "TypeScript",
+        "kind": "must-have"
+      },
+      {
+        "skill": "REST",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Firebase",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Jest",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v048",
+    "title": "Senior Data Analyst",
+    "company": "Rappi",
+    "city": "Bogotá",
+    "workMode": "remote",
+    "salaryMin": 8500000,
+    "salaryMax": 12000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "SQL",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Python",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Tableau",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Snowflake",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v049",
+    "title": "Java Tech Lead",
+    "company": "Bancolombia",
+    "city": "Medellín",
+    "workMode": "hybrid",
+    "salaryMin": 18000000,
+    "salaryMax": 24000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Java",
+        "kind": "must-have"
+      },
+      {
   }
 ]
