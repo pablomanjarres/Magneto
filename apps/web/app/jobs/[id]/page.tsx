@@ -12,8 +12,12 @@ import { loadRanked, requireProfile } from "../../../lib/queries";
 import { ApplyButton } from "./ApplyButton";
 import { CloseTheGap } from "./CloseTheGap";
 import { ScoreBreakdown } from "./ScoreBreakdown";
+import { TailorPanel } from "./TailorPanel";
 
 export const dynamic = "force-dynamic";
+
+/** On paper the vacancy steps aside once TailorPanel renders a tailored CV to print. */
+const UNTIL_TAILORED = "print:has-[~[data-print-sheet]]:hidden";
 
 const RADIUS = 54;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
@@ -88,13 +92,15 @@ export default async function VacancyPage({ params }: { params: Promise<{ id: st
     <AppShell>
       <Link
         href="/jobs"
-        className="inline-flex w-fit items-center gap-2 rounded-full px-3 py-1.5 text-sm font-bold text-brand transition hover:bg-brand-wash"
+        className="inline-flex w-fit items-center gap-2 rounded-full px-3 py-1.5 text-sm font-bold text-brand transition hover:bg-brand-wash print:hidden"
       >
         <Icon name="arrowLeft" size={16} />
         Volver a vacantes
       </Link>
 
-      <Card className="relative isolate flex animate-pop flex-col gap-6 overflow-hidden p-6 sm:flex-row sm:items-center sm:p-8">
+      <Card
+        className={`relative isolate flex animate-pop flex-col gap-6 overflow-hidden p-6 sm:flex-row sm:items-center sm:p-8 ${UNTIL_TAILORED}`}
+      >
         <div className="pointer-events-none absolute -top-24 -right-24 -z-10 size-72 rounded-full bg-brand-wash blur-3xl" />
         <div className="flex min-w-0 flex-1 flex-col gap-4">
           {rank > 0 && (
@@ -136,16 +142,21 @@ export default async function VacancyPage({ params }: { params: Promise<{ id: st
           </ButtonLink>
         </Card>
       ) : (
-        <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
-          <ScoreBreakdown result={result} earned={earned} total={total} />
-          <CloseTheGap
-            result={result}
-            earned={earned}
-            total={total}
-            gaps={gaps}
-            vacancyCount={vacancies.length}
-          />
-        </div>
+        <>
+          <div
+            className={`grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_380px] ${UNTIL_TAILORED}`}
+          >
+            <ScoreBreakdown result={result} earned={earned} total={total} />
+            <CloseTheGap
+              result={result}
+              earned={earned}
+              total={total}
+              gaps={gaps}
+              vacancyCount={vacancies.length}
+            />
+          </div>
+          <TailorPanel profile={profile} vacancyId={vacancy.id} vacancyTitle={vacancy.title} />
+        </>
       )}
     </AppShell>
   );
