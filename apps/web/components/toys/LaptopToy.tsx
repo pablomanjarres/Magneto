@@ -178,3 +178,183 @@ function tintsOf(colors: LaptopColors) {
       [0, new THREE.Color(colors.escKey)],
       [COLS - 1, new THREE.Color(colors.backspaceKey)],
       [3 * COLS - 1, new THREE.Color(colors.enterKey)],
+      [3 * COLS, shift],
+      [SPACE - 1, shift],
+      [SPACE, new THREE.Color(colors.spacebar)],
+    ]),
+    flash: colors.flash.map((color) => new THREE.Color(color)),
+    light: new THREE.Color(colors.light),
+    screenOn,
+    screenOff: screenOn.clone().multiplyScalar(0.45),
+  };
+}
+
+const TINTS = tintsOf(COLORS);
+type Tints = ReturnType<typeof tintsOf>;
+
+/** The colour key `i` rests at; the spacebar is the last index. */
+const restOf = (tints: Tints, i: number): THREE.Color => tints.accents.get(i) ?? tints.keys;
+
+interface Spring {
+  x: number;
+  v: number;
+}
+interface Key extends Spring {
+  /** The colour it flashed when last pressed, fading back to rest as `glow` drops. */
+  tint: THREE.Color | null;
+  glow: number;
+}
+
+/** Moves a spring one frame towards `target`; light damping lets it overshoot. */
+function step(
+  s: Spring,
+  target: number,
+  delta: number,
+  stiffness: number,
+  damping: number,
+  still: boolean,
+): void {
+  if (still) {
+    s.x = target;
+    s.v = 0;
+    return;
+  }
+  // Small fixed steps keep it stable and on time even when frames are slow.
+  for (let left = Math.min(delta, 0.1); left > 0; left -= 1 / 60) {
+    const dt = Math.min(left, 1 / 60);
+    s.v += (stiffness * (target - s.x) - damping * s.v) * dt;
+    s.x += s.v * dt;
+  }
+}
+
+const createMotion = () => ({
+  open: { x: IDLE.open, v: 0 },
+  turn: { x: IDLE.turn, v: 0 },
+  tilt: { x: IDLE.tilt, v: 0 },
+  y: { x: IDLE.y, v: 0 },
+  scale: { x: IDLE.scale, v: 0 },
+  pop: { x: 1, v: 0 }, // the screen text, per key
+  light: 0,
+  keys: Array.from({ length: SPACE + 1 }, (): Key => ({ x: 0, v: 0, tint: null, glow: 0 })),
+  lastKey: -1,
+});
+
+const keyX = (i: number): number => ((i % COLS) - (COLS - 1) / 2) * PITCH;
+const keyZ = (i: number): number => ROW0 + Math.floor(i / COLS) * PITCH;
+
+function roundedRect(w: number, h: number, r: number): THREE.Shape {
+  const x = -w / 2;
+  const y = -h / 2;
+  return new THREE.Shape()
+    .moveTo(x + r, y)
+    .lineTo(x + w - r, y)
+    .quadraticCurveTo(x + w, y, x + w, y + r)
+    .lineTo(x + w, y + h - r)
+    .quadraticCurveTo(x + w, y + h, x + w - r, y + h)
+    .lineTo(x + r, y + h)
+    .quadraticCurveTo(x, y + h, x, y + h - r)
+    .lineTo(x, y + r)
+    .quadraticCurveTo(x, y, x + r, y);
+}
+
+function heart(s: number): THREE.Shape {
+  return new THREE.Shape()
+    .moveTo(0, -0.9 * s)
+    .bezierCurveTo(-0.35 * s, -0.55 * s, -s, -0.25 * s, -s, 0.25 * s)
+    .bezierCurveTo(-s, 0.7 * s, -0.45 * s, 0.95 * s, 0, 0.55 * s)
+    .bezierCurveTo(0.45 * s, 0.95 * s, s, 0.7 * s, s, 0.25 * s)
+    .bezierCurveTo(s, -0.25 * s, 0.35 * s, -0.55 * s, 0, -0.9 * s);
+}
+
+/** A five-point star with every corner rounded off, so it looks soft. */
+function star(outer: number, inner: number): THREE.Shape {
+  const at = (i: number): [number, number] => {
+    const r = i % 2 ? inner : outer;
+    const a = Math.PI / 2 + (i * Math.PI) / 5;
+    return [Math.cos(a) * r, Math.sin(a) * r];
+  };
+  const mid = (i: number): [number, number] => {
+    const [x, y] = at(i);
+    const [u, v] = at(i + 1);
+    return [(x + u) / 2, (y + v) / 2];
+  };
+  const shape = new THREE.Shape().moveTo(...mid(0));
+  for (let i = 1; i <= 10; i++) shape.quadraticCurveTo(...at(i), ...mid(i));
+  return shape;
+}
+
+const puffy = (shape: THREE.Shape): THREE.ExtrudeGeometry =>
+  new THREE.ExtrudeGeometry(shape, {
+    depth: 0.01,
+    bevelEnabled: true,
+    bevelThickness: 0.025,
+    bevelSize: 0.022,
+    bevelSegments: 6,
+    curveSegments: 32,
+  });
+
+/** A block caret for a line `size` px tall whose top is at `y`. */
+function caretBlock(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  size: number,
+  color: string,
+): void {
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.roundRect(x, y + size * 0.12, size * 0.5, size * 0.84, size * 0.08);
+  ctx.fill();
+}
+
+/** Splits a line still wider than `room` letter by letter. */
+function splitLetters(ctx: CanvasRenderingContext2D, line: string, room: number): string[] {
+  const parts = [""];
+  for (const letter of line) {
+    const last = parts[parts.length - 1] ?? "";
+    if (last && ctx.measureText(last + letter).width > room) parts.push(letter);
+    else parts[parts.length - 1] = last + letter;
+  }
+  return parts;
+}
+
+type Layout = (ctx: CanvasRenderingContext2D, text: string, room: number) => string[];
+
+// Tried in order, each from its biggest size to its smallest: one big line,
+// then wrapped by words, and only then with long words split by letters.
+const LAYOUTS: ReadonlyArray<readonly [number, number, Layout]> = [
+  [160, 100, (_, text) => [text]],
+  [132, 64, (ctx, text, room) => wrapText(ctx, text, room)],
+  [
+    132,
+    36,
+    (ctx, text, room) => wrapText(ctx, text, room).flatMap((line) => splitLetters(ctx, line, room)),
+  ],
+];
+
+/** The biggest size, and its lines, at which `text` and its caret fit `width` by `height`. */
+function fitText(ctx: CanvasRenderingContext2D, text: string, width: number, height: number) {
+  const font = pageFont();
+  for (const [biggest, smallest, layout] of LAYOUTS) {
+    for (let size = biggest; size >= smallest; size -= 4) {
+      ctx.font = `900 ${size}px ${font}`;
+      const room = width - size * 0.6;
+      const lines = layout(ctx, text, room);
+      const fits = lines.every((line) => ctx.measureText(line).width <= room);
+      if (fits && lines.length * size * 1.05 <= height) return { size, lines };
+    }
+  }
+  return { size: 36, lines: [text] };
+}
+
+/** The lit screen: the prompt and any `command`, then the typed text as big as it fits. */
+function drawScreen(
+  ctx: CanvasRenderingContext2D,
+  w: number,
+  h: number,
+  colors: LaptopColors,
+  text: string,
+  caret: boolean,
+  command: string,
+): void {
+  const pad = 64;
