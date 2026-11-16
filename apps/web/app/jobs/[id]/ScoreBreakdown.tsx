@@ -97,37 +97,5 @@ export function ScoreBreakdown({
         <code>NodeJS</code> cuentan igual.
       </p>
     </Card>
-                {earned} / {total}
-              </span>
-              <span className="num" style={{ ...RIGHT, color: "var(--gold-deep)" }}>
-                {result.score}%
-              </span>
-            </div>
-          </div>
-
-          <p className="lead">
-            Every requirement you meet adds its weight to yours. You earn{" "}
-            <strong style={{ color: "var(--ink-secondary)" }}>{earned}</strong> of the{" "}
-            <strong style={{ color: "var(--ink-secondary)" }}>{total}</strong> weight this vacancy
-            puts on the table, and {earned} divided by {total} is {scoreFromWeights(earned, total)}
-            %.
-            {result.location &&
-              ` The vacancy is in ${result.location.city} and you won't relocate, so it loses ${result.location.points} points: ${result.score}%.`}
-          </p>
-
-          <div className="card stack" style={{ gap: 5 }}>
-            <span style={{ fontSize: 13.5 }}>How the score is built</span>
-            <p className="lead">
-              Every requirement carries a weight: a must-have is worth {WEIGHTS["must-have"]}, a
-              nice-to-have is worth {WEIGHTS["nice-to-have"]}. Your score is the weight you earn
-              divided by the weight on offer. If you won&apos;t relocate, a vacancy that is not
-              remote and sits outside your city loses {LOCATION_DEDUCTION} points. No other factors
-              and no ranking by company. Skill names are matched loosely, so <code>Node.js</code>,{" "}
-              <code>node js</code> and <code>NodeJS</code> all count as one skill.
-            </p>
-          </div>
-        </>
-      )}
-    </section>
   );
 }
