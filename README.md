@@ -52,7 +52,7 @@ cp .env.example .env.local   # required: the app fails at start without DATABASE
 
 pnpm db:up                   # PostgreSQL 17 on :5433
 pnpm db:migrate              # forward-only, re-runnable
-pnpm db:seed                 # 20 vacancies, one candidate, six applications
+pnpm db:seed                 # 50 vacancies, the demo candidate, two test profiles, six applications
 
 pnpm dev                     # http://localhost:3000
 ```
