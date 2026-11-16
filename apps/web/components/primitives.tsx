@@ -189,10 +189,6 @@ export function Chip({ children, tone = "plain" }: { children: ReactNode; tone?:
       {tone === "met" && <Icon name="check" size={12} strokeWidth={3} />}
       {tone === "missing" && <Icon name="close" size={12} strokeWidth={3} />}
       {tone === "dashed" && <span className="size-1.5 rounded-full bg-control" />}
-    <span className={className}>
-      {tone === "met" && <Icon name="check" size={11} strokeWidth={2.6} />}
-      {tone === "missing" && <Icon name="close" size={11} strokeWidth={2.6} />}
-      {tone === "dashed" && <span className="chip__dot" />}
       {children}
     </span>
   );
@@ -200,16 +196,16 @@ export function Chip({ children, tone = "plain" }: { children: ReactNode; tone?:
 
 export function EmptyState({ title, children }: { title: string; children?: ReactNode }) {
   return (
-    <div className="empty">
-      <p style={{ margin: 0, color: "var(--ink-secondary)" }}>{title}</p>
-      {children && (
-        <p className="lead" style={{ marginTop: 8 }}>
-          {children}
-        </p>
-      )}
+    <div className="rounded-3xl border border-dashed border-control/60 bg-canvas px-6 py-10 text-center">
+      <p className="font-bold text-slate">{title}</p>
+      {children && <p className="mt-2 text-sm text-muted">{children}</p>}
     </div>
   );
 }
+
+/** Text inputs and selects share one look: a pill with a visible boundary. */
+export const inputClass =
+  "h-11 w-full rounded-full border border-control bg-canvas px-4 text-[15px] text-ink placeholder:text-faint outline-none transition focus:border-brand focus:ring-4 focus:ring-brand-wash";
 
 /**
  * One labelled input. Pass `group` when the label covers several controls
@@ -229,17 +225,37 @@ export function Field({
 }) {
   const body = (
     <>
-      <span className="field__label">{label}</span>
+      <span className="text-sm font-bold text-ink">{label}</span>
       {children}
-      {hint && <span className="field__hint">{hint}</span>}
+      {hint && <span className="text-xs text-muted">{hint}</span>}
     </>
   );
 
   return group ? (
-    <div className="field" role="group" aria-label={label}>
+    <div className="flex flex-col gap-2" role="group" aria-label={label}>
       {body}
     </div>
   ) : (
-    <label className="field">{body}</label>
+    <label className="flex flex-col gap-2">{body}</label>
+  );
+}
+
+/** A big number with its label, for the strips of figures at the top of a screen. */
+export function Stat({
+  value,
+  label,
+  accent = false,
+}: {
+  value: string;
+  label: string;
+  accent?: boolean;
+}) {
+  return (
+    <div className="flex flex-col">
+      <span className={`text-3xl font-black tabular-nums ${accent ? "text-brand" : "text-navy"}`}>
+        {value}
+      </span>
+      <span className="text-xs font-bold text-muted">{label}</span>
+    </div>
   );
 }
