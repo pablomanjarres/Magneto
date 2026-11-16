@@ -1,31 +1,13 @@
-import type { CSSProperties } from "react";
-import type { ScoreResult } from "@moonlight/types";
+import type { RequirementKind, ScoreResult } from "@moonlight/types";
 import { LOCATION_DEDUCTION, WEIGHTS, scoreFromWeights } from "@moonlight/core";
 
 import { Icon } from "../../../components/Icon";
-import { EmptyState } from "../../../components/primitives";
+import { Card, EmptyState } from "../../../components/primitives";
 
-/** Requirement, kind, weight, met — the four columns of the breakdown table. */
-const COLUMNS = "minmax(0, 1fr) 128px 92px 96px";
-
-const ROW: CSSProperties = { display: "grid", gridTemplateColumns: COLUMNS, padding: "13px 18px" };
-
-const HEAD_ROW: CSSProperties = {
-  ...ROW,
-  padding: "11px 18px",
-  borderBottom: "1px solid var(--line)",
-  fontSize: 11,
-  letterSpacing: "1.1px",
-  textTransform: "uppercase",
-  color: "var(--faint)",
+export const KIND_LABELS: Record<RequirementKind, string> = {
+  "must-have": "Obligatorio",
+  "nice-to-have": "Deseable",
 };
-
-const TOTAL_ROW: CSSProperties = { ...ROW, background: "var(--tint)", fontSize: 13 };
-
-const RIGHT: CSSProperties = { textAlign: "right" };
-
-/** The last two columns hold numbers, so they hug the right edge. */
-const HEADINGS = ["Requirement", "Kind", "Weight", "You"];
 
 /** The score line by line: what the vacancy asks for, and what you bring to it. */
 export function ScoreBreakdown({
@@ -37,94 +19,84 @@ export function ScoreBreakdown({
   earned: number;
   total: number;
 }) {
+  if (result.breakdown.length === 0) {
+    return (
+      <EmptyState title="Esta vacante no lista requisitos">
+        No hay nada contra qué comparar tus habilidades, así que el puntaje queda en cero y la
+        vacante sale del ranking.
+      </EmptyState>
+    );
+  }
+
   return (
-    <section className="stack" style={{ gap: 14 }}>
-      <div className="split">
-        <h2 className="h2">Why you scored {result.score}%</h2>
-        <span className="meta" style={RIGHT}>
-          {result.reason}
-        </span>
+    <Card className="flex animate-rise flex-col gap-5 p-6 [animation-delay:150ms]">
+      <div>
+        <h2 className="text-xl font-black text-slate">Por qué tienes {result.score}%</h2>
+        <p className="mt-1 text-sm text-muted">{result.reason}</p>
       </div>
 
-      {result.breakdown.length === 0 ? (
-        <EmptyState title="This vacancy lists no requirements">
-          There is nothing to weigh your skills against, so the score stays at zero and the vacancy
-          is kept out of the ranking rather than padded with a guess.
-        </EmptyState>
-      ) : (
-        <>
-          <div
-            style={{
-              border: "1px solid var(--line-strong)",
-              borderRadius: "var(--radius)",
-              background: "var(--panel)",
-              overflow: "hidden",
-            }}
+      <ul className="flex flex-col gap-2">
+        {result.breakdown.map((line) => (
+          <li
+            key={line.skill}
+            className={`flex items-center gap-3 rounded-2xl px-4 py-3 ${line.met ? "bg-mint-wash" : "bg-danger-wash"}`}
           >
-            <div style={HEAD_ROW}>
-              {HEADINGS.map((heading, index) => (
-                <span key={heading} style={index < 2 ? undefined : RIGHT}>
-                  {heading}
-                </span>
-              ))}
-            </div>
+            <span
+              className={`grid size-7 shrink-0 place-items-center rounded-full text-white ${line.met ? "bg-mint-deep" : "bg-danger"}`}
+            >
+              <Icon name={line.met ? "check" : "close"} size={14} strokeWidth={3} />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block font-bold text-ink">{line.skill}</span>
+              <span className={`text-xs font-bold ${line.met ? "text-mint-deep" : "text-danger"}`}>
+                {line.met ? "Lo tienes" : "Te falta"}
+              </span>
+            </span>
+            <span className="text-right text-xs text-muted">
+              {KIND_LABELS[line.kind]}
+              <span className="block text-sm font-black text-navy tabular-nums">
+                ×{line.weight}
+              </span>
+            </span>
+          </li>
+        ))}
 
-            {result.breakdown.map((line, index) => (
-              <div
-                key={line.skill}
-                style={{
-                  ...ROW,
-                  alignItems: "center",
-                  borderBottom:
-                    index < result.breakdown.length - 1 ? "1px solid var(--line)" : "none",
-                  background: line.met ? "transparent" : "var(--tint)",
-                }}
-              >
-                <span style={{ fontSize: 14 }}>{line.skill}</span>
-                <span className="meta" style={{ color: "var(--muted)" }}>
-                  {line.kind}
-                </span>
-                <span
-                  className="num"
-                  style={{ ...RIGHT, fontSize: 13, color: "var(--ink-secondary)" }}
-                >
-                  {line.weight}
-                </span>
-                <span
-                  className="meta"
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "flex-end",
-                    gap: 6,
-                    color: line.met ? "var(--gold-deep)" : "var(--dim)",
-                  }}
-                >
-                  <Icon name={line.met ? "check" : "close"} size={14} strokeWidth={2.6} />
-                  {line.met ? "have it" : "missing"}
-                </span>
-              </div>
-            ))}
+        {result.location && (
+          <li className="flex items-center gap-3 rounded-2xl border border-dashed border-danger/40 px-4 py-3">
+            <span className="grid size-7 shrink-0 place-items-center rounded-full bg-danger-wash text-danger">
+              <Icon name="mapPin" size={14} />
+            </span>
+            <span className="min-w-0 flex-1 text-sm text-ink">
+              Fuera de tu ciudad ({result.location.city}) y no te reubicas
+            </span>
+            <span className="text-sm font-black text-danger tabular-nums">
+              −{result.location.points}
+            </span>
+          </li>
+        )}
+      </ul>
 
-            {result.location && (
-              <div
-                style={{ ...ROW, borderTop: "1px solid var(--line)", background: "var(--tint)" }}
-              >
-                <span style={{ fontSize: 14 }}>
-                  Outside your city ({result.location.city}), you won&apos;t relocate
-                </span>
-                <span />
-                <span />
-                <span className="num meta" style={{ ...RIGHT, color: "var(--dim)" }}>
-                  −{result.location.points}
-                </span>
-              </div>
-            )}
+      <div className="flex items-center justify-between rounded-2xl bg-surface px-4 py-3 text-sm">
+        <span className="text-muted">
+          Peso ganado{" "}
+          <strong className="text-ink tabular-nums">
+            {earned} / {total}
+          </strong>
+        </span>
+        <span className="text-lg font-black text-navy tabular-nums">{result.score}%</span>
+      </div>
 
-            <div style={TOTAL_ROW}>
-              <span style={{ color: "var(--muted)" }}>Weight earned</span>
-              <span />
-              <span className="num" style={RIGHT}>
+      <p className="text-sm text-pretty text-muted">
+        Ganas {earned} del peso total de {total}: {earned} ÷ {total} ={" "}
+        {scoreFromWeights(earned, total)}%.
+        {result.location &&
+          ` La vacante está en ${result.location.city} y no te reubicas, así que pierde ${result.location.points} puntos: ${result.score}%.`}{" "}
+        Un obligatorio vale ×{WEIGHTS["must-have"]} y un deseable ×{WEIGHTS["nice-to-have"]}; si no
+        te reubicas, una vacante no remota fuera de tu ciudad pierde {LOCATION_DEDUCTION} puntos.
+        Los nombres de habilidades se comparan con flexibilidad: <code>Node.js</code> y{" "}
+        <code>NodeJS</code> cuentan igual.
+      </p>
+    </Card>
                 {earned} / {total}
               </span>
               <span className="num" style={{ ...RIGHT, color: "var(--gold-deep)" }}>
