@@ -178,3 +178,128 @@ function joinJob(a: Experience, b: Experience): Experience {
     startDate: dated.startDate,
     endDate: dated.endDate,
     description: best.description?.trim() ? best.description : other.description,
+    source: best.source,
+  };
+}
+
+function joinStudy(a: Education, b: Education): Education {
+  const [best, other] = rank(b.source) > rank(a.source) ? [b, a] : [a, b];
+  return {
+    institution: fuller(best.institution, other.institution),
+    degree: fuller(best.degree, other.degree),
+    startYear: best.startYear || other.startYear,
+    endYear: best.endYear ?? other.endYear,
+    source: best.source,
+  };
+}
+
+/** Adds each incoming item to the list, or joins it with its twin already there. */
+function gather<T>(
+  list: readonly T[],
+  incoming: readonly T[],
+  same: (a: T, b: T) => boolean,
+  join: (a: T, b: T) => T,
+): { list: T[]; added: number; joined: number } {
+  const out = [...list];
+  let added = 0;
+  let joined = 0;
+  for (const item of incoming) {
+    const twin = out.findIndex((held) => same(held, item));
+    if (twin === -1) {
+      out.push(item);
+      added++;
+    } else {
+      out[twin] = join(out[twin] as T, item);
+      joined++;
+    }
+  }
+  return { list: out, added, joined };
+}
+
+const joinSkill = (held: Skill): Skill => held;
+
+/**
+ * The profile after an import the candidate confirmed. "replace" keeps only the
+ * profile's id: name, contact, entries and preferences all come from the import
+ * (an e-mail it lacks stays empty for the review to ask). "complement" keeps
+ * what is there, fills empty contact fields, and joins twins instead of adding them.
+ */
+export function applyImport(
+  profile: Profile,
+  imported: ImportedProfile,
+  mode: ImportMode,
+): ImportResult {
+  const tag = <T extends { source?: ProfileSource | undefined }>(items: readonly T[]): T[] =>
+    items.map((item) => ({ ...item, source: item.source ?? imported.source }));
+  const incoming = {
+    experience: tag(imported.experience),
+    education: tag(imported.education),
+    skills: tag(imported.skills).map((s) => ({ ...s, name: cleanSkillName(s.name) })),
+  };
+  const replacing = mode === "replace";
+  // Joining starts from the profile already cleared of twins, so old duplicates go too.
+  const start = <T>(items: readonly T[], same: (a: T, b: T) => boolean, join: (a: T, b: T) => T) =>
+    replacing ? [] : gather([], items, same, join).list;
+
+  const experience = gather(
+    start(profile.experience, sameJob, joinJob),
+    incoming.experience,
+    sameJob,
+    joinJob,
+  );
+  const education = gather(
+    start(profile.education, sameStudy, joinStudy),
+    incoming.education,
+    sameStudy,
+    joinStudy,
+  );
+  const bySkill = (a: Skill, b: Skill): boolean => sameSkill(a.name, b.name);
+  const skills = gather(
+    start(profile.skills, bySkill, joinSkill),
+    incoming.skills,
+    bySkill,
+    joinSkill,
+  );
+
+  const name = imported.fullName?.trim() ?? "";
+  const email = imported.email?.trim() ?? "";
+  const city = imported.city?.trim() ?? "";
+
+  return {
+    profile: replacing
+      ? {
+          id: profile.id,
+          fullName: name || profile.fullName,
+          email,
+          city: city || undefined,
+          experience: experience.list,
+          education: education.list,
+          skills: skills.list,
+          expectations: { workModes: [], cities: [] },
+        }
+      : {
+          ...profile,
+          fullName: profile.fullName.trim() || name,
+          email: profile.email.trim() || email,
+          city: profile.city?.trim() || city || undefined,
+          experience: experience.list,
+          education: education.list,
+          skills: skills.list,
+        },
+    added: {
+      experience: experience.added,
+      education: education.added,
+      skills: skills.added,
+    },
+    joined: replacing
+      ? NONE
+      : { experience: experience.joined, education: education.joined, skills: skills.joined },
+    removed: replacing
+      ? {
+          experience: profile.experience.length,
+          education: profile.education.length,
+          skills: profile.skills.length,
+        }
+      : NONE,
+  };
+}
