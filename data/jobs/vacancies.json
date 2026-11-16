@@ -818,5 +818,185 @@
         "kind": "must-have"
       },
       {
+        "skill": "Docker",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "gRPC",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v027",
+    "title": "Data Analyst",
+    "company": "Bavaria",
+    "city": "Bogotá",
+    "workMode": "hybrid",
+    "salaryMin": 5500000,
+    "salaryMax": 8000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "SQL",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Python",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Power BI",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Excel",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Pandas",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v028",
+    "title": "Senior Frontend Engineer",
+    "company": "Platzi",
+    "city": "Remote",
+    "workMode": "remote",
+    "salaryMin": 11000000,
+    "salaryMax": 15000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "React",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Next.js",
+        "kind": "must-have"
+      },
+      {
+        "skill": "TypeScript",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Tailwind CSS",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Jest",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "GraphQL",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v029",
+    "title": "Android Developer",
+    "company": "Tigo",
+    "city": "Medellín",
+    "workMode": "hybrid",
+    "salaryMin": 7000000,
+    "salaryMax": 10500000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Kotlin",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Jetpack Compose",
+        "kind": "must-have"
+      },
+      {
+        "skill": "REST",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Firebase",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Git",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v030",
+    "title": "Data Scientist",
+    "company": "Grupo Éxito",
+    "city": "Envigado",
+    "workMode": "hybrid",
+    "salaryMin": 9500000,
+    "salaryMax": 13500000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Python",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Machine Learning",
+        "kind": "must-have"
+      },
+      {
+        "skill": "SQL",
+        "kind": "must-have"
+      },
+      {
+        "skill": "scikit-learn",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Pandas",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v031",
+    "title": "Semi Senior Full Stack Developer",
+    "company": "Sistemas y Computadores",
+    "city": "Bucaramanga",
+    "workMode": "hybrid",
+    "salaryMin": 6000000,
+    "salaryMax": 9000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "TypeScript",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Next.js",
+        "kind": "must-have"
+      },
+      {
+        "skill": "NestJS",
+        "kind": "must-have"
+      },
+      {
+        "skill": "PostgreSQL",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Jest",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v032",
+    "title": "Junior QA Automation Analyst",
+    "company": "Choucair",
+    "city": "Medellín",
+    "workMode": "hybrid",
+    "salaryMin": 3500000,
   }
 ]
