@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type {
   Education,
@@ -173,6 +174,7 @@ export function OnboardingWizard({
           </div>
 
           <div key={step} className="flex animate-rise flex-col gap-5">
+            {step === 0 && <ImportPrompt />}
             {step === 0 && <BasicsStep profile={profile} onPatch={patch} />}
 
             {step === 1 && (
@@ -299,5 +301,29 @@ function Stepper({ step, onGo }: { step: number; onGo: (index: number) => void }
         );
       })}
     </ol>
+  );
+}
+
+/** The shortcut past typing it all: bring the entries from LinkedIn or a résumé. */
+function ImportPrompt() {
+  return (
+    <Link
+      href="/import"
+      className="group flex items-center gap-3 rounded-3xl border border-brand/30 bg-brand-wash p-4 transition hover:border-brand"
+    >
+      <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-canvas text-brand">
+        <Icon name="upload" size={18} />
+      </span>
+      <span className="flex-1 text-sm text-ink">
+        <span className="font-bold text-slate">¿Tienes LinkedIn o una hoja de vida en PDF?</span>{" "}
+        Impórtala y revisa lo que encontremos.
+      </span>
+      <span className="flex items-center gap-1 text-sm font-bold text-brand">
+        Importar
+        <span className="transition group-hover:translate-x-0.5">
+          <Icon name="arrowRight" size={16} />
+        </span>
+      </span>
+    </Link>
   );
 }
