@@ -178,3 +178,51 @@ export function TailorPanel({
                   <Icon name={copied ? "check" : "copy"} size={14} strokeWidth={2.4} />
                   {copied ? "Copiado" : "Copiar"}
                 </button>
+                <button
+                  type="button"
+                  className={buttonClass("primary", "sm")}
+                  onClick={() => window.print()}
+                >
+                  <Icon name="download" size={14} strokeWidth={2.4} />
+                  Descargar CV adaptado
+                </button>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div role="group" aria-label="Vista" className="flex flex-wrap gap-2">
+                {VIEWS.map(({ id, label }) => (
+                  <TogglePill key={id} on={view === id} onClick={() => setView(id)}>
+                    {label}
+                  </TogglePill>
+                ))}
+              </div>
+              <DiffLegend />
+            </div>
+
+            {view === "split" ? (
+              <div className="grid gap-6 md:grid-cols-2">
+                {sides.map(({ side, label }) => (
+                  // Named, so both sheets' identical section headings can be told apart.
+                  <section key={side} aria-label={label} className="flex min-w-0 flex-col gap-3">
+                    <Eyebrow>{label}</Eyebrow>
+                    <HarvardCv diff={result.diff} side={side} compact />
+                  </section>
+                ))}
+              </div>
+            ) : (
+              <CvChanges diff={result.diff} />
+            )}
+          </div>
+        )}
+      </Card>
+
+      {result && (
+        // The vacancy page hides itself in print while this sheet exists.
+        <div data-print-sheet className="hidden print:block">
+          <HarvardCv doc={result.after} standalone />
+        </div>
+      )}
+    </>
+  );
+}
