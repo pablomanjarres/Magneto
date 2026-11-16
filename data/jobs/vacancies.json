@@ -638,5 +638,185 @@
         "kind": "nice-to-have"
       }
     ]
+  },
+  {
+    "id": "v021",
+    "title": "Senior Full Stack Developer",
+    "company": "Pragma",
+    "city": "Medellín",
+    "workMode": "hybrid",
+    "salaryMin": 12000000,
+    "salaryMax": 16500000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "TypeScript",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Next.js",
+        "kind": "must-have"
+      },
+      {
+        "skill": "NestJS",
+        "kind": "must-have"
+      },
+      {
+        "skill": "PostgreSQL",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Docker",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "AWS",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v022",
+    "title": "Junior Data Analyst",
+    "company": "ESSA",
+    "city": "Bucaramanga",
+    "workMode": "onsite",
+    "salaryMin": 3200000,
+    "salaryMax": 4500000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "SQL",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Excel",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Power BI",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v023",
+    "title": "Flutter Developer",
+    "company": "Imagine Apps",
+    "city": "Medellín",
+    "workMode": "hybrid",
+    "salaryMin": 6500000,
+    "salaryMax": 9500000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Flutter",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Dart",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Firebase",
+        "kind": "must-have"
+      },
+      {
+        "skill": "REST",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Git",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v024",
+    "title": "Senior Java Developer",
+    "company": "Banco de Occidente",
+    "city": "Cali",
+    "workMode": "hybrid",
+    "salaryMin": 10500000,
+    "salaryMax": 14500000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Java",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Spring Boot",
+        "kind": "must-have"
+      },
+      {
+        "skill": "SQL",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Docker",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Azure",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v025",
+    "title": "UX/UI Designer",
+    "company": "Wompi",
+    "city": "Medellín",
+    "workMode": "hybrid",
+    "salaryMin": 6000000,
+    "salaryMax": 9000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Figma",
+        "kind": "must-have"
+      },
+      {
+        "skill": "UX Research",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Design Systems",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Miro",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "HTML",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v026",
+    "title": "Go Backend Developer",
+    "company": "Truora",
+    "city": "Remote",
+    "workMode": "remote",
+    "salaryMin": 9000000,
+    "salaryMax": 13500000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Go",
+        "kind": "must-have"
+      },
+      {
+        "skill": "PostgreSQL",
+        "kind": "must-have"
+      },
+      {
+        "skill": "AWS",
+        "kind": "must-have"
+      },
+      {
   }
 ]
