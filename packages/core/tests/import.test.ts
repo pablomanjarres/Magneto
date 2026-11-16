@@ -301,3 +301,100 @@ describe("applyImport, completing", () => {
     expect(added).toEqual({ experience: 1, education: 0, skills: 1 });
     expect(joined).toEqual({ experience: 1, education: 1, skills: 3 });
   });
+
+  it("gives the same result the other way round, without duplicating anything", () => {
+    const first = applyImport(laura, resume, "complement").profile;
+    const { profile, added } = applyImport(first, linkedin, "complement");
+
+    expect(profile.experience.map((e) => `${e.company} · ${e.title}`)).toEqual([
+      "Acme Labs · Founder and Software Engineer",
+      "Globant · Frontend Developer",
+      "Globant · Intern",
+    ]);
+    expect(profile.experience[0]?.description).toBe("Built the API.\nShipped the CLI.");
+    expect(profile.education).toHaveLength(1);
+    expect(profile.skills.map((s) => s.name)).toEqual(["Python", "React", "MCP", "Figma"]);
+    expect(added).toEqual({ experience: 1, education: 0, skills: 0 });
+  });
+
+  it("joins one degree written in two languages, filling the start year the résumé left out", () => {
+    const spanish: Profile = {
+      ...laura,
+      education: [
+        {
+          institution: "Universidad EAFIT",
+          degree: "Pregrado en Ingeniería de Sistemas",
+          startYear: 0,
+          endYear: 2030,
+          source: "resume",
+        },
+      ],
+    };
+    const english: ImportedProfile = {
+      ...linkedin,
+      education: [
+        {
+          institution: "Universidad EAFIT",
+          degree: "Systems Engineering, Computer Science",
+          startYear: 2025,
+          endYear: 2030,
+        },
+      ],
+    };
+    expect(applyImport(spanish, english, "complement").profile.education).toEqual([
+      {
+        institution: "Universidad EAFIT",
+        degree: "Pregrado en Ingeniería de Sistemas",
+        startYear: 2025,
+        endYear: 2030,
+        source: "resume",
+      },
+    ]);
+  });
+
+  it("keeps two degrees from one university apart when their years do not overlap", () => {
+    const bachelor: Profile = {
+      ...laura,
+      education: [
+        { institution: "EAFIT", degree: "Ingeniería de Sistemas", startYear: 2016, endYear: 2021 },
+      ],
+    };
+    const master: ImportedProfile = {
+      ...resume,
+      education: [{ institution: "EAFIT", degree: "Maestría en Analítica", startYear: 2023 }],
+    };
+    expect(applyImport(bachelor, master, "complement").profile.education).toHaveLength(2);
+  });
+
+  it("fills empty contact fields and keeps the ones already there", () => {
+    const { profile } = applyImport({ ...laura, city: "Cali" }, resume, "complement");
+    expect(profile.email).toBe("laura@example.com");
+    expect(profile.city).toBe("Cali");
+    expect(profile.fullName).toBe("Laura Restrepo");
+  });
+
+  it("keeps what the candidate typed over imported wording", () => {
+    const typed: Profile = {
+      ...laura,
+      experience: [
+        { company: "Acme Labs", title: "Founder", startDate: "2026-01", description: "Typed." },
+      ],
+    };
+    const { profile } = applyImport(typed, resume, "complement");
+    expect(profile.experience[0]).toMatchObject({
+      title: "Founder and Software Engineer",
+      description: "Typed.",
+    });
+  });
+
+  it("never duplicates an entry repeated inside one import", () => {
+    const twice: ImportedProfile = {
+      ...resume,
+      experience: [resume.experience[0]!, resume.experience[0]!],
+      skills: [{ name: "React" }, { name: "react" }, { name: "ReactJS" }],
+    };
+    const { profile } = applyImport(laura, twice, "complement");
+    expect(profile.experience).toHaveLength(1);
+    expect(profile.skills.map((s) => s.name)).toEqual(["React"]);
+  });
+});
