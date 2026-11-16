@@ -1,10 +1,12 @@
 import Link from "next/link";
 
 import { AppShell } from "../../components/AppShell";
-import { CompletenessPanel, filledFieldsLabel } from "../../components/CompletenessPanel";
-import { EmptyState } from "../../components/primitives";
-import { Icon } from "../../components/Icon";
+import { CompletenessPanel } from "../../components/CompletenessPanel";
+import { CountUp } from "../../components/CountUp";
 import { MarketGaps } from "../../components/MarketGaps";
+import { MoonHero } from "../../components/moon/MoonHero";
+import { ButtonLink, Card, EmptyState, Eyebrow } from "../../components/primitives";
+import { Icon } from "../../components/Icon";
 import { VacancyRow } from "../../components/VacancyRow";
 import { loadAppliedIds, loadRanked, requireProfile } from "../../lib/queries";
 
@@ -17,99 +19,134 @@ export default async function DashboardPage() {
   const applied = await loadAppliedIds(profile.id);
   const byId = new Map(vacancies.map((v) => [v.id, v]));
   const top = ranked.slice(0, 3);
+  // The five best matches orbit the moon in the hero; clicking one opens it.
+  const satellites = ranked.slice(0, 5).map((r) => ({
+    id: r.vacancyId,
+    title: byId.get(r.vacancyId)?.title ?? r.vacancyId,
+    score: r.score,
+  }));
   const topGap = gaps[0];
+  const firstName = profile.fullName.split(" ")[0];
+  const complete = completeness.percentage === 100;
+
+  const figures = [
+    { value: ranked.length, label: "vacantes evaluadas" },
+    { value: ranked[0]?.score ?? 0, label: "% tu mejor match" },
+    { value: applied.size, label: "postulaciones" },
+  ];
 
   return (
-    <AppShell title="Dashboard" meta={`${ranked.length} vacancies scored`}>
-      <section
-        className="panel"
-        style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 300px", gap: 32 }}
-      >
-        <CompletenessPanel
-          completeness={completeness}
-          heading={<h1 className="display">Your profile is {completeness.percentage}% complete</h1>}
-          detail={filledFieldsLabel(completeness)}
-        />
+    <AppShell>
+      <section className="relative isolate grid animate-pop overflow-hidden rounded-[32px] bg-navy text-white lg:grid-cols-[1.1fr_1fr]">
+        {/* Aurora behind everything, in the two brand purples. */}
+        <div className="pointer-events-none absolute -top-40 -left-24 -z-10 size-[520px] rounded-full bg-brand/45 blur-[110px] motion-safe:animate-aurora" />
+        <div className="pointer-events-none absolute -right-24 -bottom-48 -z-10 size-[460px] rounded-full bg-brand-soft/30 blur-[120px] motion-safe:animate-aurora" />
 
-        <div
-          className="stack"
-          style={{ justifyContent: "center", borderLeft: "1px solid var(--line)", paddingLeft: 32 }}
-        >
-          <p className="lead">
-            Your matches are already scored — completeness does not gate that. The empty fields are
-            what a recruiter sees missing.
-          </p>
-          <Link href="/onboarding" className="btn btn--primary">
-            Finish my profile
-            <Icon name="arrowRight" size={16} strokeWidth={2.4} />
-          </Link>
+        <div className="flex flex-col gap-6 p-7 sm:p-10">
+          <div>
+            <Eyebrow tone="mint">Hola, {firstName}</Eyebrow>
+            <h1 className="mt-3 text-4xl font-black text-balance sm:text-5xl">
+              Tu perfil está al <CountUp value={completeness.percentage} />%
+            </h1>
+            <p className="mt-3 max-w-md text-pretty text-white/75">
+              {complete
+                ? "Luna llena. Tu perfil está completo y cada vacante se evalúa con todo lo que sabes hacer."
+                : "Cada campo que completas ilumina un poco más tu luna. Un perfil completo es lo que ve el reclutador."}
+            </p>
+          </div>
+
+          <CompletenessPanel completeness={completeness} dark />
+
+          <div className="flex flex-wrap gap-3">
+            <ButtonLink href="/onboarding">
+              {complete ? "Editar mi perfil" : "Completar mi perfil"}
+              <Icon name="arrowRight" size={16} strokeWidth={2.4} />
+            </ButtonLink>
+            <Link
+              href="/jobs"
+              className="inline-flex h-11 items-center rounded-full border border-white/30 px-5 font-bold text-white transition hover:bg-white/10"
+            >
+              Ver vacantes
+            </Link>
+          </div>
+
+          <dl className="mt-auto grid grid-cols-3 gap-4 border-t border-white/15 pt-6">
+            {figures.map((f) => (
+              <div key={f.label}>
+                <dt className="sr-only">{f.label}</dt>
+                <dd className="text-3xl font-black">
+                  <CountUp value={f.value} />
+                </dd>
+                <p className="text-xs text-white/65">{f.label}</p>
+              </div>
+            ))}
+          </dl>
+        </div>
+
+        <div className="relative h-[320px] lg:h-auto lg:min-h-[460px]">
+          <MoonHero
+            percentage={completeness.percentage}
+            satellites={satellites}
+            moonHref="/onboarding"
+          />
         </div>
       </section>
 
-      <div className="two-col">
-        <section className="stack">
-          <div className="split">
-            <h2 className="h2">Your top matches</h2>
-            <Link href="/jobs" className="meta" style={{ color: "var(--glow)" }}>
-              See all {ranked.length}
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
+        <section className="flex flex-col gap-4">
+          <div className="flex items-end justify-between">
+            <h2 className="text-2xl font-black text-slate">Tus mejores coincidencias</h2>
+            <Link href="/jobs" className="text-sm font-bold text-brand hover:underline">
+              Ver las {ranked.length}
             </Link>
           </div>
 
           {top.length === 0 ? (
-            <EmptyState title="No vacancies scored yet">
-              Seed the dataset with <code>pnpm db:seed</code>.
+            <EmptyState title="Aún no hay vacantes evaluadas">
+              Carga el dataset con <code>pnpm db:seed</code>.
             </EmptyState>
           ) : (
-            top.map((result) => {
+            top.map((result, index) => {
               const vacancy = byId.get(result.vacancyId);
               return vacancy ? (
-                <VacancyRow
+                <div
                   key={result.vacancyId}
-                  vacancy={vacancy}
-                  result={result}
-                  applied={applied.has(result.vacancyId)}
-                />
+                  className="animate-rise"
+                  style={{ animationDelay: `${150 + index * 90}ms` }}
+                >
+                  <VacancyRow
+                    vacancy={vacancy}
+                    result={result}
+                    applied={applied.has(result.vacancyId)}
+                  />
+                </div>
               ) : null;
             })
           )}
         </section>
 
-        <section className="card stack" style={{ gap: 14, padding: "20px 22px" }}>
-          <div className="stack" style={{ gap: 5 }}>
-            <h2 className="h2">What the market asks for</h2>
-            <span className="meta" style={{ textWrap: "pretty" }}>
-              Skills you have not listed, counted across all {vacancies.length} open vacancies.
-              Close the top one first.
-            </span>
+        <Card className="flex animate-rise flex-col gap-5 p-6 [animation-delay:250ms]">
+          <div>
+            <h2 className="text-xl font-black text-slate">Lo que pide el mercado</h2>
+            <p className="mt-1 text-sm text-muted">
+              Habilidades que no tienes, contadas en las {vacancies.length} vacantes abiertas.
+            </p>
           </div>
 
           <MarketGaps gaps={gaps} limit={5} />
 
           {topGap && (
-            <p
-              className="lead"
-              style={{
-                display: "flex",
-                gap: 10,
-                alignItems: "center",
-                marginTop: "auto",
-                padding: "12px 14px",
-                borderRadius: 10,
-                background: "var(--wash)",
-                border: "1px solid var(--line-strong)",
-                color: "var(--ink-secondary)",
-              }}
-            >
-              <span style={{ color: "var(--glow)" }}>
-                <Icon name="check" size={18} />
+            <p className="mt-auto flex gap-3 rounded-2xl bg-brand-wash p-4 text-sm text-ink">
+              <span className="text-brand">
+                <Icon name="sparkles" size={18} />
               </span>
               <span>
-                Learning <strong>{topGap.skill}</strong> alone would raise your score on{" "}
-                {topGap.demandCount} of the {vacancies.length}.
+                Aprender <strong>{topGap.skill}</strong> sube tu puntaje en {topGap.demandCount} de
+                las {vacancies.length} vacantes.
               </span>
             </p>
           )}
-        </section>
+        </Card>
       </div>
     </AppShell>
   );
