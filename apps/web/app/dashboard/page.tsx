@@ -4,9 +4,9 @@ import { AppShell } from "../../components/AppShell";
 import { CompletenessPanel } from "../../components/CompletenessPanel";
 import { CountUp } from "../../components/CountUp";
 import { MarketGaps } from "../../components/MarketGaps";
-import { MoonHero } from "../../components/moon/MoonHero";
 import { ButtonLink, Card, EmptyState, Eyebrow } from "../../components/primitives";
 import { Icon } from "../../components/Icon";
+import { Laptop } from "../../components/toys/Laptop";
 import { VacancyRow } from "../../components/VacancyRow";
 import { loadAppliedIds, loadRanked, requireProfile } from "../../lib/queries";
 
@@ -19,12 +19,6 @@ export default async function DashboardPage() {
   const applied = await loadAppliedIds(profile.id);
   const byId = new Map(vacancies.map((v) => [v.id, v]));
   const top = ranked.slice(0, 3);
-  // The five best matches orbit the moon in the hero; clicking one opens it.
-  const satellites = ranked.slice(0, 5).map((r) => ({
-    id: r.vacancyId,
-    title: byId.get(r.vacancyId)?.title ?? r.vacancyId,
-    score: r.score,
-  }));
   const topGap = gaps[0];
   const firstName = profile.fullName.split(" ")[0];
   const complete = completeness.percentage === 100;
@@ -50,8 +44,8 @@ export default async function DashboardPage() {
             </h1>
             <p className="mt-3 max-w-md text-pretty text-white/75">
               {complete
-                ? "Luna llena. Tu perfil está completo y cada vacante se evalúa con todo lo que sabes hacer."
-                : "Cada campo que completas ilumina un poco más tu luna. Un perfil completo es lo que ve el reclutador."}
+                ? "Tu perfil está completo y cada vacante se evalúa con todo lo que sabes hacer."
+                : "Cada campo que completas acerca mejores vacantes. Un perfil completo es lo que ve el reclutador."}
             </p>
           </div>
 
@@ -63,10 +57,11 @@ export default async function DashboardPage() {
               <Icon name="arrowRight" size={16} strokeWidth={2.4} />
             </ButtonLink>
             <Link
-              href="/jobs"
-              className="inline-flex h-11 items-center rounded-full border border-white/30 px-5 font-bold text-white transition hover:bg-white/10"
+              href="/import"
+              className="inline-flex h-11 items-center gap-2 rounded-full border border-white/30 px-5 font-bold text-white transition hover:bg-white/10"
             >
-              Ver vacantes
+              <Icon name="sparkles" size={15} />
+              Importar LinkedIn o PDF
             </Link>
           </div>
 
@@ -84,10 +79,15 @@ export default async function DashboardPage() {
         </div>
 
         <div className="relative h-[320px] lg:h-auto lg:min-h-[460px]">
-          <MoonHero
-            percentage={completeness.percentage}
-            satellites={satellites}
-            moonHref="/onboarding"
+          <Laptop
+            profile={profile}
+            completeness={completeness.percentage}
+            href="/onboarding"
+            caption={
+              complete
+                ? "Haz clic en tu portátil para editar tu perfil"
+                : "Haz clic en tu portátil para completar tu perfil"
+            }
           />
         </div>
       </section>
