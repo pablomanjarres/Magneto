@@ -38,8 +38,10 @@ const MARKS: Record<Change, { tone: ChipTone; label: string; words: string; bar:
 export const markClass = (change: Change): string =>
   `rounded-[0.2em] box-decoration-clone px-[0.15em] ${MARKS[change].words}`;
 
+// Letter proportions as a minimum height, not an aspect ratio: a long résumé
+// makes the sheet taller instead of spilling out of it (Safari never stretches one).
 const SHEET =
-  "mx-auto aspect-[8.5/11] w-full max-w-[8.5in] rounded-sm border border-line bg-canvas px-[clamp(1.25rem,7cqi,0.75in)] py-[clamp(1.5rem,6cqi,0.6in)] font-cv leading-[1.35] text-ink-strong wrap-break-word shadow-[0_28px_60px_-32px_rgba(26,50,76,0.45)] [-webkit-print-color-adjust:exact] [print-color-adjust:exact] print:aspect-auto print:max-w-none print:rounded-none print:border-0 print:p-[0.15in] print:shadow-none";
+  "mx-auto min-h-[calc(min(100cqi,8.5in)*1.2941)] w-full max-w-[8.5in] rounded-sm border border-line bg-canvas px-[clamp(1.25rem,7cqi,0.75in)] py-[clamp(1.5rem,6cqi,0.6in)] font-cv leading-[1.35] text-ink-strong wrap-break-word shadow-[0_28px_60px_-32px_rgba(26,50,76,0.45)] [-webkit-print-color-adjust:exact] [print-color-adjust:exact] print:min-h-0 print:max-w-none print:rounded-none print:border-0 print:p-[0.15in] print:shadow-none";
 
 /**
  * Everything inside is sized in em, so the type alone scales the sheet; it follows the sheet's width.

@@ -1,16 +1,11 @@
-import type { Education, Experience, ImportedProfile, Profile } from "@moonlight/types";
-import { dedupeSkills, hasEducation, hasExperience, hasSkill } from "@moonlight/core";
+import type { Education, Experience, ImportedProfile } from "@moonlight/types";
+import { dedupeSkills } from "@moonlight/core";
 
-/**
- * The review screen's state: every imported entry with whether the candidate
- * keeps it. Entries the profile already has start unselected and stay so,
- * since merging them would add nothing.
- */
+/** The review screen's state: every imported entry and whether the candidate keeps it. */
 
 export interface ReviewItem<T> {
   value: T;
   selected: boolean;
-  exists: boolean;
 }
 
 export interface ReviewState {
@@ -19,32 +14,26 @@ export interface ReviewState {
   skills: ReviewItem<string>[];
 }
 
-const item = <T>(value: T, exists: boolean): ReviewItem<T> => ({
-  value,
-  exists,
-  selected: !exists,
-});
+const kept = <T>(value: T): ReviewItem<T> => ({ value, selected: true });
 
-export function initialReview(profile: Profile, imported: ImportedProfile): ReviewState {
+export function initialReview(imported: ImportedProfile): ReviewState {
   return {
-    experience: imported.experience.map((e) => item(e, hasExperience(profile, e))),
-    education: imported.education.map((e) => item(e, hasEducation(profile, e))),
-    skills: dedupeSkills(imported.skills.map((s) => s.name)).map((name) =>
-      item(name, hasSkill(profile, name)),
-    ),
+    experience: imported.experience.map((e) => kept(e)),
+    education: imported.education.map((e) => kept(e)),
+    skills: dedupeSkills(imported.skills.map((s) => s.name)).map((name) => kept(name)),
   };
 }
 
-const kept = <T>(items: ReviewItem<T>[]): T[] =>
+const chosen = <T>(items: ReviewItem<T>[]): T[] =>
   items.filter((i) => i.selected).map((i) => i.value);
 
-/** What the candidate confirmed, in the shape `mergeImport` takes. */
+/** What the candidate confirmed, in the shape `applyImport` takes. */
 export function selection(imported: ImportedProfile, review: ReviewState): ImportedProfile {
   return {
     ...imported,
-    experience: kept(review.experience),
-    education: kept(review.education),
-    skills: kept(review.skills).map((name) => ({ name, source: imported.source })),
+    experience: chosen(review.experience),
+    education: chosen(review.education),
+    skills: chosen(review.skills).map((name) => ({ name, source: imported.source })),
   };
 }
 
@@ -63,7 +52,7 @@ export function missingEducation(e: Education): string[] {
   return [
     !e.institution.trim() && "Institución",
     !e.degree.trim() && "Título",
-    !(e.startYear > 1900) && "Año de inicio",
+    !(e.startYear > 1900) && !e.endYear && "Año de inicio o de fin",
   ].filter((label): label is string => Boolean(label));
 }
 

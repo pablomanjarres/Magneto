@@ -138,6 +138,11 @@ const byLatestPosition = (a: Experience, b: Experience): number =>
  * fact from the profile, so an entry or skill the profile lacks never shows, and
  * a position shows at most as many times as the profile lists it.
  */
+/** Spoken languages, in Spanish or English, which a Harvard résumé lists apart from technical skills. */
+const LANGUAGE =
+  /^(espa[ñn]ol|ingl[eé]s|franc[eé]s|portugu[eé]s|alem[aá]n|italiano|mandar[ií]n|chino|japon[eé]s|coreano|spanish|english|french|portuguese|german|italian|mandarin|chinese|japanese|korean)\b/i;
+const isLanguage = (skill: string): boolean => LANGUAGE.test(skill.trim());
+
 export function toHarvardCv(profile: Profile, tailored?: TailoredProfile): CvDocument {
   const positions = withKeys(profile.experience, experienceKey);
   const shown = new Set<string>();
@@ -164,6 +169,9 @@ export function toHarvardCv(profile: Profile, tailored?: TailoredProfile): CvDoc
     ).map(clean),
   );
 
+  const languages = skills.filter(isLanguage);
+  const technical = skills.filter((name) => !isLanguage(name));
+
   const sections: CvSection[] = [
     {
       key: "profile",
@@ -184,7 +192,10 @@ export function toHarvardCv(profile: Profile, tailored?: TailoredProfile): CvDoc
       key: "skills",
       title: "Habilidades",
       entries: [],
-      lines: skills.length > 0 ? [`Técnicas: ${skills.join(", ")}`] : [],
+      lines: [
+        ...(technical.length > 0 ? [`Técnicas: ${technical.join(", ")}`] : []),
+        ...(languages.length > 0 ? [`Idiomas: ${languages.join(", ")}`] : []),
+      ],
     },
   ];
 

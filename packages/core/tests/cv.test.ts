@@ -754,3 +754,27 @@ describe("diffCv", () => {
     }
   });
 });
+
+describe("toHarvardCv skills", () => {
+  it("puts spoken languages on their own line", () => {
+    const cv = toHarvardCv({
+      id: "p",
+      email: "a@b.co",
+      fullName: "Laura Restrepo",
+      skills: [
+        { name: "React" },
+        { name: "Español (nativo)" },
+        { name: "SQL" },
+        { name: "Inglés B2" },
+        { name: "English (C1)" },
+      ],
+      experience: [],
+      education: [],
+      expectations: { workModes: [], cities: [] },
+    });
+    expect(cv.sections.find((s) => s.key === "skills")?.lines).toEqual([
+      "Técnicas: React, SQL",
+      "Idiomas: Español (nativo), Inglés B2, English (C1)",
+    ]);
+  });
+});

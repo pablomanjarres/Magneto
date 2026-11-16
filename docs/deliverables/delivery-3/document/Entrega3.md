@@ -67,19 +67,21 @@ La demostración y la sustentación son de ambos.
 
 ### Trabajo construido en el Sprint 3
 
-| Cambio                                                                                                      | Impacto en la arquitectura                                                                                         |
-| ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| Registro de actividades de las postulaciones                                                                | Nueva tabla `application_events` y una clase `ApplicationEvents` en el dominio (Observer)                          |
-| Interfaz rediseñada con la paleta y la tipografía de magneto365, en español                                 | Tailwind CSS reemplaza la hoja de estilos propia; los tokens de diseño viven en un solo archivo                    |
-| Portátil 3D en el asistente del perfil: al hacer clic se abre y escribe en vivo lo que el candidato teclea  | three.js y react-three-fiber en el cliente; el modelo se construye en código, sin archivos de modelo               |
-| Ordenamiento de vacantes por match, salario o empresa                                                       | Comparadores intercambiables (Strategy) en la lista de vacantes                                                    |
-| Sin pantalla de registro: la aplicación abre en el perfil de demostración                                   | Se retira `POST /api/candidates`; el inicio de sesión (#3, #32) no se evalúa en esta entrega                       |
-| Se retira el servicio Express de la PoC, como decidió el ADR 0001                                           | Un solo proceso de aplicación                                                                                      |
-| Importación desde LinkedIn y desde la hoja de vida en PDF, con revisión y edición (#4 a #10)                | `POST /api/imports` transmite el avance por _Server-Sent Events_; Apify lee LinkedIn y Claude lee el PDF           |
-| Perfil adaptado a una vacante sin inventar datos (#31)                                                      | `POST /api/profiles/[id]/tailor`; `checkTailored` en el dominio rechaza lo que no esté en el perfil                |
-| Hoja de vida en formato Harvard en `/cv`, lista para guardar como PDF                                       | `toHarvardCv` en el dominio arma el documento desde el perfil; un solo componente lo dibuja en todas las pantallas |
-| La hoja de vida adaptada junto a la original, con cada cambio marcado: lado a lado o solo los cambios (#31) | `diffCv` y `diffWords` en el dominio calculan las diferencias palabra por palabra; la pantalla solo las pinta      |
-| Validación, límite de solicitudes y registro sin datos personales (#33, #34, #36)                           | `takeToken` en el dominio; `withRequestLog` envuelve cada ruta con un id de correlación                            |
+| Cambio                                                                                                              | Impacto en la arquitectura                                                                                                                                |
+| ------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Registro de actividades de las postulaciones                                                                        | Nueva tabla `application_events` y una clase `ApplicationEvents` en el dominio (Observer)                                                                 |
+| Interfaz rediseñada con la paleta y la tipografía de magneto365, en español                                         | Tailwind CSS reemplaza la hoja de estilos propia; los tokens de diseño viven en un solo archivo                                                           |
+| Portátil 3D en el asistente del perfil: al hacer clic se abre y escribe en vivo lo que el candidato teclea          | three.js y react-three-fiber en el cliente; el modelo se construye en código, sin archivos de modelo                                                      |
+| Ordenamiento de vacantes por match, salario o empresa                                                               | Comparadores intercambiables (Strategy) en la lista de vacantes                                                                                           |
+| Sin pantalla de registro: la aplicación abre en el perfil de demostración                                           | Se retira `POST /api/candidates`; el inicio de sesión (#3, #32) no se evalúa en esta entrega                                                              |
+| Se retira el servicio Express de la PoC, como decidió el ADR 0001                                                   | Un solo proceso de aplicación                                                                                                                             |
+| Importación desde LinkedIn y desde la hoja de vida en PDF, con revisión y edición (#4 a #10)                        | `POST /api/imports` transmite el avance por _Server-Sent Events_; Apify lee LinkedIn y Claude lee el PDF                                                  |
+| Perfil adaptado a una vacante sin inventar datos (#31)                                                              | `POST /api/profiles/[id]/tailor`; `checkTailored` en el dominio rechaza lo que no esté en el perfil                                                       |
+| Hoja de vida en formato Harvard en `/cv`, lista para guardar como PDF                                               | `toHarvardCv` en el dominio arma el documento desde el perfil; un solo componente lo dibuja en todas las pantallas                                        |
+| La hoja de vida adaptada junto a la original, con cada cambio marcado: lado a lado o solo los cambios (#31)         | `diffCv` y `diffWords` en el dominio calculan las diferencias palabra por palabra; la pantalla solo las pinta                                             |
+| Validación, límite de solicitudes y registro sin datos personales (#33, #34, #36)                                   | `takeToken` en el dominio; `withRequestLog` envuelve cada ruta con un id de correlación                                                                   |
+| Luna, una asistente en cada página: desde un chat edita el perfil, adapta la hoja de vida, busca vacantes y postula | `POST /api/assistant` corre un ciclo de herramientas con la API de Claude; cada herramienta usa las reglas del dominio y los repositorios que ya existían |
+| Importar sin duplicar: lo de otra persona reemplaza el perfil y lo de la misma persona lo completa (#63)            | `applyImport` en el dominio une los cargos, estudios y habilidades repetidos en vez de agregarlos dos veces                                               |
 
 ### Historias priorizadas
 
@@ -127,7 +129,7 @@ Lo que el diagrama debe mostrar, tal como está en el código:
 - Los repositorios de `packages/db/src/repositories/`: perfiles, vacantes, postulaciones y eventos.
 - Los tipos de `packages/types`: `Profile`, `Vacancy`, `Application`, `ApplicationEvent`,
   `ScoreResult`.
-- Las reglas nuevas del dominio: `mapLinkedInProfile`, `mergeImport`, `checkTailored`, `takeToken`,
+- Las reglas nuevas del dominio: `mapLinkedInProfile`, `applyImport`, `checkTailored`, `takeToken`,
   y las de la hoja de vida en `packages/core/src/cv.ts`: `toHarvardCv`, `diffCv` y `diffWords`.
 - Los adaptadores a servicios externos de `apps/web/lib/`: `apify.ts`, `resume.ts`, `tailor.ts`,
   y el error común `UserFacingError`.

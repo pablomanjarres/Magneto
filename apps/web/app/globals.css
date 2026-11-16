@@ -48,6 +48,9 @@
   --animate-shimmer: shimmer 2.4s linear infinite;
   --animate-aurora: aurora 18s ease-in-out infinite alternate;
   --animate-scan: scan 2.4s ease-in-out infinite;
+  --animate-blink: blink 4.2s ease-in-out infinite;
+  --animate-wiggle: wiggle 0.7s ease-in-out;
+  --animate-think: think 1.4s ease-in-out infinite;
 
   @keyframes rise {
     from {
@@ -77,6 +80,32 @@
     }
     to {
       transform: translateY(100%);
+    }
+  }
+  @keyframes blink {
+    0%,
+    92%,
+    100% {
+      transform: scaleY(1);
+    }
+    95% {
+      transform: scaleY(0.1);
+    }
+  }
+  @keyframes wiggle {
+    25% {
+      transform: rotate(-10deg) scale(1.05);
+    }
+    50% {
+      transform: rotate(8deg) scale(1.05);
+    }
+    75% {
+      transform: rotate(-4deg);
+    }
+  }
+  @keyframes think {
+    50% {
+      transform: rotate(-7deg) translateY(-2px);
     }
   }
   @keyframes aurora {

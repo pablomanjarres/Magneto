@@ -8,7 +8,7 @@ repository, not when it has been discussed.
 - Board: https://github.com/users/pablomanjarres/projects/3
 - Document: [`document/Entrega3.md`](document/Entrega3.md)
 
-**Status: 32 of 57 done.** Verified against the repository on 2026-11-16.
+**Status: 34 of 59 done.** Verified against the repository on 2026-11-16.
 
 ## Roles
 
@@ -110,9 +110,13 @@ patrones 20% (exposición 10%, análisis 10%) · Funcionalidad y demostración 5
 - [x] The résumé in Harvard format at `/cv`, ready to save as PDF (Pablo)
 - [x] The tailored résumé next to the original with every change marked, side by side or
       changes only (#31) (Pablo)
+- [x] Luna, an assistant button on every page: from a chat it edits the profile, tailors the
+      résumé, finds vacancies and applies (Pablo)
+- [x] Imports never duplicate: another person's import replaces the profile, the same person's
+      completes it (#63) (Pablo)
 - [x] Input validation, rate limiting and logs without personal data (#33, #34, #36) (Pablo)
 - [ ] Sign-up and login (#3, #32): left out on purpose, login is not graded in this delivery
-- [x] `pnpm lint`, `typecheck`, `test` (137 passing) and `build` green (Pablo)
+- [x] `pnpm lint`, `typecheck`, `test` (151 passing) and `build` green (Pablo)
 - [ ] Screenshots of the screens (Valentina)
 - [ ] Rehearse the demo end to end from `pnpm db:seed` (Both)
 

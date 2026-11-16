@@ -10,6 +10,7 @@ import { CLAUDE_MODEL, claude } from "./claude";
 // Every field is a string so "not in the document" is always the same thing: "".
 const Resume = z.object({
   fullName: z.string(),
+  email: z.string(),
   city: z.string(),
   headline: z.string(),
   experience: z.array(
@@ -35,7 +36,7 @@ const Resume = z.object({
 const PROMPT = `Lee esta hoja de vida y extrae los datos del candidato.
 Copia solo lo que el documento dice, con sus mismas palabras. Nunca inventes, completes ni supongas nada.
 Si un dato no aparece, deja ese campo como texto vacío "".
-- fullName: nombre completo. city: ciudad donde vive. headline: cargo o titular que se da a sí mismo.
+- fullName: nombre completo. email: su correo. city: ciudad donde vive. headline: cargo o titular que se da a sí mismo.
 - experience: cada cargo, con fechas como "YYYY-MM" (o "YYYY" si solo hay año); endDate vacío si es su cargo actual.
 - education: cada estudio, con startYear y endYear como años de cuatro dígitos.
 - skills: cada habilidad o tecnología que el documento nombra, una por elemento.`;
@@ -104,6 +105,7 @@ export function mapResume(parsed: Resume): ImportedProfile {
   return {
     source: "resume",
     fullName: parsed.fullName.trim() || undefined,
+    email: /^\S+@\S+\.\S+$/.test(parsed.email.trim()) ? parsed.email.trim() : undefined,
     city: parsed.city.trim() || undefined,
     headline: parsed.headline.trim() || undefined,
     experience: parsed.experience

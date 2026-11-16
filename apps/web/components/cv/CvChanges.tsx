@@ -2,8 +2,8 @@ import { Fragment } from "react";
 import { differs, touched } from "@moonlight/core";
 import type { CvDiff, CvEntryDiff, CvSectionDiff, DiffPart } from "@moonlight/types";
 
-import { MovedChip, StatusChip, Words, markClass } from "../../../components/cv/HarvardCv";
-import { EmptyState } from "../../../components/primitives";
+import { MovedChip, StatusChip, Words, markClass } from "./HarvardCv";
+import { EmptyState } from "../primitives";
 
 const CARD = "flex flex-col gap-2 rounded-2xl border border-line p-4 text-sm text-ink";
 

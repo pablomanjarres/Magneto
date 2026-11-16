@@ -104,18 +104,18 @@ function educationList(v: unknown, errors: string[]): Education[] {
     const institution = str(e["institution"]);
     const degree = str(e["degree"]);
     const startYear = year(e["startYear"]);
+    const endYear = year(e["endYear"]);
     const at = `education ${i + 1}`;
 
     if (!institution) errors.push(`${at} is missing an institution`);
     if (!degree) errors.push(`${at} is missing a degree`);
-    if (startYear === undefined) {
-      errors.push(`${at} needs a start year between ${MIN_YEAR} and ${MAX_YEAR}`);
+    // A résumé often gives only the year a degree ends; 0 keeps the start unknown.
+    if (startYear === undefined && endYear === undefined) {
+      errors.push(`${at} needs a start or end year between ${MIN_YEAR} and ${MAX_YEAR}`);
     }
-    if (!institution || !degree || startYear === undefined) return [];
+    if (!institution || !degree || (startYear === undefined && endYear === undefined)) return [];
 
-    return [
-      { institution, degree, startYear, endYear: year(e["endYear"]), ...source(e["source"]) },
-    ];
+    return [{ institution, degree, startYear: startYear ?? 0, endYear, ...source(e["source"]) }];
   });
 }
 

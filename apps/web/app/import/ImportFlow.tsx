@@ -8,14 +8,14 @@ import { Icon } from "../../components/Icon";
 import { ButtonLink, Card, Eyebrow, buttonClass } from "../../components/primitives";
 import { startImport } from "../../lib/client";
 import { EntryCards } from "./EntryCards";
-import { type Added, ReviewStep, summary } from "./ReviewStep";
+import { type Saved, ReviewStep, outcome } from "./ReviewStep";
 import { ScanStage } from "./ScanStage";
 
 type Stage =
   | { kind: "entry" }
   | { kind: "scanning"; source: ProfileSource; done: number }
   | { kind: "review"; imported: ImportedProfile }
-  | { kind: "saved"; added: Added }
+  | { kind: "saved"; saved: Saved }
   | { kind: "error"; message: string };
 
 /** How long each finished step stays on screen before the next view, so the checks are seen. */
@@ -90,8 +90,8 @@ export function ImportFlow({ profile }: { profile: Profile }) {
         <ReviewStep
           profile={profile}
           imported={stage.imported}
-          onSaved={(added) => {
-            setStage({ kind: "saved", added });
+          onSaved={(saved) => {
+            setStage({ kind: "saved", saved });
             router.refresh();
           }}
         />
@@ -102,7 +102,7 @@ export function ImportFlow({ profile }: { profile: Profile }) {
           tone="mint"
           eyebrow="Listo"
           title="Tu perfil quedó actualizado"
-          lead={`Agregamos ${summary(stage.added)}. Cada vacante ya se evalúa con lo nuevo.`}
+          lead={`${outcome(stage.saved)} Cada vacante ya se evalúa con tu perfil nuevo.`}
         >
           <ButtonLink href="/cv">
             <Icon name="document" size={16} />

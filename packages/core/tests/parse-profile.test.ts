@@ -76,7 +76,7 @@ describe("parseProfile", () => {
       }),
     ).toEqual([
       "experience 2 is missing a title",
-      "education 1 needs a start year between 1900 and 2100",
+      "education 1 needs a start or end year between 1900 and 2100",
     ]);
   });
 
@@ -87,7 +87,7 @@ describe("parseProfile", () => {
       "experience 1 is missing a start date",
       "education 1 is missing an institution",
       "education 1 is missing a degree",
-      "education 1 needs a start year between 1900 and 2100",
+      "education 1 needs a start or end year between 1900 and 2100",
     ]);
   });
 
@@ -108,11 +108,21 @@ describe("parseProfile", () => {
     expect(profile.education.map((e) => e.startYear)).toEqual([1900, 2100]);
   });
 
+  it("takes a degree known only by the year it ends, keeping 0 as the unknown start", () => {
+    const profile = ok({
+      ...valid,
+      education: [{ institution: "EAFIT", degree: "Ing.", endYear: 2030 }],
+    });
+    expect(profile.education).toEqual([
+      { institution: "EAFIT", degree: "Ing.", startYear: 0, endYear: 2030 },
+    ]);
+  });
+
   it("refuses a start year outside the accepted range", () => {
     const outside = (startYear: number) =>
       errors({ ...valid, education: [{ institution: "EAFIT", degree: "Ing.", startYear }] });
-    expect(outside(1899)).toEqual(["education 1 needs a start year between 1900 and 2100"]);
-    expect(outside(2101)).toEqual(["education 1 needs a start year between 1900 and 2100"]);
+    expect(outside(1899)).toEqual(["education 1 needs a start or end year between 1900 and 2100"]);
+    expect(outside(2101)).toEqual(["education 1 needs a start or end year between 1900 and 2100"]);
   });
 
   it("keeps only real work modes", () => {
