@@ -254,4 +254,28 @@ describe("parseProfile", () => {
       "skills",
     ]);
   });
+
+  it("keeps where an imported entry came from", () => {
+    const profile = ok({
+      ...valid,
+      skills: [{ name: "SQL", source: "linkedin" }],
+      experience: [{ ...valid.experience[0], source: "resume" }],
+      education: [{ ...valid.education[0], source: "linkedin" }],
+    });
+    expect(profile.skills).toEqual([{ name: "SQL", source: "linkedin" }]);
+    expect(profile.experience[0]?.source).toBe("resume");
+    expect(profile.education[0]?.source).toBe("linkedin");
+  });
+
+  it("drops a source that is not linkedin or resume", () => {
+    const profile = ok({
+      ...valid,
+      skills: [{ name: "SQL", source: "twitter" }],
+      experience: [{ ...valid.experience[0], source: 42 }],
+      education: [{ ...valid.education[0], source: "" }],
+    });
+    expect(profile.skills).toEqual([{ name: "SQL" }]);
+    expect(profile.experience[0]).not.toHaveProperty("source");
+    expect(profile.education[0]).not.toHaveProperty("source");
+  });
 });
