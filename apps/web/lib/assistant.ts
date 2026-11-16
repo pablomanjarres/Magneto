@@ -9,12 +9,12 @@ import {
 } from "@moonlight/db";
 import {
   SENIORITIES,
-  cleanSkillName,
+  TARGET_AREAS,
+  applyEdits,
   normalizeCity,
   parseProfile,
   profileCompleteness,
   rankVacancies,
-  sameSkill,
 } from "@moonlight/core";
 import type { Profile } from "@moonlight/types";
 
@@ -46,63 +46,12 @@ type Turn = {
 
 const tool = <S extends z.ZodType>(t: Tool<S>): Tool<S> => t;
 
-/** Merges the requested changes into the profile and lists them in Spanish; nothing is saved here. */
-function applyChanges(
-  profile: Profile,
-  changes: z.infer<typeof ProfileChanges>,
-): { next: Profile; done: string[] } {
-  const done: string[] = [];
-  // The same matching the imports use: "React.js" is "React", so it is never added twice.
-  const has = (name: string): boolean => profile.skills.some((s) => sameSkill(s.name, name));
-
-  const removed = (changes.removeSkills ?? []).filter(has);
-  const added: string[] = [];
-  for (const raw of changes.addSkills ?? []) {
-    const name = cleanSkillName(raw);
-    if (name && !has(name) && !added.some((held) => sameSkill(held, name))) added.push(name);
-  }
-  if (added.length > 0) done.push(`Habilidades agregadas: ${added.join(", ")}`);
-  if (removed.length > 0) done.push(`Habilidades quitadas: ${removed.join(", ")}`);
-
-  const expectations = { ...profile.expectations };
-  const set = <K extends keyof typeof expectations>(
-    key: K,
-    value: (typeof expectations)[K] | undefined,
-    label: string,
-  ): void => {
-    if (value === undefined) return;
-    expectations[key] = value;
-    done.push(`${label}: ${Array.isArray(value) ? value.join(", ") : String(value)}`);
-  };
-  set("targetRole", changes.targetRole, "Cargo objetivo");
-  set("targetSeniority", changes.targetSeniority, "Seniority");
-  set("salaryMin", changes.salaryMin, "Salario mínimo");
-  set("salaryMax", changes.salaryMax, "Salario máximo");
-  set("currency", changes.currency, "Moneda");
-  set("workModes", changes.workModes, "Modalidades");
-  set("willRelocate", changes.willRelocate, "Dispuesto a reubicarse");
-  set("cities", changes.relocationCities, "Ciudades a las que se mudaría");
-  if (changes.city) done.push(`Ciudad: ${changes.city}`);
-
-  return {
-    next: {
-      ...profile,
-      city: changes.city ?? profile.city,
-      skills: [
-        ...profile.skills.filter((s) => !removed.some((name) => sameSkill(s.name, name))),
-        ...added.map((name) => ({ name })),
-      ],
-      expectations,
-    },
-    done,
-  };
-}
-
 const ProfileChanges = z.object({
   addSkills: z.array(z.string()).optional(),
   removeSkills: z.array(z.string()).optional(),
   city: z.string().optional(),
   targetRole: z.string().optional(),
+  targetArea: z.enum(TARGET_AREAS as [string, ...string[]]).optional(),
   targetSeniority: z.enum(SENIORITIES as [string, ...string[]]).optional(),
   salaryMin: z.number().int().nonnegative().optional(),
   salaryMax: z.number().int().nonnegative().optional(),
@@ -169,10 +118,10 @@ const TOOLS = {
 
   update_profile: tool({
     description:
-      "Cambia el perfil guardado del candidato: agregar o quitar habilidades, ciudad, cargo objetivo, seniority, rango salarial y moneda, modalidades de trabajo y disponibilidad para reubicarse. Solo lo que el candidato pidió.",
+      "Cambia el perfil guardado del candidato: agregar o quitar habilidades, ciudad, cargo objetivo, área, seniority, rango salarial y moneda, modalidades de trabajo, disponibilidad para reubicarse y ciudades a las que se mudaría. Solo lo que el candidato pidió.",
     input: ProfileChanges,
     run: async (changes, turn) => {
-      const { next, done } = applyChanges(turn.profile, changes);
+      const { profile: next, done } = applyEdits(turn.profile, changes);
       if (done.length === 0) return { ok: true, cambios: [], nota: "No había nada que cambiar." };
       const parsed = parseProfile(next);
       if ("errors" in parsed) return { error: parsed.errors.join(", ") };

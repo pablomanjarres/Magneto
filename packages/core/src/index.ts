@@ -318,6 +318,7 @@ export { DEFAULT_CURRENCY, SENIORITIES, TARGET_AREAS, parseProfile } from "./par
 export { ApplicationEvents, describeEvent } from "./activity.js";
 export * from "./import.js";
 export * from "./merge.js";
+export * from "./edits.js";
 export * from "./tailor.js";
 export { takeToken } from "./rate-limit.js";
 export { diffCv, diffWords, differs, toHarvardCv, touched } from "./cv.js";
