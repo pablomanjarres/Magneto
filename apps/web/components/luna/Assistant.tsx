@@ -117,12 +117,12 @@ export function Assistant({ children }: { children: ReactNode }) {
             onClick={toggle}
             aria-label="Abrir a Luna, tu asistente"
             aria-expanded={open}
-            className="group grid size-16 place-items-center rounded-full bg-navy shadow-[0_16px_36px_-14px_rgba(124,0,255,0.7)] ring-4 ring-brand-wash/70 transition duration-300 hover:-translate-y-0.5 hover:bg-navy-hover active:scale-95"
+            className="group grid size-16 place-items-center rounded-full bg-mint shadow-[0_16px_36px_-14px_rgba(124,0,255,0.7)] ring-4 ring-brand-wash/70 transition duration-300 hover:-translate-y-0.5 hover:bg-mint-hover active:scale-95"
           >
             <span className="motion-safe:animate-float">
               <LunaFace
                 mood={mood}
-                className={`size-12 drop-shadow-[0_0_10px_rgba(241,200,115,0.55)] motion-safe:group-hover:animate-wiggle ${pending ? "motion-safe:animate-think" : ""}`}
+                className={`size-14 drop-shadow-[0_2px_2px_rgba(26,50,76,0.22)] ${pending ? "motion-safe:animate-think" : ""}`}
               />
             </span>
           </button>

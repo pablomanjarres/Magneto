@@ -86,7 +86,7 @@ export function LunaPanel({
       className="fixed inset-x-0 bottom-0 z-50 flex max-h-[85dvh] animate-pop flex-col overflow-hidden rounded-t-3xl border border-line bg-canvas shadow-[0_28px_60px_-20px_rgba(26,50,76,0.45)] sm:inset-x-auto sm:right-6 sm:bottom-28 sm:max-h-[70vh] sm:w-[400px] sm:rounded-3xl"
     >
       <header className="flex items-center gap-3 border-b border-line bg-brand-wash/60 px-4 py-3">
-        <span className="grid size-11 shrink-0 place-items-center rounded-full bg-navy">
+        <span className="grid size-11 shrink-0 place-items-center rounded-full bg-mint">
           <LunaFace mood={pending ? "thinking" : "happy"} className="size-9" />
         </span>
         <div className="min-w-0 flex-1">
