@@ -2,11 +2,28 @@
 
 import { useState, type ReactNode } from "react";
 import type { ImportedProfile, Profile } from "@moonlight/types";
-import { mergeImport, profileCompleteness } from "@moonlight/core";
+import {
+  type ImportCounts,
+  type ImportMode,
+  applyImport,
+  importMode,
+  profileCompleteness,
+  sameJob,
+  sameSkill,
+  sameStudy,
+} from "@moonlight/core";
 
 import { CountUp } from "../../components/CountUp";
 import { Icon, type IconName } from "../../components/Icon";
-import { Card, Eyebrow, ProgressBar, TogglePill, buttonClass } from "../../components/primitives";
+import {
+  Card,
+  Eyebrow,
+  Field,
+  ProgressBar,
+  TogglePill,
+  buttonClass,
+  inputClass,
+} from "../../components/primitives";
 import { saveProfile } from "../../lib/client";
 import { EducationFields, ExperienceFields } from "../onboarding/entry-steps";
 import { ReviewCard } from "./ReviewCard";
@@ -20,7 +37,27 @@ import {
   selection,
 } from "./review-model";
 
-export type Added = ReturnType<typeof mergeImport>["added"];
+/** What an import saved, for the screen after it. */
+export interface Saved {
+  mode: ImportMode;
+  added: ImportCounts;
+  joined: ImportCounts;
+}
+
+interface Identity {
+  fullName: string;
+  email: string;
+  city: string;
+}
+
+/** Name, e-mail and city the way the chosen mode leaves them, before any edit. */
+function identityFor(profile: Profile, imported: ImportedProfile, mode: ImportMode): Identity {
+  const empty = { ...imported, experience: [], education: [], skills: [] };
+  const { fullName, email, city } = applyImport(profile, empty, mode).profile;
+  return { fullName, email, city: city ?? "" };
+}
+
+const total = (c: ImportCounts): number => c.experience + c.education + c.skills;
 
 /** Each card pops in a beat after the one before it. */
 const STAGGER_MS = 70;
@@ -32,17 +69,41 @@ export function ReviewStep({
 }: {
   profile: Profile;
   imported: ImportedProfile;
-  onSaved: (added: Added) => void;
+  onSaved: (saved: Saved) => void;
 }) {
-  const [review, setReview] = useState<ReviewState>(() => initialReview(profile, imported));
+  const [review, setReview] = useState<ReviewState>(() => initialReview(imported));
+  const [mode, setMode] = useState<ImportMode>(() => importMode(profile, imported));
+  const [identity, setIdentity] = useState<Identity>(() =>
+    identityFor(profile, imported, importMode(profile, imported)),
+  );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const merged = mergeImport(profile, selection(imported, review));
+  const result = applyImport(profile, selection(imported, review), mode);
+  const next: Profile = {
+    ...result.profile,
+    fullName: identity.fullName.trim(),
+    email: identity.email.trim(),
+    city: identity.city.trim() || undefined,
+  };
   const before = profileCompleteness(profile).percentage;
-  const after = profileCompleteness(merged.profile).percentage;
-  const blocked = isBlocked(review);
-  const nothing = merged.added.experience + merged.added.education + merged.added.skills === 0;
+  const after = profileCompleteness(next).percentage;
+  const unnamed = !next.fullName || !next.email;
+  const blocked = isBlocked(review) || unnamed;
+  const nothing = total(result.added) + total(result.joined) === 0;
+  const completing = mode === "complement";
+  const someoneElse = importMode(profile, imported) === "replace";
+
+  function choose(m: ImportMode): void {
+    setMode(m);
+    setIdentity(identityFor(profile, imported, m));
+    setError(null);
+  }
+
+  function edit(changes: Partial<Identity>): void {
+    setIdentity((i) => ({ ...i, ...changes }));
+    setError(null);
+  }
 
   function update<K extends keyof ReviewState>(
     key: K,
@@ -60,8 +121,8 @@ export function ReviewStep({
     setSaving(true);
     setError(null);
     try {
-      await saveProfile(merged.profile);
-      onSaved(merged.added);
+      await saveProfile(next);
+      onSaved({ mode, added: result.added, joined: result.joined });
     } catch (e) {
       setError(e instanceof Error ? e.message : "No pudimos guardar tu perfil.");
       setSaving(false);
@@ -82,8 +143,20 @@ export function ReviewStep({
       label: plural(review.skills.length, "habilidad", "habilidades"),
     },
   ];
-  const fresh = review.skills.filter((s) => !s.exists);
-  const known = review.skills.filter((s) => s.exists);
+  // Skills already in the profile are joined, so only the new ones are worth a toggle.
+  const isKnown = (name: string): boolean =>
+    completing && profile.skills.some((held) => sameSkill(held.name, name));
+  const fresh = review.skills.filter((s) => !isKnown(s.value));
+  const known = review.skills.filter((s) => isKnown(s.value));
+  const allFresh = fresh.every((s) => s.selected);
+
+  // LinkedIn lists can run to dozens of skills: one click clears them to pick a few.
+  function markFresh(selected: boolean): void {
+    setReview((r) => ({
+      ...r,
+      skills: r.skills.map((item) => (isKnown(item.value) ? item : { ...item, selected })),
+    }));
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -117,6 +190,61 @@ export function ReviewStep({
         </div>
       </Card>
 
+      <Card className="flex animate-rise flex-col gap-5 p-6">
+        <div className="flex flex-wrap items-center gap-2">
+          <TogglePill on={!completing} onClick={() => choose("replace")}>
+            Reemplazar mi perfil
+          </TogglePill>
+          <TogglePill on={completing} onClick={() => choose("complement")}>
+            Completar mi perfil
+          </TogglePill>
+        </div>
+        <p className="text-sm text-pretty text-muted">
+          {completing
+            ? "Lo nuevo se agrega y lo que ya tienes se completa, sin repetir nada."
+            : "Tu perfil actual se borra y queda solo lo importado: datos, experiencia, educación y habilidades."}
+          {someoneElse && imported.fullName && (
+            <>
+              {" "}
+              Lo importado es de <strong className="text-ink">{imported.fullName}</strong>, no de{" "}
+              <strong className="text-ink">{profile.fullName}</strong>.
+            </>
+          )}
+        </p>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="sm:col-span-2">
+            <Field label="Nombre completo">
+              <input
+                className={inputClass}
+                value={identity.fullName}
+                onChange={(e) => edit({ fullName: e.target.value })}
+                autoComplete="name"
+              />
+            </Field>
+          </div>
+          <Field
+            label="Correo"
+            {...(identity.email ? {} : { hint: "La importación no lo trae: escríbelo." })}
+          >
+            <input
+              className={inputClass}
+              type="email"
+              value={identity.email}
+              onChange={(e) => edit({ email: e.target.value })}
+              autoComplete="email"
+            />
+          </Field>
+          <Field label="Ciudad">
+            <input
+              className={inputClass}
+              value={identity.city}
+              onChange={(e) => edit({ city: e.target.value })}
+              autoComplete="address-level2"
+            />
+          </Field>
+        </div>
+      </Card>
+
       <ReviewSection title="Experiencia" icon="briefcase" count={review.experience.length}>
         {review.experience.map((item, i) => (
           <ReviewCard
@@ -126,7 +254,7 @@ export function ReviewStep({
             period={`${item.value.startDate || "Sin fecha"} – ${item.value.endDate ?? "Actualidad"}`}
             source={imported.source}
             selected={item.selected}
-            exists={item.exists}
+            joins={completing && profile.experience.some((held) => sameJob(held, item.value))}
             missing={missingExperience(item.value)}
             delay={i * STAGGER_MS}
             onToggle={(selected) => update("experience", i, { selected })}
@@ -151,7 +279,7 @@ export function ReviewStep({
             period={`${item.value.startYear || "Sin año"} – ${item.value.endYear ?? "Actualidad"}`}
             source={imported.source}
             selected={item.selected}
-            exists={item.exists}
+            joins={completing && profile.education.some((held) => sameStudy(held, item.value))}
             missing={missingEducation(item.value)}
             delay={i * STAGGER_MS}
             onToggle={(selected) => update("education", i, { selected })}
@@ -168,6 +296,16 @@ export function ReviewStep({
       </ReviewSection>
 
       <ReviewSection title="Habilidades" icon="sparkles" count={review.skills.length} list={false}>
+        {fresh.length > 5 && (
+          <button
+            type="button"
+            className={`${buttonClass("ghost", "sm")} self-start`}
+            onClick={() => markFresh(!allFresh)}
+          >
+            <Icon name={allFresh ? "close" : "check"} size={14} />
+            {allFresh ? "Desmarcar todas" : "Marcar todas"}
+          </button>
+        )}
         <div className="flex flex-wrap gap-2">
           {fresh.map((skill, i) => (
             <span
@@ -188,7 +326,7 @@ export function ReviewStep({
         </div>
         {known.length > 0 && (
           <p className="text-sm text-muted">
-            <span className="font-bold text-mint-deep">Ya está en tu perfil:</span>{" "}
+            <span className="font-bold text-mint-deep">Ya están en tu perfil, no se repiten:</span>{" "}
             {known.map((s) => s.value).join(", ")}
           </p>
         )}
@@ -200,16 +338,20 @@ export function ReviewStep({
             <span className="font-bold text-danger" role="alert">
               {error}
             </span>
+          ) : unnamed ? (
+            <span className="font-bold text-danger">
+              Escribe tu nombre y tu correo para continuar.
+            </span>
           ) : blocked ? (
             <span className="font-bold text-danger">
               Completa los campos que faltan para continuar.
             </span>
           ) : nothing ? (
-            "No hay nada nuevo marcado para agregar."
+            "No hay nada marcado para guardar."
           ) : (
-            <>
-              Se agregan <strong className="text-ink">{summary(merged.added)}</strong>.
-            </>
+            <strong className="text-ink">
+              {outcome({ mode, added: result.added, joined: result.joined })}
+            </strong>
           )}
         </p>
         <button
@@ -218,7 +360,7 @@ export function ReviewStep({
           onClick={confirm}
           disabled={saving || blocked || nothing}
         >
-          {saving ? "Guardando…" : "Confirmar e importar"}
+          {saving ? "Guardando…" : completing ? "Completar mi perfil" : "Reemplazar mi perfil"}
           {!saving && <Icon name="check" size={16} strokeWidth={2.6} />}
         </button>
       </Card>
@@ -227,7 +369,7 @@ export function ReviewStep({
 }
 
 /** "2 cargos, 1 estudio y 5 habilidades", leaving out what is zero. */
-export function summary(added: Added): string {
+function summary(added: ImportCounts): string {
   const parts = [
     added.experience > 0 && `${added.experience} ${plural(added.experience, "cargo", "cargos")}`,
     added.education > 0 && `${added.education} ${plural(added.education, "estudio", "estudios")}`,
@@ -236,6 +378,17 @@ export function summary(added: Added): string {
   return parts.length > 1
     ? `${parts.slice(0, -1).join(", ")} y ${parts.at(-1)}`
     : (parts[0] ?? "nada nuevo");
+}
+
+/** One sentence on what an import does to the profile. */
+export function outcome({ mode, added, joined }: Saved): string {
+  if (mode === "replace") return `Tu perfil queda con ${summary(added)}.`;
+  const parts = [
+    total(added) > 0 && `se agregan ${summary(added)}`,
+    total(joined) > 0 && `se completan ${summary(joined)}`,
+  ].filter((p): p is string => Boolean(p));
+  const sentence = parts.join(" y ");
+  return sentence ? `${sentence[0]?.toUpperCase()}${sentence.slice(1)}.` : "No hay nada nuevo.";
 }
 
 function Completeness({
