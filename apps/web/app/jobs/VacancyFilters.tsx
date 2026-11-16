@@ -201,128 +201,51 @@ export function VacancyFilters({
           Ordenar por
           <PillSelect
             label="Ordenar por"
-          <div style={{ width: 150 }}>
-            <Field label="Work mode">
-              <select
-                className="select"
-                value={mode}
-                onChange={(event) => refilter(setMode)(event.target.value)}
-              >
-                <option value={ANY}>Any mode</option>
-                {WORK_MODES.map((value) => (
-                  <option key={value} value={value}>
-                    {workModeLabel(value)}
-                  </option>
-                ))}
-              </select>
-            </Field>
-          </div>
+            value={sort}
+            onChange={(value) => refilter(setSort)(value as SortKey)}
+            options={(Object.keys(SORTS) as SortKey[]).map((key) => ({
+              value: key,
+              label: SORT_LABELS[key],
+            }))}
+          />
+        </span>
+      </div>
 
-          <div style={{ width: 170 }}>
-            <Field label="Company">
-              <select
-                className="select"
-                value={company}
-                onChange={(event) => refilter(setCompany)(event.target.value)}
-              >
-                <option value={ANY}>Any company</option>
-                {companies.map((value) => (
-                  <option key={value} value={value}>
-                    {value}
-                  </option>
-                ))}
-              </select>
-            </Field>
-          </div>
-
-          <div style={{ width: 170 }}>
-            <Field label="City">
-              <select
-                className="select"
-                value={city}
-                onChange={(event) => refilter(setCity)(event.target.value)}
-              >
-                <option value={ANY}>Any city</option>
-                {cities.map((value) => (
-                  <option key={value} value={value}>
-                    {value}
-                  </option>
-                ))}
-              </select>
-            </Field>
-          </div>
-
-          <label className="check" style={{ height: 42 }}>
-            <input
-              type="checkbox"
-              checked={hideApplied}
-              onChange={(event) => refilter(setHideApplied)(event.target.checked)}
-            />
-            Hide vacancies I already applied to
-          </label>
-        </div>
-
-        <div
-          className="split"
-          style={{ alignItems: "center", borderTop: "1px solid var(--line)", paddingTop: 12 }}
-        >
-          <span className="meta num" style={{ color: "var(--ink-secondary)" }}>
-            {visible.length} of {items.length} vacancies
-          </span>
-          <span className="row" style={{ gap: 10 }}>
-            {filtering && (
-              <button type="button" className="btn btn--sm" onClick={clear}>
-                Clear filters
-              </button>
-            )}
-            <span className="meta">Sorted by match score</span>
-          </span>
-        </div>
-      </section>
+      <p className="text-sm text-muted tabular-nums">
+        {visible.length} de {items.length} vacantes
+      </p>
 
       {visible.length === 0 ? (
-        <EmptyState title="No vacancy matches these filters">
-          Widen the search and the whole ranked list comes back.{" "}
-          <button type="button" className="btn btn--sm" onClick={clear}>
-            Clear filters
-          </button>
+        <EmptyState title="Ninguna vacante coincide con estos filtros">
+          Amplía la búsqueda y vuelve la lista completa.
+          <span className="mt-4 block">
+            <button type="button" className={buttonClass("quiet", "sm")} onClick={clear}>
+              Limpiar filtros
+            </button>
+          </span>
         </EmptyState>
       ) : (
-        <div className="stack" style={{ gap: 10 }}>
-          {shown.items.map((item) => (
-            <Fragment key={item.id}>{item.row}</Fragment>
+        <div className="flex flex-col gap-3">
+          {shown.items.map((item, index) => (
+            <div
+              key={item.id}
+              className="animate-rise"
+              style={{ animationDelay: `${(index % PAGE_SIZE) * 60}ms` }}
+            >
+              {item.row}
+            </div>
           ))}
           {shown.hasMore && (
             <button
               type="button"
-              className="btn btn--sm"
-              style={{ alignSelf: "center" }}
+              className={`${buttonClass("quiet")} self-center`}
               onClick={() => setPage(page + 1)}
             >
-              Load more
+              Ver más vacantes
+              <Icon name="chevronDown" size={16} strokeWidth={2.4} />
             </button>
           )}
         </div>
-      )}
-
-      {hidden > 0 && visible.length > 0 && (
-        <p className="meta" style={{ textAlign: "center" }}>
-          <span className="num">{hidden}</span> hidden by your filters —{" "}
-          <button
-            type="button"
-            onClick={clear}
-            style={{
-              border: 0,
-              padding: 0,
-              background: "none",
-              color: "var(--glow)",
-              cursor: "pointer",
-              fontSize: "inherit",
-            }}
-          >
-            show the rest
-          </button>
-        </p>
       )}
     </>
   );
