@@ -7,6 +7,7 @@ import { HarvardCv } from "../../components/cv/HarvardCv";
 import { Icon } from "../../components/Icon";
 import { ButtonLink, PageHeader } from "../../components/primitives";
 import { requireProfile } from "../../lib/queries";
+import { AdaptedCv } from "./AdaptedCv";
 import { PrintButton } from "./PrintButton";
 
 export const dynamic = "force-dynamic";
@@ -66,7 +67,9 @@ export default async function CvPage() {
             </span>
           </p>
         )}
-        <HarvardCv doc={toHarvardCv(profile)} standalone />
+        <AdaptedCv profile={profile}>
+          <HarvardCv doc={toHarvardCv(profile)} standalone />
+        </AdaptedCv>
       </div>
     </AppShell>
   );
