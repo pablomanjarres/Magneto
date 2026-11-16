@@ -129,6 +129,6 @@ describe("groupByStatus", () => {
     );
     expect(columns.map((c) => c.status)).toEqual([...APPLICATION_STATUSES]);
     expect(columns.map((c) => c.cards.length)).toEqual([0, 0, 1, 0]);
-    expect(columns[2]?.label).toBe("Interview");
+    expect(columns[2]?.label).toBe("Entrevista");
   });
 });

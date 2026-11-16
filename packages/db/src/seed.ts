@@ -50,13 +50,14 @@ for (const v of vacancies) {
 
 await saveProfile(candidate);
 
+// Seeding resets the demo: the candidate's pipeline and its activity go back to
+// the fixed starting point, so every rehearsal starts from the same board.
+await pool.query("DELETE FROM application_events WHERE profile_id = $1", [candidate.id]);
+await pool.query("DELETE FROM applications WHERE profile_id = $1", [candidate.id]);
+
 for (const a of applications) {
-  // No conflict target: the row can already exist under its seeded id OR under
-  // a generated one, because the candidate withdrew it and applied again in the
-  // app. Naming only the id would abort the seed on that second case.
   await pool.query(
-    `INSERT INTO applications (id, profile_id, vacancy_id, status) VALUES ($1, $2, $3, $4)
-     ON CONFLICT DO NOTHING`,
+    "INSERT INTO applications (id, profile_id, vacancy_id, status) VALUES ($1, $2, $3, $4)",
     [a.id, candidate.id, a.vacancyId, a.status],
   );
 }

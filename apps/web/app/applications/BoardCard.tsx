@@ -3,28 +3,16 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { ApplicationCard, ApplicationStatus } from "@moonlight/types";
+import type { ApplicationCard } from "@moonlight/types";
 import { ALLOWED_MOVES, NOTE_MAX_LENGTH, STATUS_LABELS } from "@moonlight/core";
 
-import { Field } from "../../components/primitives";
+import { Icon } from "../../components/Icon";
+import { Field, buttonClass, inputClass, liftCard } from "../../components/primitives";
 import { moveApplication, updateNextStep, withdrawApplication } from "../../lib/client";
-import { placeMeta, salaryRange, shortDate } from "../../lib/format";
+import { shortDate } from "../../lib/format";
 
 /** Withdrawing is destructive, so the button asks once. Reverts on its own. */
 const CONFIRM_MS = 4000;
-
-const noteStyle = (status: ApplicationStatus): React.CSSProperties =>
-  status === "interview"
-    ? {
-        background: "var(--wash)",
-        border: "1px solid var(--line-strong)",
-        color: "var(--gold-deep)",
-      }
-    : {
-        background: "var(--tint)",
-        border: "1px solid var(--line)",
-        color: "var(--muted)",
-      };
 
 export function BoardCard({ card }: { card: ApplicationCard }) {
   const router = useRouter();
@@ -42,15 +30,19 @@ export function BoardCard({ card }: { card: ApplicationCard }) {
     setArmed(false);
   }
 
-  async function run(action: () => Promise<unknown>): Promise<void> {
+  /** True only when the API answered OK; the server data is then re-read. */
+  async function run(action: () => Promise<unknown>): Promise<boolean> {
     disarm();
     setPending(true);
     setError(null);
     try {
       await action();
       router.refresh();
+      return true;
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "the request failed");
+      console.error(cause);
+      setError("No se pudo completar. Intenta de nuevo.");
+      return false;
     } finally {
       setPending(false);
     }
@@ -74,123 +66,117 @@ export function BoardCard({ card }: { card: ApplicationCard }) {
   async function onSaveNote(event: React.FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
     // Close the form only when the save worked, so a refused note can be fixed in place.
-    await run(async () => {
-      await updateNextStep(card.id, draft);
-      setEditing(false);
-    });
+    if (await run(() => updateNextStep(card.id, draft))) setEditing(false);
   }
 
-  const moves = ALLOWED_MOVES[card.status];
-
   return (
-    <article className="card stack" style={{ gap: 8, padding: 12 }}>
-      <div className="split">
+    <article
+      aria-busy={pending}
+      className={`flex animate-pop flex-col gap-3 rounded-3xl border border-line bg-canvas p-4 ${liftCard}`}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <Link
+            href={`/jobs/${card.vacancyId}`}
+            className="font-bold text-pretty text-ink hover:text-brand"
+          >
+            {card.vacancy.title}
+          </Link>
+          <p className="mt-0.5 flex items-center gap-1.5 text-[13px] text-muted">
+            <Icon name="building" size={13} />
+            {card.vacancy.company}
+          </p>
+        </div>
         <span
-          className="num"
-          style={{
-            fontFamily: "var(--font-display)",
-            fontSize: 22,
-            lineHeight: 1,
-            color: card.score >= 80 ? "var(--gold-deep)" : "var(--muted)",
-          }}
+          className="text-2xl leading-none font-black text-navy tabular-nums"
+          aria-label={`${card.score}% de coincidencia`}
         >
-          {card.score}%
-        </span>
-        <span style={{ fontSize: 10.5, color: "var(--faint)", whiteSpace: "nowrap" }}>
-          {shortDate(card.appliedAt)}
+          {card.score}
+          <span className="text-sm">%</span>
         </span>
       </div>
 
-      <Link
-        href={`/jobs/${card.vacancyId}`}
-        style={{ fontSize: 13, lineHeight: 1.35, color: "var(--ink)", textWrap: "pretty" }}
-      >
-        {card.vacancy.title}
-      </Link>
-
-      <div className="stack" style={{ gap: 3 }}>
-        <span style={{ fontSize: 11.5, color: "var(--muted)" }}>{card.vacancy.company}</span>
-        <span className="meta">
-          {placeMeta(card.vacancy)} · {salaryRange(card.vacancy)}
-        </span>
-      </div>
+      <p className="text-xs text-muted">Postulado el {shortDate(card.appliedAt)}</p>
 
       {card.note && !editing && (
-        <span
-          style={{
-            fontSize: 11,
-            padding: "5px 8px",
-            borderRadius: 6,
-            lineHeight: 1.4,
-            textWrap: "pretty",
-            ...noteStyle(card.status),
-          }}
+        <p
+          className={`rounded-2xl px-3 py-2 text-[13px] text-pretty ${
+            card.status === "interview" ? "bg-mint-wash text-mint-deep" : "bg-surface text-ink"
+          }`}
         >
-          <strong>Next step:</strong> {card.note}
-        </span>
+          <strong>Próximo paso:</strong> {card.note}
+        </p>
       )}
 
       {editing && (
-        <form className="stack" style={{ gap: 6 }} onSubmit={(e) => void onSaveNote(e)}>
-          <Field label="Next step">
+        <form className="flex flex-col gap-2" onSubmit={(e) => void onSaveNote(e)}>
+          <Field label="Próximo paso">
             <textarea
-              className="textarea"
+              className={`${inputClass} h-auto min-h-20 rounded-3xl py-3 text-sm`}
               value={draft}
               maxLength={NOTE_MAX_LENGTH}
+              placeholder="Ej.: Enviar portafolio el viernes"
               autoFocus
               onChange={(e) => setDraft(e.target.value)}
             />
           </Field>
-          <div className="chips" style={{ gap: 6 }}>
-            <button type="submit" className="btn btn--sm btn--primary" disabled={pending}>
-              Save
+          <div className="flex gap-2">
+            <button type="submit" className={buttonClass("strong", "sm")} disabled={pending}>
+              {pending ? "Guardando…" : "Guardar"}
             </button>
             <button
               type="button"
-              className="btn btn--sm"
+              className={buttonClass("quiet", "sm")}
               disabled={pending}
               onClick={() => setEditing(false)}
             >
-              Cancel
+              Cancelar
             </button>
           </div>
         </form>
       )}
 
       {error && (
-        <span role="alert" style={{ fontSize: 11, lineHeight: 1.4, color: "var(--gold-deep)" }}>
+        <p role="alert" className="rounded-2xl bg-danger-wash px-3 py-2 text-[13px] text-danger">
           {error}
-        </span>
+        </p>
       )}
 
-      <div className="chips" style={{ gap: 6, paddingTop: 2 }}>
-        {moves.map((target) => (
+      <div className="flex flex-wrap gap-1.5 border-t border-line pt-3">
+        {ALLOWED_MOVES[card.status].map((target) => (
           <button
             key={target}
             type="button"
-            className="btn btn--sm"
+            className={buttonClass("quiet", "sm")}
             disabled={pending}
-            aria-label={`Move to ${STATUS_LABELS[target]}`}
+            aria-label={`Mover a ${STATUS_LABELS[target]}`}
             onClick={() => void run(() => moveApplication(card.id, target))}
           >
+            <Icon name="arrowRight" size={13} strokeWidth={2.4} />
             {STATUS_LABELS[target]}
           </button>
         ))}
         {!editing && (
-          <button type="button" className="btn btn--sm" disabled={pending} onClick={startEditing}>
-            Edit next step
+          <button
+            type="button"
+            className={buttonClass("ghost", "sm")}
+            disabled={pending}
+            onClick={startEditing}
+          >
+            <Icon name="edit" size={13} />
+            Editar próximo paso
           </button>
         )}
         <button
           type="button"
-          className="btn btn--sm"
+          className={`${buttonClass("danger", "sm")} ${armed ? "bg-danger-wash" : ""}`}
           disabled={pending}
-          aria-label={armed ? "Confirm withdraw" : "Withdraw this application"}
-          style={armed ? { borderColor: "var(--gold)", color: "var(--gold-deep)" } : undefined}
+          aria-label={armed ? "Confirmar retiro" : "Retirar esta postulación"}
           onClick={onWithdraw}
           onBlur={disarm}
         >
-          {armed ? "Sure?" : "Withdraw"}
+          <Icon name="trash" size={13} />
+          {armed ? "¿Seguro?" : "Retirar"}
         </button>
       </div>
     </article>

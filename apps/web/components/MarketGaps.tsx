@@ -7,23 +7,32 @@ import type { MarketGap } from "@moonlight/types";
 export function MarketGaps({ gaps, limit = 6 }: { gaps: MarketGap[]; limit?: number }) {
   if (gaps.length === 0) {
     return (
-      <p className="lead">Nothing. Every skill the dataset asks for is already on the profile.</p>
+      <p className="text-sm text-muted">
+        Ninguna. Tu perfil ya tiene cada habilidad que piden las vacantes.
+      </p>
     );
   }
 
   return (
-    <ol className="stack" style={{ gap: 10, listStyle: "none", margin: 0, padding: 0 }}>
-      {gaps.slice(0, limit).map((gap) => (
-        <li key={gap.skill} className="stack" style={{ gap: 6 }}>
-          <div className="split">
-            <span style={{ fontSize: 13.5 }}>{gap.skill}</span>
-            <span className="meta num">
-              {gap.demandCount} {gap.demandCount === 1 ? "vacancy" : "vacancies"} ·{" "}
+    <ol className="flex flex-col gap-3.5">
+      {gaps.slice(0, limit).map((gap, index) => (
+        <li
+          key={gap.skill}
+          className="flex animate-rise flex-col gap-1.5"
+          style={{ animationDelay: `${index * 70}ms` }}
+        >
+          <div className="flex items-baseline justify-between gap-3 text-sm">
+            <span className="font-bold text-ink">{gap.skill}</span>
+            <span className="text-xs text-muted tabular-nums">
+              {gap.demandCount} {gap.demandCount === 1 ? "vacante" : "vacantes"} ·{" "}
               {gap.sharePercent}%
             </span>
           </div>
-          <div className="track" style={{ height: 6 }}>
-            <div className="track__fill" style={{ width: `${gap.sharePercent}%` }} />
+          <div className="h-1.5 overflow-hidden rounded-full bg-surface-strong">
+            <div
+              className="h-full rounded-full bg-brand-soft"
+              style={{ width: `${gap.sharePercent}%` }}
+            />
           </div>
         </li>
       ))}

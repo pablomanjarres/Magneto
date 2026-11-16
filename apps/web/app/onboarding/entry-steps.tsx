@@ -2,8 +2,8 @@
 
 import type { Education, Experience } from "@moonlight/types";
 
-import { EmptyState, Field } from "../../components/primitives";
-import { AddButton, EntryCard, optionalNumber, optionalText } from "./fields";
+import { EmptyState, Field, inputClass } from "../../components/primitives";
+import { AddButton, EntryCard, FieldGrid, optionalNumber, optionalText } from "./fields";
 
 export const BLANK_EXPERIENCE: Experience = {
   company: "",
@@ -32,62 +32,61 @@ export function ExperienceStep({
   onRemove: (index: number) => void;
 }) {
   return (
-    <div className="stack" style={{ gap: 12 }}>
+    <div className="flex flex-col gap-4">
       {items.length === 0 && (
-        <EmptyState title="No positions yet">
-          Add the one you are in now. An unfinished job is still a position — leave the end date
-          empty.
+        <EmptyState title="Aún no tienes cargos">
+          Agrega el que tienes hoy. Un trabajo en curso también cuenta: deja vacía la fecha de fin.
         </EmptyState>
       )}
 
       {items.map((item, index) => (
-        <EntryCard key={index} removeLabel="Remove this position" onRemove={() => onRemove(index)}>
-          <div className="two-fields">
-            <Field label="Company">
+        <EntryCard key={index} removeLabel="Quitar cargo" onRemove={() => onRemove(index)}>
+          <FieldGrid>
+            <Field label="Empresa">
               <input
-                className="input"
+                className={inputClass}
                 value={item.company}
                 onChange={(e) => onUpdate(index, { company: e.target.value })}
                 placeholder="Sofka Technologies"
               />
             </Field>
-            <Field label="Title">
+            <Field label="Cargo">
               <input
-                className="input"
+                className={inputClass}
                 value={item.title}
                 onChange={(e) => onUpdate(index, { title: e.target.value })}
-                placeholder="Frontend Developer"
+                placeholder="Desarrollador frontend"
               />
             </Field>
-            <Field label="Start date">
+            <Field label="Fecha de inicio">
               <input
-                className="input"
+                className={inputClass}
                 type="month"
                 value={item.startDate}
                 onChange={(e) => onUpdate(index, { startDate: e.target.value })}
               />
             </Field>
-            <Field label="End date" hint="Leave empty if you still work here.">
+            <Field label="Fecha de fin" hint="Déjala vacía si aún trabajas aquí.">
               <input
-                className="input"
+                className={inputClass}
                 type="month"
                 value={item.endDate ?? ""}
                 onChange={(e) => onUpdate(index, { endDate: optionalText(e.target.value) })}
               />
             </Field>
-          </div>
-          <Field label="Description">
+          </FieldGrid>
+          <Field label="Descripción">
             <textarea
-              className="textarea"
+              className={`${inputClass} h-auto min-h-24 rounded-3xl py-3`}
               value={item.description ?? ""}
               onChange={(e) => onUpdate(index, { description: optionalText(e.target.value) })}
-              placeholder="React and TypeScript on an internal banking portal."
+              placeholder="React y TypeScript en un portal bancario interno."
             />
           </Field>
         </EntryCard>
       ))}
 
-      <AddButton label="Add a position" onClick={onAdd} />
+      <AddButton label="Agregar cargo" onClick={onAdd} />
     </div>
   );
 }
@@ -104,35 +103,35 @@ export function EducationStep({
   onRemove: (index: number) => void;
 }) {
   return (
-    <div className="stack" style={{ gap: 12 }}>
+    <div className="flex flex-col gap-4">
       {items.length === 0 && (
-        <EmptyState title="No studies yet">
-          One entry is enough, and the degree you are still finishing counts.
+        <EmptyState title="Aún no tienes estudios">
+          Con uno basta, y el título que estás terminando también cuenta.
         </EmptyState>
       )}
 
       {items.map((item, index) => (
-        <EntryCard key={index} removeLabel="Remove this degree" onRemove={() => onRemove(index)}>
-          <div className="two-fields">
-            <Field label="Institution">
+        <EntryCard key={index} removeLabel="Quitar estudio" onRemove={() => onRemove(index)}>
+          <FieldGrid>
+            <Field label="Institución">
               <input
-                className="input"
+                className={inputClass}
                 value={item.institution}
                 onChange={(e) => onUpdate(index, { institution: e.target.value })}
                 placeholder="Universidad EAFIT"
               />
             </Field>
-            <Field label="Degree">
+            <Field label="Título">
               <input
-                className="input"
+                className={inputClass}
                 value={item.degree}
                 onChange={(e) => onUpdate(index, { degree: e.target.value })}
                 placeholder="Ingeniería de Sistemas"
               />
             </Field>
-            <Field label="Start year">
+            <Field label="Año de inicio">
               <input
-                className="input num"
+                className={`${inputClass} tabular-nums`}
                 type="number"
                 min={1950}
                 max={2100}
@@ -140,9 +139,9 @@ export function EducationStep({
                 onChange={(e) => onUpdate(index, { startYear: Number(e.target.value) || 0 })}
               />
             </Field>
-            <Field label="End year" hint="Leave empty if you have not finished.">
+            <Field label="Año de fin" hint="Déjalo vacío si aún no terminas.">
               <input
-                className="input num"
+                className={`${inputClass} tabular-nums`}
                 type="number"
                 min={1950}
                 max={2100}
@@ -150,11 +149,11 @@ export function EducationStep({
                 onChange={(e) => onUpdate(index, { endYear: optionalNumber(e.target.value) })}
               />
             </Field>
-          </div>
+          </FieldGrid>
         </EntryCard>
       ))}
 
-      <AddButton label="Add a degree" onClick={onAdd} />
+      <AddButton label="Agregar estudio" onClick={onAdd} />
     </div>
   );
 }

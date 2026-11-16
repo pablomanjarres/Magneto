@@ -37,23 +37,12 @@
       "endDate": "2023-01"
     }
   ],
-  "education": [
-    {
-      "institution": "Universidad EAFIT",
-      "degree": "Ingeniería de Sistemas",
-      "startYear": 2020,
-      "endYear": 2025
-    }
-  ],
+  "education": [],
   "expectations": {
     "targetRole": "Full Stack Developer",
-    "targetArea": "Software development",
-    "targetSeniority": "Mid-level",
-    "salaryMin": 7000000,
-    "salaryMax": 11000000,
-    "currency": "COP",
+    "targetArea": "Desarrollo de software",
+    "targetSeniority": "Semi senior",
     "workModes": ["remote", "hybrid"],
-    "willRelocate": false,
     "cities": []
   }
 }

@@ -1,28 +1,10 @@
-import { Fragment } from "react";
-
 import { AppShell } from "../../components/AppShell";
-import { EmptyState } from "../../components/primitives";
+import { Card, EmptyState, PageHeader, Stat } from "../../components/primitives";
 import { VacancyRow } from "../../components/VacancyRow";
 import { loadAppliedIds, loadRanked, requireProfile } from "../../lib/queries";
 import { VacancyFilters, type VacancyListItem } from "./VacancyFilters";
 
 export const dynamic = "force-dynamic";
-
-function Stat({ value, label, tone }: { value: string; label: string; tone?: "gold" }) {
-  return (
-    <div className="stack" style={{ gap: 2, padding: "0 26px" }}>
-      <span
-        className="display num"
-        style={{ color: tone === "gold" ? "var(--gold-deep)" : "var(--ink-active)" }}
-      >
-        {value}
-      </span>
-      <span className="meta" style={{ whiteSpace: "nowrap" }}>
-        {label}
-      </span>
-    </div>
-  );
-}
 
 export default async function JobsPage() {
   const profile = await requireProfile();
@@ -33,7 +15,7 @@ export default async function JobsPage() {
 
   // rankVacancies drops vacancies with no requirements, so the list is built
   // from the ranked results and never from the raw vacancy set.
-  const items: VacancyListItem[] = ranked.flatMap((result) => {
+  const items: VacancyListItem[] = ranked.flatMap((result, rank) => {
     const vacancy = byId.get(result.vacancyId);
     if (!vacancy) return [];
     const isApplied = applied.has(vacancy.id);
@@ -45,6 +27,8 @@ export default async function JobsPage() {
         city: vacancy.city,
         workMode: vacancy.workMode,
         applied: isApplied,
+        rank,
+        salaryMax: vacancy.salaryMax ?? vacancy.salaryMin,
         // Searching requirements is what makes "React" find the vacancies that
         // ask for it rather than only the ones with it in the title.
         skills: vacancy.requirements.map((r) => r.skill).join(" "),
@@ -54,53 +38,33 @@ export default async function JobsPage() {
   });
 
   const unique = (values: string[]): string[] =>
-    [...new Set(values)].sort((a, b) => a.localeCompare(b));
-  const best = ranked[0]?.score ?? 0;
-  const appliedCount = items.filter((item) => item.applied).length;
+    [...new Set(values)].sort((a, b) => a.localeCompare(b, "es"));
 
-  const stats: ReadonlyArray<{ value: string; label: string; tone?: "gold" }> = [
-    { value: String(items.length), label: "Vacancies scored" },
-    { value: `${best}%`, label: "Best match", tone: "gold" },
-    { value: String(appliedCount), label: "Already applied" },
+  const stats = [
+    { value: items.length, label: "vacantes evaluadas" },
+    { value: ranked[0]?.score ?? 0, label: "% mejor match", accent: true },
+    { value: items.filter((item) => item.applied).length, label: "ya postulado" },
   ];
 
   return (
-    <AppShell title="Vacancies" meta={`${items.length} vacancies scored`}>
-      <section
-        className="panel"
-        style={{
-          display: "grid",
-          gridTemplateColumns: "minmax(0, 1fr) auto",
-          gap: 32,
-          alignItems: "center",
-        }}
-      >
-        <div className="stack" style={{ gap: 8 }}>
-          <h1 className="display">Every vacancy, best match first</h1>
-          <p className="lead">
-            The number on each row is the share of that vacancy&apos;s requirements you already
-            meet, with a must-have counting three times a nice-to-have. Nothing is hidden from you —
-            the order is the recommendation, and the chips are what is missing.
-          </p>
-        </div>
+    <AppShell>
+      <PageHeader
+        eyebrow="Vacantes"
+        title="Vacantes ordenadas por tu match"
+        lead="El número de cada vacante es la parte de sus requisitos que ya cumples; un obligatorio vale tres veces un deseable. Las etiquetas rojas son lo que te falta."
+      />
 
-        <div className="row" style={{ gap: 0, alignSelf: "stretch" }}>
-          {stats.map((stat, index) => (
-            <Fragment key={stat.label}>
-              {index > 0 && <div className="divider" />}
-              {stat.tone ? (
-                <Stat value={stat.value} label={stat.label} tone={stat.tone} />
-              ) : (
-                <Stat value={stat.value} label={stat.label} />
-              )}
-            </Fragment>
-          ))}
-        </div>
-      </section>
+      <Card className="grid animate-rise grid-cols-3 divide-x divide-line p-5 [animation-delay:60ms]">
+        {stats.map((stat) => (
+          <div key={stat.label} className="px-4 first:pl-1">
+            <Stat value={String(stat.value)} label={stat.label} accent={stat.accent ?? false} />
+          </div>
+        ))}
+      </Card>
 
       {items.length === 0 ? (
-        <EmptyState title="No vacancies scored yet">
-          A vacancy needs at least one requirement to be scored. Seed the dataset with{" "}
+        <EmptyState title="Aún no hay vacantes evaluadas">
+          Una vacante necesita al menos un requisito para evaluarse. Carga el dataset con{" "}
           <code>pnpm db:seed</code>.
         </EmptyState>
       ) : (

@@ -19,11 +19,8 @@ Our answer to the Profile Manager challenge from **Magneto**, for Ingeniería de
 
 Candidates leave their profile half-filled and wait to be contacted, which wrecks match quality for everyone. Moon Light takes the candidate's profile and expectations, says exactly what is missing to reach 100%, and ranks jobs by a weighted score with its reasons attached. The MVP runs locally against our own dataset, since the challenge gives no access to real Magneto postings.
 
-In this delivery the candidate registers and fills their own profile. The LinkedIn and résumé
-import is release 2, and the wizard it will pre-fill is already the screen the candidate confirms
-by hand today.
-
-
+The candidate fills their own profile in a guided wizard. The LinkedIn and résumé import is
+release 2, and the wizard it will pre-fill is already the screen the candidate confirms by hand.
 
 ## Layout
 
@@ -31,10 +28,9 @@ by hand today.
 moonlight/
 ├── apps/
 │   ├── web/            # Next.js: onboarding wizard, dashboard, ranked jobs, status board
-│   │   ├── app/api/    #   Next API routes, branch A of the comparison PoC
+│   │   ├── app/api/    #   Next route handlers: the HTTP API
 │   │   ├── components/ #   the shell and the pieces every screen reuses
 │   │   └── lib/        #   server loaders and the browser side of the API
-│   ├── api/            # Express service, branch B of the comparison PoC
 │   └── agents/         # LangGraph agents, release 2+
 ├── packages/
 │   ├── core/           # domain: scoring, completeness, market gaps, status machine. Zero IO
@@ -61,15 +57,10 @@ pnpm db:seed                 # 20 vacancies, one candidate, six applications
 pnpm dev                     # http://localhost:3000
 ```
 
-Register at `/register` with a name and an email. Your profile starts **empty**, because this
-delivery imports nothing from LinkedIn, so `/onboarding` is where it gets filled and the
-completeness bar is what says how far along it is. From there, `/dashboard` shows completeness and
-top matches, `/jobs` the whole list by score, `/jobs/v003` one recommendation worked through, and
-`/applications` the status board.
-
-There is no sign-in. Registering puts your profile id in a cookie so the app knows whose profile
-to draw; nothing is verified. To see the seeded candidate instead, with her pipeline already
-filled, set that cookie to `demo-candidate` in the browser's devtools.
+Open `localhost:3000`. There is no sign-in: the app opens on the seeded candidate, whose profile
+starts at 67% so the wizard at `/onboarding` has something to fill. `/dashboard` shows completeness
+and top matches, `/jobs` the whole list by score, `/jobs/v003` one recommendation worked through,
+and `/applications` the status board. `pnpm db:seed` puts the demo back as it was.
 
 The endpoints are real and inspectable, which is what the delivery video shows:
 

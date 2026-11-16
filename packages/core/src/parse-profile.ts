@@ -13,16 +13,22 @@ const WORK_MODES: readonly WorkMode[] = ["remote", "hybrid", "onsite"];
 
 /** Fixed lists, so recommendations can match on them; free text could not be. */
 export const TARGET_AREAS: readonly string[] = [
-  "Software development",
-  "Data",
-  "Design",
-  "Product",
-  "Quality assurance",
-  "Infrastructure and DevOps",
-  "Other",
+  "Desarrollo de software",
+  "Datos",
+  "Diseño",
+  "Producto",
+  "Calidad (QA)",
+  "Infraestructura y DevOps",
+  "Otra",
 ];
 
-export const SENIORITIES: readonly string[] = ["Intern", "Junior", "Mid-level", "Senior", "Lead"];
+export const SENIORITIES: readonly string[] = [
+  "Practicante",
+  "Junior",
+  "Semi senior",
+  "Senior",
+  "Líder",
+];
 
 const MIN_YEAR = 1900;
 const MAX_YEAR = 2100;

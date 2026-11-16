@@ -1,6 +1,5 @@
 "use client";
 
-import type { ReactNode } from "react";
 import type { Expectations, Profile, Vacancy, WorkMode } from "@moonlight/types";
 import {
   DEFAULT_CURRENCY,
@@ -11,10 +10,10 @@ import {
 } from "@moonlight/core";
 
 import { Icon } from "../../components/Icon";
-import { Field } from "../../components/primitives";
+import { Field, TogglePill, inputClass } from "../../components/primitives";
 import { WORK_MODES } from "../../components/work-modes";
 import { salaryRange, workModeLabel } from "../../lib/format";
-import { ChipInput, optionalNumber } from "./fields";
+import { ChipInput, FieldGrid, optionalNumber } from "./fields";
 
 const CURRENCIES = [DEFAULT_CURRENCY, "USD", "EUR"];
 
@@ -26,11 +25,11 @@ export function BasicsStep({
   onPatch: (changes: Partial<Profile>) => void;
 }) {
   return (
-    <div className="two-fields">
-      <div style={{ gridColumn: "span 2" }}>
-        <Field label="Full name">
+    <FieldGrid>
+      <div className="sm:col-span-2">
+        <Field label="Nombre completo">
           <input
-            className="input"
+            className={inputClass}
             value={profile.fullName}
             onChange={(e) => onPatch({ fullName: e.target.value })}
             placeholder="Ana Gómez"
@@ -38,26 +37,26 @@ export function BasicsStep({
           />
         </Field>
       </div>
-      <Field label="Email">
+      <Field label="Correo">
         <input
-          className="input"
+          className={inputClass}
           type="email"
           value={profile.email}
           onChange={(e) => onPatch({ email: e.target.value })}
-          placeholder="ana.gomez@example.com"
+          placeholder="ana.gomez@ejemplo.com"
           autoComplete="email"
         />
       </Field>
-      <Field label="City" hint="Where you live today, not where you would move.">
+      <Field label="Ciudad" hint="Donde vives hoy, no adonde te mudarías.">
         <input
-          className="input"
+          className={inputClass}
           value={profile.city ?? ""}
           onChange={(e) => onPatch({ city: e.target.value })}
           placeholder="Medellín"
           autoComplete="address-level2"
         />
       </Field>
-    </div>
+    </FieldGrid>
   );
 }
 
@@ -76,37 +75,36 @@ export function SkillsStep({
   const suggested = marketGaps(profile, vacancies).slice(0, 6);
 
   return (
-    <div className="stack" style={{ gap: 24 }}>
+    <div className="flex flex-col gap-6">
       <ChipInput
-        label="Your skills"
-        placeholder="Type a skill and press Enter"
+        label="Tus habilidades"
+        placeholder="Escribe una habilidad y presiona Enter"
         values={profile.skills.map((s) => s.name)}
         normalize={normalizeSkill}
         onChange={onSetSkills}
       />
 
       {suggested.length > 0 && (
-        <div className="stack" style={{ gap: 10 }}>
-          <div className="row" style={{ alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
-            <span style={{ fontSize: 12, color: "var(--glow)" }}>Suggested by the market</span>
-            <span className="meta">
-              most-asked skills you have not listed, across {vacancies.length} open{" "}
-              {vacancies.length === 1 ? "vacancy" : "vacancies"}
-            </span>
-          </div>
-          <div className="chips">
+        <div className="flex flex-col gap-3 rounded-3xl bg-brand-wash/60 p-5">
+          <p className="flex items-center gap-2 text-sm font-bold text-brand">
+            <Icon name="sparkles" size={16} />
+            Sugeridas por el mercado
+          </p>
+          <p className="-mt-2 text-xs text-muted">
+            Las más pedidas que aún no tienes, en {vacancies.length}{" "}
+            {vacancies.length === 1 ? "vacante abierta" : "vacantes abiertas"}.
+          </p>
+          <div className="flex flex-wrap gap-2">
             {suggested.map((gap) => (
               <button
                 key={gap.skill}
                 type="button"
-                className="chip chip--dashed chip--action"
                 onClick={() => onAddSkill(gap.skill)}
+                className="inline-flex items-center gap-1.5 rounded-full border border-dashed border-brand/50 bg-canvas px-3 py-1.5 text-[13px] font-bold text-ink transition hover:-translate-y-0.5 hover:border-brand hover:text-brand"
               >
-                <span style={{ color: "var(--gold-deep)", display: "flex" }}>
-                  <Icon name="plus" size={13} strokeWidth={2.4} />
-                </span>
+                <Icon name="plus" size={13} strokeWidth={2.6} />
                 {gap.skill}
-                <span className="meta num">{gap.sharePercent}%</span>
+                <span className="font-normal text-muted tabular-nums">{gap.sharePercent}%</span>
               </button>
             ))}
           </div>
@@ -126,51 +124,45 @@ export function ExpectationsStep({
   onToggleWorkMode: (mode: WorkMode) => void;
 }) {
   return (
-    <div className="stack" style={{ gap: 20 }}>
-      <div className="two-fields">
-        <div style={{ gridColumn: "span 2" }}>
-          <Field label="Target role">
+    <div className="flex flex-col gap-6">
+      <FieldGrid>
+        <div className="sm:col-span-2">
+          <Field label="Cargo objetivo">
             <input
-              className="input"
+              className={inputClass}
               value={expectations.targetRole ?? ""}
               onChange={(e) => onPatch({ targetRole: e.target.value })}
-              placeholder="Full Stack Developer"
+              placeholder="Desarrollador full stack"
             />
           </Field>
         </div>
         <SelectField
-          label="Area"
+          label="Área"
           value={expectations.targetArea ?? ""}
           options={TARGET_AREAS}
-          placeholder="Choose an area"
+          placeholder="Elige un área"
           onChange={(value) => onPatch({ targetArea: value || undefined })}
         />
         <SelectField
-          label="Seniority"
+          label="Nivel"
           value={expectations.targetSeniority ?? ""}
           options={SENIORITIES}
-          placeholder="Choose a level"
+          placeholder="Elige un nivel"
           onChange={(value) => onPatch({ targetSeniority: value || undefined })}
         />
-      </div>
+      </FieldGrid>
 
-      <div className="stack" style={{ gap: 9 }}>
-        <div className="split">
-          <span className="field__label">Salary range, monthly</span>
-          <span className="num" style={{ fontSize: 13.5, color: "var(--ink-active)" }}>
+      <div className="flex flex-col gap-3">
+        <div className="flex items-baseline justify-between gap-3">
+          <span className="text-sm font-bold text-ink">Salario mensual</span>
+          <span className="text-sm font-black text-navy tabular-nums">
             {salaryRange(expectations)}
           </span>
         </div>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr) 120px",
-            gap: 16,
-          }}
-        >
-          <Field label="Minimum">
+        <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_120px]">
+          <Field label="Mínimo">
             <input
-              className="input num"
+              className={`${inputClass} tabular-nums`}
               type="number"
               min={0}
               step={100000}
@@ -179,9 +171,9 @@ export function ExpectationsStep({
               placeholder="7000000"
             />
           </Field>
-          <Field label="Maximum">
+          <Field label="Máximo">
             <input
-              className="input num"
+              className={`${inputClass} tabular-nums`}
               type="number"
               min={0}
               step={100000}
@@ -191,7 +183,7 @@ export function ExpectationsStep({
             />
           </Field>
           <SelectField
-            label="Currency"
+            label="Moneda"
             value={expectations.currency ?? DEFAULT_CURRENCY}
             options={CURRENCIES}
             onChange={(currency) => onPatch({ currency })}
@@ -199,50 +191,49 @@ export function ExpectationsStep({
         </div>
       </div>
 
-      {/* A <label> around a row of buttons points at nothing, so this is a
-          named group instead. */}
-      <div className="stack" style={{ gap: 9 }} role="group" aria-label="Work mode">
-        <span className="field__label">Work mode</span>
-        <div className="row" style={{ gap: 10, flexWrap: "wrap" }}>
+      <Field label="Modalidad" group>
+        <div className="flex flex-wrap gap-2">
           {WORK_MODES.map((mode) => (
-            <ChoiceChip
+            <TogglePill
               key={mode}
               on={expectations.workModes.includes(mode)}
               onClick={() => onToggleWorkMode(mode)}
             >
               {workModeLabel(mode)}
-            </ChoiceChip>
+            </TogglePill>
           ))}
         </div>
-      </div>
+      </Field>
 
       {/* Two buttons rather than a checkbox, so "not answered yet" can exist
           and does not count toward completeness. */}
-      <div className="stack" style={{ gap: 9 }} role="group" aria-label="Willing to relocate">
-        <span className="field__label">Willing to relocate</span>
-        <span className="meta">Say yes and we ask which cities.</span>
-        <div className="row" style={{ gap: 10, flexWrap: "wrap" }}>
-          <ChoiceChip
+      <Field
+        label="¿Estás dispuesto a reubicarte?"
+        hint="Si dices que sí, te preguntamos a qué ciudades."
+        group
+      >
+        <div className="flex flex-wrap gap-2">
+          <TogglePill
             on={expectations.willRelocate === true}
             onClick={() => onPatch({ willRelocate: true })}
           >
-            Yes
-          </ChoiceChip>
+            Sí
+          </TogglePill>
           {/* Saying no drops the cities: a relocation with none is an
               incomplete field, and a hidden one cannot be fixed. */}
-          <ChoiceChip
+          <TogglePill
             on={expectations.willRelocate === false}
             onClick={() => onPatch({ willRelocate: false, cities: [] })}
           >
             No
-          </ChoiceChip>
+          </TogglePill>
         </div>
-      </div>
+      </Field>
 
       {expectations.willRelocate === true && (
         <ChipInput
-          label="Cities you would move to"
-          placeholder="Type a city and press Enter"
+          label="Ciudades a las que te mudarías"
+          placeholder="Escribe una ciudad y presiona Enter"
           values={expectations.cities}
           normalize={(value) => value.trim().toLowerCase()}
           onChange={(cities) => onPatch({ cities })}
@@ -268,7 +259,7 @@ function SelectField({
 }) {
   return (
     <Field label={label}>
-      <select className="select" value={value} onChange={(e) => onChange(e.target.value)}>
+      <select className={inputClass} value={value} onChange={(e) => onChange(e.target.value)}>
         {placeholder !== undefined && <option value="">{placeholder}</option>}
         {options.map((option) => (
           <option key={option} value={option}>
@@ -277,28 +268,5 @@ function SelectField({
         ))}
       </select>
     </Field>
-  );
-}
-
-/** A pressable chip for picking one or more answers from a short list. */
-function ChoiceChip({
-  on,
-  onClick,
-  children,
-}: {
-  on: boolean;
-  onClick: () => void;
-  children: ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      className="chip chip--action"
-      aria-pressed={on}
-      onClick={onClick}
-      style={{ height: 40, padding: "0 18px", fontSize: 13.5 }}
-    >
-      {children}
-    </button>
   );
 }

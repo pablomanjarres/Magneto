@@ -2,20 +2,12 @@ import type { ApplicationCard, ApplicationStatus } from "@moonlight/types";
 
 import { BoardCard } from "./BoardCard";
 
-/** The pipeline reads left to right, so the dot darkens with it. */
-const DOT_OPACITY: Record<ApplicationStatus, number> = {
-  applied: 0.35,
-  "in-review": 0.6,
-  interview: 0.9,
-  rejected: 0.16,
-};
-
-/** An empty column still says what belongs in it. */
-const EMPTY_TEXT: Record<ApplicationStatus, string> = {
-  applied: "Nothing applied yet. The scored list is at Vacancies.",
-  "in-review": "Nothing being read right now.",
-  interview: "No interviews yet. Keep the top of the list moving.",
-  rejected: "No rejections here.",
+/** Each column's dot and what it says while empty. */
+const COLUMN: Record<ApplicationStatus, { dot: string; empty: string }> = {
+  applied: { dot: "bg-navy", empty: "Aún no te postulas. Las vacantes evaluadas te esperan." },
+  "in-review": { dot: "bg-brand", empty: "Nada en revisión por ahora." },
+  interview: { dot: "bg-mint-deep", empty: "Sin entrevistas todavía. Mueve las mejores." },
+  rejected: { dot: "bg-muted", empty: "Nada descartado. Bien." },
 };
 
 export function BoardColumn({
@@ -27,45 +19,27 @@ export function BoardColumn({
   label: string;
   cards: ApplicationCard[];
 }) {
-  return (
-    <section className="stack" style={{ gap: 0 }}>
-      <div className="column__head">
-        <span className="row" style={{ gap: 8 }}>
-          <span
-            style={{
-              width: 7,
-              height: 7,
-              borderRadius: 999,
-              background: "var(--glow)",
-              opacity: DOT_OPACITY[status],
-              flexShrink: 0,
-            }}
-          />
-          <span style={{ fontSize: 12.5, color: "var(--ink-secondary)" }}>{label}</span>
-        </span>
-        <span className="meta num">{cards.length}</span>
-      </div>
+  const { dot, empty } = COLUMN[status];
 
-      <div className="column__cards">
-        {cards.length === 0 ? (
-          <p
-            className="meta"
-            style={{
-              margin: 0,
-              padding: "22px 12px",
-              border: "1px dashed var(--line-dashed)",
-              borderRadius: 10,
-              textAlign: "center",
-              textWrap: "pretty",
-              lineHeight: 1.45,
-            }}
-          >
-            {EMPTY_TEXT[status]}
-          </p>
-        ) : (
-          cards.map((card) => <BoardCard key={card.id} card={card} />)
-        )}
-      </div>
+  return (
+    <section className="flex snap-start flex-col gap-3 rounded-3xl bg-surface p-3">
+      <header className="flex items-center justify-between px-2 pt-1">
+        <span className="flex items-center gap-2 text-sm font-black text-slate">
+          <span className={`size-2.5 rounded-full ${dot}`} aria-hidden />
+          {label}
+        </span>
+        <span className="rounded-full bg-canvas px-2.5 py-0.5 text-xs font-bold text-muted tabular-nums">
+          {cards.length}
+        </span>
+      </header>
+
+      {cards.length === 0 ? (
+        <p className="rounded-2xl border border-dashed border-control/60 px-4 py-6 text-center text-sm text-pretty text-muted">
+          {empty}
+        </p>
+      ) : (
+        cards.map((card) => <BoardCard key={card.id} card={card} />)
+      )}
     </section>
   );
 }

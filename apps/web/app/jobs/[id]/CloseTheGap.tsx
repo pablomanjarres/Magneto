@@ -1,7 +1,9 @@
 import type { MarketGap, ScoreResult } from "@moonlight/types";
 import { WEIGHTS, normalizeSkill, scoreFromWeights, topGaps } from "@moonlight/core";
 
-import { Chip, EmptyState, ProgressBar } from "../../../components/primitives";
+import { Icon } from "../../../components/Icon";
+import { Card, Chip, ProgressBar } from "../../../components/primitives";
+import { KIND_LABELS } from "./ScoreBreakdown";
 
 /** How many gaps get a before-and-after row of their own; the rest stay chips. */
 const DETAILED = 3;
@@ -20,25 +22,21 @@ export function CloseTheGap({
   gaps: MarketGap[];
   vacancyCount: number;
 }) {
-  if (result.breakdown.length === 0) {
-    return (
-      <EmptyState title="Nothing to close">
-        This vacancy asks for no skills, so there is no gap to work on.
-      </EmptyState>
-    );
-  }
+  if (result.breakdown.length === 0) return null;
 
   // Every gap, in core's must-haves-first order; the first DETAILED get their own row.
   const missing = topGaps(result, result.missing.length);
   if (missing.length === 0) {
     return (
-      <div className="card stack" style={{ gap: 6 }}>
-        <span style={{ fontSize: 15 }}>A full match</span>
-        <p className="lead">
-          You meet all {result.breakdown.length} requirements, must-haves included. There is nothing
-          left to learn for this one — apply.
+      <Card className="flex animate-rise flex-col gap-2 border-mint bg-mint-wash p-6 [animation-delay:220ms]">
+        <span className="flex items-center gap-2 text-lg font-black text-mint-deep">
+          <Icon name="sparkles" size={18} /> Match completo
+        </span>
+        <p className="text-sm text-pretty text-ink">
+          Cumples los {result.breakdown.length} requisitos, incluidos los obligatorios. No te falta
+          nada para esta: postúlate.
         </p>
-      </div>
+      </Card>
     );
   }
 
@@ -46,20 +44,22 @@ export function CloseTheGap({
   const rest = missing.length - DETAILED;
 
   return (
-    <div className="card stack" style={{ gap: 14 }}>
-      <div className="stack" style={{ gap: 8 }}>
-        <div className="chips">
-          {missing.map((requirement) => (
-            <Chip key={requirement.skill} tone="missing">
-              {requirement.skill}
-            </Chip>
-          ))}
-        </div>
-        <p className="lead">
+    <Card className="flex animate-rise flex-col gap-5 p-6 [animation-delay:220ms]">
+      <div>
+        <h2 className="text-xl font-black text-slate">Cierra la brecha</h2>
+        <p className="mt-1 text-sm text-pretty text-muted">
           {missing.some((r) => r.kind === "must-have")
-            ? "Must-haves are listed first: each one is worth three times a nice-to-have, so they move the score most."
-            : "Only nice-to-haves are missing, so every must-have this vacancy asks for is already on your profile."}
+            ? "Los obligatorios van primero: cada uno vale tres veces un deseable, así que mueven más tu puntaje."
+            : "Solo te faltan deseables: ya tienes todos los obligatorios que pide esta vacante."}
         </p>
+      </div>
+
+      <div className="flex flex-wrap gap-1.5">
+        {missing.map((requirement) => (
+          <Chip key={requirement.skill} tone="missing">
+            {requirement.skill}
+          </Chip>
+        ))}
       </div>
 
       {missing.slice(0, DETAILED).map((requirement) => {
@@ -69,47 +69,43 @@ export function CloseTheGap({
         const others = gap ? gap.demandCount - 1 : 0;
 
         return (
-          <div
-            key={requirement.skill}
-            className="stack"
-            style={{ gap: 10, paddingTop: 14, borderTop: "1px solid var(--line)" }}
-          >
-            <div className="split">
-              <span style={{ fontSize: 16 }}>{requirement.skill}</span>
-              <span className="meta num" style={{ color: "var(--muted)" }}>
-                {requirement.kind} · weight {weight}
+          <div key={requirement.skill} className="flex flex-col gap-2 border-t border-line pt-4">
+            <div className="flex items-baseline justify-between gap-3">
+              <span className="font-bold text-ink">Si aprendes {requirement.skill}</span>
+              <span className="text-xs text-muted">
+                {KIND_LABELS[requirement.kind]} · ×{weight}
               </span>
             </div>
-
-            <div className="row" style={{ gap: 11 }}>
-              <span className="num" style={{ fontSize: 15, color: "var(--muted)" }}>
-                {result.score}%
-              </span>
-              <div className="grow">
-                <ProgressBar percentage={potential} />
+            <div className="flex items-center gap-3 text-sm font-black tabular-nums">
+              <span className="text-muted">{result.score}%</span>
+              <div className="flex-1">
+                <ProgressBar
+                  percentage={potential}
+                  label={`Puntaje con ${requirement.skill}`}
+                  thin
+                />
               </div>
-              <span className="num" style={{ fontSize: 15, color: "var(--gold-deep)" }}>
-                {potential}%
-              </span>
+              <span className="text-brand">{potential}%</span>
             </div>
-
-            <p className="lead">
+            <p className="text-xs text-pretty text-muted">
               {gap
-                ? `Asked for by ${gap.demandCount} of the ${vacancyCount} open vacancies` +
+                ? `La piden ${gap.demandCount} de las ${vacancyCount} vacantes abiertas` +
                   (others > 0
-                    ? `, so learning it also lifts your score on ${others} other${others === 1 ? "" : "s"}.`
-                    : ", and this is the only one asking for it.")
-                : `Learning it takes this match to ${potential}%.`}
+                    ? `, así que también sube tu puntaje en ${others} más.`
+                    : ", y esta es la única.")
+                : `Aprenderla lleva este match a ${potential}%.`}
             </p>
           </div>
         );
       })}
 
       {rest > 0 && (
-        <span className="meta">
-          {rest} more missing requirement{rest === 1 ? " is" : "s are"} listed above.
+        <span className="text-xs text-muted">
+          {rest === 1
+            ? "Otro requisito faltante está en la lista de arriba."
+            : `Otros ${rest} requisitos faltantes están en la lista de arriba.`}
         </span>
       )}
-    </div>
+    </Card>
   );
 }

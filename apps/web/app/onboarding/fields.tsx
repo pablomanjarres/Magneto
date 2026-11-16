@@ -3,9 +3,10 @@
 import { useState, type ReactNode } from "react";
 import type { CompletenessResult } from "@moonlight/types";
 
-import { filledFieldsLabel } from "../../components/CompletenessPanel";
+import { CompletenessPanel } from "../../components/CompletenessPanel";
 import { Icon } from "../../components/Icon";
-import { ProgressBar } from "../../components/primitives";
+import { MoonHero } from "../../components/moon/MoonHero";
+import { Card, Eyebrow, buttonClass, inputClass } from "../../components/primitives";
 
 /** An input left empty is a missing value, not an empty string. */
 export function optionalText(value: string): string | undefined {
@@ -16,90 +17,39 @@ export function optionalNumber(value: string): number | undefined {
   return value === "" ? undefined : Number(value);
 }
 
-/** The whole point of the wizard, on screen at every step. */
+/**
+ * The whole point of the wizard, on screen at every step. It is fed the draft's
+ * completeness, so the moon fills while the candidate types, not after saving.
+ */
 export function CompletenessRail({ completeness }: { completeness: CompletenessResult }) {
   return (
-    <aside className="card stack" style={{ gap: 18, padding: "20px 22px" }}>
-      <span
-        style={{
-          fontSize: 11,
-          letterSpacing: 1.4,
-          textTransform: "uppercase",
-          color: "var(--faint)",
-        }}
-      >
-        Profile completeness
-      </span>
-
-      <div className="stack" style={{ gap: 10 }}>
-        <div className="row" style={{ alignItems: "baseline", gap: 8 }}>
-          <span
-            className="display num"
-            style={{ fontSize: 46, lineHeight: 1, color: "var(--gold-deep)" }}
-          >
-            {completeness.percentage}
-          </span>
-          <span style={{ fontSize: 18, color: "var(--gold-deep)" }}>%</span>
-          <span className="meta num" style={{ marginLeft: "auto" }}>
-            {filledFieldsLabel(completeness)}
-          </span>
-        </div>
-        <ProgressBar percentage={completeness.percentage} label="Profile completeness" />
+    <Card className="flex animate-rise flex-col gap-5 p-6 [animation-delay:150ms] lg:sticky lg:top-24">
+      <div className="relative h-64 overflow-hidden rounded-3xl bg-navy">
+        <MoonHero percentage={completeness.percentage} />
       </div>
 
-      <div className="stack" style={{ gap: 9 }}>
-        <span className="field__label">Still missing</span>
-        {completeness.missing.length === 0 ? (
-          <span className="row" style={{ gap: 9, fontSize: 13, color: "var(--glow)" }}>
-            <Icon name="check" size={14} strokeWidth={2.6} />
-            Nothing left. Every field is filled.
-          </span>
-        ) : (
-          completeness.missing.map((label) => (
-            <span
-              key={label}
-              className="row"
-              style={{ gap: 9, fontSize: 13, color: "var(--ink-secondary)" }}
-            >
-              <span
-                style={{
-                  width: 6,
-                  height: 6,
-                  borderRadius: 999,
-                  border: "1px solid var(--dim)",
-                  flexShrink: 0,
-                }}
-              />
-              {label}
-            </span>
-          ))
-        )}
+      <div>
+        <Eyebrow>Completitud del perfil</Eyebrow>
+        <p className="mt-1 text-5xl font-black text-navy tabular-nums" aria-live="polite">
+          {completeness.percentage}
+          <span className="text-2xl">%</span>
+        </p>
       </div>
 
-      <div
-        className="stack"
-        style={{
-          gap: 6,
-          padding: "14px 16px",
-          border: "1px solid var(--line-strong)",
-          borderRadius: 10,
-          background: "var(--ground)",
-        }}
-      >
-        <span style={{ fontSize: 12, color: "var(--glow)" }}>Why this bar matters</span>
-        <span className="lead">
-          A finished profile is scored against every open vacancy. Each empty field is a match we
-          cannot compute for you.
-        </span>
-      </div>
-    </aside>
+      <CompletenessPanel completeness={completeness} />
+
+      <p className="rounded-2xl bg-brand-wash p-4 text-sm text-ink">
+        Un perfil completo se evalúa contra cada vacante abierta. Cada campo vacío es una
+        coincidencia que no podemos calcular.
+      </p>
+    </Card>
   );
 }
 
 /**
- * One box of removable chips fed by a text input. Skills and relocation cities
- * are the same interaction, so they are the same component. The half-typed word
- * is the only state that stays here; the list itself lives in the wizard.
+ * Removable chips fed by a text input. Skills and relocation cities are the
+ * same interaction, so they are the same component. The half-typed word is the
+ * only state that stays here; the list itself lives in the wizard.
  */
 export function ChipInput({
   label,
@@ -124,55 +74,31 @@ export function ChipInput({
   }
 
   return (
-    <div className="stack" style={{ gap: 10 }}>
-      <span className="field__label">{label}</span>
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          alignContent: "flex-start",
-          gap: 8,
-          padding: 12,
-          minHeight: 96,
-          border: "1px solid var(--line-strong)",
-          borderRadius: 10,
-          background: "var(--panel)",
-        }}
-      >
-        {values.map((value) => (
-          <span
-            key={value}
-            className="chip"
-            style={{
-              height: 32,
-              padding: "0 6px 0 12px",
-              fontSize: 13,
-              gap: 8,
-              color: "var(--ink-active)",
-              background: "var(--wash)",
-            }}
-          >
-            {value}
-            <button
-              type="button"
-              aria-label={`Remove ${value}`}
-              onClick={() => onChange(values.filter((held) => held !== value))}
-              style={{
-                display: "flex",
-                background: "none",
-                border: 0,
-                padding: 4,
-                cursor: "pointer",
-                color: "var(--gold-deep)",
-              }}
+    <div className="flex flex-col gap-3" role="group" aria-label={label}>
+      <span className="text-sm font-bold text-ink">{label}</span>
+      {values.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {values.map((value) => (
+            <span
+              key={value}
+              className="inline-flex animate-pop items-center gap-1 rounded-full bg-brand-wash py-1 pr-1 pl-3 text-[13px] font-bold text-brand"
             >
-              <Icon name="close" size={12} strokeWidth={2.4} />
-            </button>
-          </span>
-        ))}
-
+              {value}
+              <button
+                type="button"
+                aria-label={`Quitar ${value}`}
+                onClick={() => onChange(values.filter((held) => held !== value))}
+                className="flex size-6 items-center justify-center rounded-full transition hover:bg-brand hover:text-white"
+              >
+                <Icon name="close" size={12} strokeWidth={2.6} />
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
+      <div className="flex gap-2">
         <input
-          className="input"
+          className={inputClass}
           aria-label={label}
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
@@ -186,25 +112,22 @@ export function ChipInput({
           // typed is kept instead of being dropped by the next step.
           onBlur={add}
           placeholder={placeholder}
-          style={{
-            flex: "1 1 180px",
-            width: "auto",
-            height: 32,
-            padding: "0 6px",
-            border: 0,
-            background: "transparent",
-            fontSize: 13,
-          }}
         />
-        <button type="button" className="btn btn--sm" onClick={add} disabled={draft.trim() === ""}>
-          Add
+        <button
+          type="button"
+          className={buttonClass("strong")}
+          onClick={add}
+          disabled={draft.trim() === ""}
+        >
+          <Icon name="plus" size={16} strokeWidth={2.4} />
+          Agregar
         </button>
       </div>
     </div>
   );
 }
 
-/** A repeatable block: the accent bar, the fields, and the one way out. */
+/** A repeatable block: the fields and the one way out. */
 export function EntryCard({
   removeLabel,
   onRemove,
@@ -215,20 +138,15 @@ export function EntryCard({
   children: ReactNode;
 }) {
   return (
-    <div className="card row" style={{ gap: 14, alignItems: "stretch", padding: "16px 18px" }}>
-      <span style={{ width: 3, borderRadius: 2, background: "var(--glow)", flexShrink: 0 }} />
-      <div className="stack grow" style={{ gap: 14 }}>
-        {children}
-      </div>
+    <div className="flex animate-rise flex-col gap-4 rounded-3xl border border-line bg-surface/40 p-5">
+      {children}
       <button
         type="button"
-        className="btn btn--sm"
-        aria-label={removeLabel}
-        title={removeLabel}
+        className={`${buttonClass("danger", "sm")} self-end`}
         onClick={onRemove}
-        style={{ alignSelf: "flex-start" }}
       >
-        <Icon name="close" size={13} strokeWidth={2.4} />
+        <Icon name="trash" size={14} />
+        {removeLabel}
       </button>
     </div>
   );
@@ -238,25 +156,16 @@ export function AddButton({ label, onClick }: { label: string; onClick: () => vo
   return (
     <button
       type="button"
-      className="row"
       onClick={onClick}
-      style={{
-        justifyContent: "center",
-        gap: 8,
-        width: "100%",
-        height: 48,
-        border: "1px dashed var(--line-dashed)",
-        borderRadius: 10,
-        background: "transparent",
-        color: "var(--muted)",
-        fontSize: 13.5,
-        cursor: "pointer",
-      }}
+      className={`${buttonClass("ghost")} w-full border border-dashed border-control`}
     >
-      <span style={{ color: "var(--gold-deep)", display: "flex" }}>
-        <Icon name="plus" size={16} strokeWidth={2.2} />
-      </span>
+      <Icon name="plus" size={16} strokeWidth={2.4} />
       {label}
     </button>
   );
+}
+
+/** Pairs of fields side by side on wide screens, stacked on phones. */
+export function FieldGrid({ children }: { children: ReactNode }) {
+  return <div className="grid gap-4 sm:grid-cols-2">{children}</div>;
 }

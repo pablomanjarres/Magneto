@@ -1,9 +1,9 @@
 import type { Vacancy, WorkMode } from "@moonlight/types";
 
 const WORK_MODES: Record<WorkMode, string> = {
-  remote: "Remote",
-  hybrid: "Hybrid",
-  onsite: "On site",
+  remote: "Remoto",
+  hybrid: "Híbrido",
+  onsite: "Presencial",
 };
 
 export const workModeLabel = (mode: WorkMode): string => WORK_MODES[mode];
@@ -13,7 +13,7 @@ export function salaryRange(
   vacancy: Pick<Vacancy, "salaryMin" | "salaryMax" | "currency">,
 ): string {
   const { salaryMin, salaryMax, currency } = vacancy;
-  if (salaryMin === undefined && salaryMax === undefined) return "Salary not stated";
+  if (salaryMin === undefined && salaryMax === undefined) return "Salario no publicado";
   const short = (n: number): string =>
     n >= 1_000_000 ? `${(n / 1_000_000).toFixed(1).replace(/\.0$/, "")}M` : n.toLocaleString();
   const unit = currency ?? "";
@@ -24,17 +24,18 @@ export function salaryRange(
 }
 
 /**
- * "Medellín · Hybrid". Some vacancies in the dataset carry "Remote" as their
+ * "Medellín · Híbrido". Some vacancies in the dataset carry "Remote" as their
  * city, so the city is dropped when it only repeats the work mode rather than
- * printing "Remote · Remote".
+ * printing "Remote · Remoto".
  */
 export function placeMeta(v: Pick<Vacancy, "city" | "workMode">): string {
   const mode = workModeLabel(v.workMode);
-  const city = v.city.trim().toLowerCase() === mode.toLowerCase() ? "" : v.city;
+  const raw = v.city.trim().toLowerCase();
+  const city = raw === v.workMode || raw === mode.toLowerCase() ? "" : v.city;
   return [city, mode].filter(Boolean).join(" · ");
 }
 
-/** "Bancolombia · Medellín · Hybrid" without the empties. */
+/** "Bancolombia · Medellín · Híbrido" without the empties. */
 export const vacancyMeta = (v: Vacancy): string => `${v.company} · ${placeMeta(v)}`;
 
 export const initials = (fullName: string): string =>
@@ -47,7 +48,7 @@ export const initials = (fullName: string): string =>
 
 /** Fixed locale and UTC so the server and the browser never disagree. */
 export const shortDate = (iso: string): string =>
-  new Date(iso).toLocaleDateString("en-GB", {
+  new Date(iso).toLocaleDateString("es-CO", {
     day: "numeric",
     month: "short",
     year: "numeric",

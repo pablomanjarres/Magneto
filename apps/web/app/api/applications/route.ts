@@ -7,6 +7,8 @@ import {
 } from "@moonlight/db";
 import { applicationCards } from "@moonlight/core";
 
+import { publish } from "../../../lib/events";
+
 export const dynamic = "force-dynamic";
 
 /** GET /api/applications?profileId=demo-candidate — the board, scored. */
@@ -45,5 +47,11 @@ export async function POST(request: Request): Promise<Response> {
   if (!vacancy) return Response.json({ error: "vacancy not found" }, { status: 404 });
 
   const application = await createApplication(body.profileId, body.vacancyId, body.note);
+  await publish({
+    profileId: application.profileId,
+    vacancyId: application.vacancyId,
+    applicationId: application.id,
+    kind: "applied",
+  });
   return Response.json({ application }, { status: 201 });
 }

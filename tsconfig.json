@@ -6,7 +6,6 @@
     { "path": "packages/types" },
     { "path": "packages/core" },
     { "path": "packages/db" },
-    { "path": "apps/web" },
-    { "path": "apps/api" }
+    { "path": "apps/web" }
   ]
 }
