@@ -178,3 +178,183 @@ las llaves foráneas cuidan esas reglas en la base de datos. Los sub-objetos del
 | **Variaciones protegidas** | `parseProfile` reconstruye todo perfil que llega por HTTP; `@moonlight/db` oculta el driver `pg` al resto          |
 
 ### 5.3. Clean Code
+
+- **Nombres que dicen qué hacen:** `comparisonBlockers`, `topGaps`, `canMove`, `describeEvent`.
+- **Funciones puras y pequeñas** en el dominio: mismas entradas, mismo resultado, sin E/S.
+- **Una sola fuente para cada regla:** las etiquetas de estado, los pesos y los campos de
+  completitud se definen una vez en `packages/core` y la interfaz los importa.
+- **Errores explícitos:** las rutas responden 400, 404 o 409 con un mensaje, y la aplicación se
+  detiene al iniciar si falta `DATABASE_URL`.
+- **Pruebas del dominio:** 83 pruebas en `packages/core/tests` que corren sin base de datos.
+
+---
+
+## Sección 6. Patrones de diseño
+
+### Observer
+
+|                           |                                                                                                                                                                                                                              |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Nombre del patrón**     | Observer                                                                                                                                                                                                                     |
+| **Clasificación**         | Comportamiento                                                                                                                                                                                                               |
+| **Intención**             | Que el registro de actividades reaccione a cada cambio de una postulación sin que las rutas sepan que existe                                                                                                                 |
+| **Aplicabilidad**         | Un cambio debe disparar efectos secundarios que pueden crecer (historial hoy, notificaciones mañana)                                                                                                                         |
+| **Estructura**            | {PENDIENTE: images/6-observer.png}                                                                                                                                                                                           |
+| **Participantes**         | Sujeto: `ApplicationEvents`. Oyente: la función que llama `recordEvent`. Evento: `ApplicationEvent`                                                                                                                          |
+| **Colaboraciones**        | La ruta cambia la postulación y llama `publish`; el sujeto avisa a cada oyente; el oyente guarda la fila en `application_events`                                                                                             |
+| **Consecuencias**         | (+) agregar un efecto es suscribir un oyente; un oyente que falla no tumba la petición. (−) el flujo es menos evidente al leer la ruta                                                                                       |
+| **Implementación**        | `publish` usa `Promise.allSettled` y devuelve los fallos para registrarlos en el log                                                                                                                                         |
+| **Código de ejemplo**     | [`packages/core/src/activity.ts`](https://github.com/pablomanjarres/Magneto/blob/main/packages/core/src/activity.ts), [`apps/web/lib/events.ts`](https://github.com/pablomanjarres/Magneto/blob/main/apps/web/lib/events.ts) |
+| **Usos conocidos**        | Los eventos del DOM (`addEventListener`) y `EventEmitter` de Node.js                                                                                                                                                         |
+| **Patrones relacionados** | Mediator, Publish/Subscribe                                                                                                                                                                                                  |
+
+### Strategy
+
+|                           |                                                                                                                                    |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| **Nombre del patrón**     | Strategy                                                                                                                           |
+| **Clasificación**         | Comportamiento                                                                                                                     |
+| **Intención**             | Cambiar el orden de la lista de vacantes sin tocar el código que filtra y pagina                                                   |
+| **Aplicabilidad**         | Varias formas de resolver lo mismo (ordenar) elegidas por el usuario en tiempo de ejecución                                        |
+| **Estructura**            | {PENDIENTE: images/6-strategy.png}                                                                                                 |
+| **Participantes**         | Contexto: la lista en `VacancyFilters`. Estrategias: los comparadores `match`, `salary` y `company` de `SORTS`                     |
+| **Colaboraciones**        | El selector "Ordenar por" guarda una llave; la lista llama `sort(SORTS[llave])`                                                    |
+| **Consecuencias**         | (+) un orden nuevo es una línea. (−) cada estrategia debe respetar el mismo contrato de comparación                                |
+| **Implementación**        | Un `Record<SortKey, comparador>` tipado: el compilador exige una estrategia por llave                                              |
+| **Código de ejemplo**     | [`apps/web/app/jobs/VacancyFilters.tsx`](https://github.com/pablomanjarres/Magneto/blob/main/apps/web/app/jobs/VacancyFilters.tsx) |
+| **Usos conocidos**        | `Array.prototype.sort` con comparador; los ordenamientos de cualquier portal de empleo                                             |
+| **Patrones relacionados** | State, Template Method                                                                                                             |
+
+### Repository
+
+|                           |                                                                                                                          |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| **Nombre del patrón**     | Repository                                                                                                               |
+| **Clasificación**         | Estructura (patrón de arquitectura de acceso a datos)                                                                    |
+| **Intención**             | Que el resto de la aplicación pida perfiles, vacantes y postulaciones sin escribir SQL                                   |
+| **Aplicabilidad**         | Una capa de dominio que no debe conocer la base de datos                                                                 |
+| **Estructura**            | {PENDIENTE: images/6-repository.png}                                                                                     |
+| **Participantes**         | Repositorios de `packages/db/src/repositories/`; entidades de `packages/types`; el _pool_ de conexiones                  |
+| **Colaboraciones**        | La ruta llama `getProfile` o `listVacancies`; el repositorio consulta y convierte las filas en objetos del dominio       |
+| **Consecuencias**         | (+) todo el SQL en un paquete; cambiar el motor no toca el dominio. (−) una capa más entre la ruta y la tabla            |
+| **Implementación**        | Funciones con consultas parametrizadas y un convertidor fila→entidad por tabla (`toVacancy`, `toApplication`, `toEvent`) |
+| **Código de ejemplo**     | [`packages/db/src/repositories/`](https://github.com/pablomanjarres/Magneto/tree/main/packages/db/src/repositories)      |
+| **Usos conocidos**        | Spring Data, Doctrine, Entity Framework                                                                                  |
+| **Patrones relacionados** | Data Mapper, Facade                                                                                                      |
+
+### Facade
+
+|                           |                                                                                                                                    |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| **Nombre del patrón**     | Facade                                                                                                                             |
+| **Clasificación**         | Estructura                                                                                                                         |
+| **Intención**             | Dar a las páginas una sola puerta para leer datos y a la interfaz una sola puerta para escribir                                    |
+| **Aplicabilidad**         | Varias páginas necesitan la misma combinación de repositorios y reglas del dominio                                                 |
+| **Estructura**            | {PENDIENTE: images/6-facade.png}                                                                                                   |
+| **Participantes**         | Fachadas: `apps/web/lib/queries.ts` (lectura) y `apps/web/lib/client.ts` (escritura). Subsistemas: repositorios, dominio y API     |
+| **Colaboraciones**        | El panel llama `loadRanked(profile)`, que trae las vacantes, las puntúa y calcula las brechas en una sola llamada                  |
+| **Consecuencias**         | (+) las páginas solo componen; la consulta no se copia por ruta. (−) la fachada crece si se le agregan casos que no comparten nada |
+| **Implementación**        | Funciones exportadas que combinan repositorios con funciones puras de `packages/core`                                              |
+| **Código de ejemplo**     | [`apps/web/lib/queries.ts`](https://github.com/pablomanjarres/Magneto/blob/main/apps/web/lib/queries.ts)                           |
+| **Usos conocidos**        | `fetch` sobre la pila HTTP; los SDK de servicios en la nube                                                                        |
+| **Patrones relacionados** | Repository, Mediator                                                                                                               |
+
+### State
+
+|                           |                                                                                                                                            |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Nombre del patrón**     | State (dirigido por tabla)                                                                                                                 |
+| **Clasificación**         | Comportamiento                                                                                                                             |
+| **Intención**             | Que una postulación solo pueda moverse a los estados permitidos desde el estado en que está                                                |
+| **Aplicabilidad**         | Un objeto con pocos estados y transiciones fijas                                                                                           |
+| **Estructura**            | {PENDIENTE: images/6-state.png}                                                                                                            |
+| **Participantes**         | Estados: `applied`, `in-review`, `interview`, `rejected`. Tabla de transiciones: `ALLOWED_MOVES`. Guardia: `canMove`                       |
+| **Colaboraciones**        | El tablero muestra solo los movimientos de `ALLOWED_MOVES`; la ruta `PATCH` vuelve a validar con `canMove` y responde 409 si no se permite |
+| **Consecuencias**         | (+) la tabla se lee y se prueba de un vistazo. (−) estados con comportamiento propio pedirían clases por estado                            |
+| **Implementación**        | Un `Record<ApplicationStatus, ApplicationStatus[]>` en el dominio, compartido por la interfaz y la API                                     |
+| **Código de ejemplo**     | [`packages/core/src/index.ts`](https://github.com/pablomanjarres/Magneto/blob/main/packages/core/src/index.ts)                             |
+| **Usos conocidos**        | Flujos de pedidos y de tickets en sistemas de gestión                                                                                      |
+| **Patrones relacionados** | Strategy                                                                                                                                   |
+
+---
+
+## Sección 7. Funcionalidad y demostración
+
+**Repositorio:** https://github.com/pablomanjarres/Magneto
+
+### Árbol de directorios
+
+```
+moonlight/
+├── apps/
+│   └── web/
+│       ├── app/            # páginas: dashboard, jobs, applications, onboarding, profile
+│       │   └── api/        # route handlers: la API HTTP
+│       ├── components/     # piezas reutilizables y la escena 3D (moon/)
+│       ├── lib/            # fachadas de lectura y escritura, y el bus de eventos
+│       └── public/models/  # modelos 3D de NASA (.glb)
+├── packages/
+│   ├── core/               # dominio: puntaje, completitud, brechas, estados, eventos
+│   ├── db/                 # SQL: migraciones, semilla y repositorios
+│   └── types/              # tipos compartidos
+├── data/                   # 20 vacantes y el perfil de demostración
+├── docs/                   # entregas, ADR, diagramas
+└── infra/                  # PostgreSQL 17 en Docker
+```
+
+### Código de ejemplo por capa
+
+Dominio, `packages/core/src/index.ts`:
+
+```ts
+export function canMove(from: ApplicationStatus, to: ApplicationStatus): boolean {
+  return ALLOWED_MOVES[from].includes(to);
+}
+```
+
+Acceso a datos, `packages/db/src/repositories/applications.ts`:
+
+```ts
+const { rows } = await pool.query<ApplicationRow>(
+  "UPDATE applications SET status = $2, updated_at = now() WHERE id = $1 RETURNING *",
+  [id, status],
+);
+```
+
+API, `apps/web/app/api/applications/[id]/route.ts`:
+
+```ts
+const application = await updateApplicationStatus(id, body.status);
+await record(application, "moved", `${current.status}→${application.status}`);
+return Response.json({ application });
+```
+
+### Historias de usuario demostradas
+
+| HU       | Historia                                          | Dónde se ve                                                                                  |
+| -------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| #11, #16 | Guardar mi perfil y ver qué tan completo está     | `/onboarding`: el asistente guarda el perfil y la luna se llena mientras se completan campos |
+| #23, #24 | Ver mi puntaje y las vacantes ordenadas por match | `/jobs` y `/jobs/[id]`; en el panel, las mejores vacantes orbitan la luna                    |
+| #30, #43 | Seguir mis postulaciones y anotar el próximo paso | `/applications`: tablero de cuatro estados, próximo paso y registro de actividades           |
+
+### Demostración pedida por la guía
+
+- **Lista con registros de la base de datos y una acción por registro:** el tablero de
+  `/applications` lee la tabla `applications`; cada tarjeta se mueve de estado o se retira.
+- **Formulario lanzado desde la lista que manipula datos:** "Editar próximo paso" actualiza con
+  `PATCH /api/applications/[id]`, "Retirar" borra con `DELETE` y "Postularme", en el detalle de una
+  vacante, inserta con `POST /api/applications`. Cada acción queda en "Actividad reciente".
+- El inicio de sesión no se evalúa en esta entrega: la aplicación abre directo en el perfil.
+
+**Capturas:** {PENDIENTE: images/7-panel.png, 7-vacantes.png, 7-detalle.png, 7-postulaciones.png,
+7-asistente.png}
+
+---
+
+## Conclusiones y lecciones aprendidas
+
+{PENDIENTE: síntesis del documento, aportes, hallazgos y dificultades de esta fase, escrita por el
+equipo}
+
+---
+
