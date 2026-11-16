@@ -1,7 +1,9 @@
 import type { ReactNode } from "react";
+import type { ProfileSource } from "@moonlight/types";
 
 import { Card, EmptyState } from "../../components/primitives";
 import { Icon, type IconName } from "../../components/Icon";
+import { SourceChip } from "../../components/SourceChip";
 
 /** One card of the profile: an icon, a heading, a line of guidance, then the contents. */
 export function ProfileSection({
@@ -51,6 +53,7 @@ export interface Entry {
   period: string;
   subtitle: string;
   description?: string | undefined;
+  source?: ProfileSource | undefined;
 }
 
 /** A timeline: a dot per entry on one rule, newest on top. */
@@ -71,7 +74,10 @@ export function EntryList({
         <li key={entry.key} className="relative">
           <span className="absolute top-1.5 -left-[27px] size-3 rounded-full border-2 border-canvas bg-brand" />
           <div className="flex flex-wrap items-baseline justify-between gap-x-3">
-            <span className="font-bold text-slate">{entry.title}</span>
+            <span className="inline-flex flex-wrap items-center gap-2 font-bold text-slate">
+              {entry.title}
+              {entry.source && <SourceChip source={entry.source} />}
+            </span>
             <span className="text-xs font-bold whitespace-nowrap text-muted tabular-nums">
               {entry.period}
             </span>

@@ -40,10 +40,10 @@ este documento, escrito por el equipo}
 
 ### Aporte de cada integrante
 
-| Integrante        | Aporte en la Entrega 3                                                                                                                             |
-| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Pablo Manjarres   | Rediseño de la interfaz, luna 3D, registro de actividades (patrón Observer), arquitectura y principios (secciones 4 a 6), código y pruebas         |
-| Valentina Barbosa | {PENDIENTE: retrospectiva, planificación y sus evidencias, diagramas de clases de implementación y de despliegue, capturas, conclusiones, fuentes} |
+| Integrante        | Aporte en la Entrega 3                                                                                                                                                                        |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Pablo Manjarres   | Rediseño de la interfaz, importación desde LinkedIn y hoja de vida, perfil adaptado, hoja de vida en formato Harvard, portátil 3D, registro de actividades, secciones 4 a 6, código y pruebas |
+| Valentina Barbosa | {PENDIENTE: retrospectiva, planificación y sus evidencias, diagramas de clases de implementación y de despliegue, capturas, conclusiones, fuentes}                                            |
 
 La demostración y la sustentación son de ambos.
 
@@ -67,14 +67,19 @@ La demostración y la sustentación son de ambos.
 
 ### Trabajo construido en el Sprint 3
 
-| Cambio                                                                      | Impacto en la arquitectura                                                                      |
-| --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| Registro de actividades de las postulaciones                                | Nueva tabla `application_events` y una clase `ApplicationEvents` en el dominio (Observer)       |
-| Interfaz rediseñada con la paleta y la tipografía de magneto365, en español | Tailwind CSS reemplaza la hoja de estilos propia; los tokens de diseño viven en un solo archivo |
-| Luna 3D interactiva: la fase muestra la completitud, las vacantes orbitan   | three.js y react-three-fiber en el cliente; modelos de NASA servidos como archivos estáticos    |
-| Ordenamiento de vacantes por match, salario o empresa                       | Comparadores intercambiables (Strategy) en la lista de vacantes                                 |
-| Sin pantalla de registro: la aplicación abre en el perfil de demostración   | Se retira `POST /api/candidates`; el inicio de sesión no se evalúa en esta entrega              |
-| Se retira el servicio Express de la PoC, como decidió el ADR 0001           | Un solo proceso de aplicación                                                                   |
+| Cambio                                                                                                      | Impacto en la arquitectura                                                                                         |
+| ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Registro de actividades de las postulaciones                                                                | Nueva tabla `application_events` y una clase `ApplicationEvents` en el dominio (Observer)                          |
+| Interfaz rediseñada con la paleta y la tipografía de magneto365, en español                                 | Tailwind CSS reemplaza la hoja de estilos propia; los tokens de diseño viven en un solo archivo                    |
+| Portátil 3D en el asistente del perfil: al hacer clic se abre y escribe en vivo lo que el candidato teclea  | three.js y react-three-fiber en el cliente; el modelo se construye en código, sin archivos de modelo               |
+| Ordenamiento de vacantes por match, salario o empresa                                                       | Comparadores intercambiables (Strategy) en la lista de vacantes                                                    |
+| Sin pantalla de registro: la aplicación abre en el perfil de demostración                                   | Se retira `POST /api/candidates`; el inicio de sesión (#3, #32) no se evalúa en esta entrega                       |
+| Se retira el servicio Express de la PoC, como decidió el ADR 0001                                           | Un solo proceso de aplicación                                                                                      |
+| Importación desde LinkedIn y desde la hoja de vida en PDF, con revisión y edición (#4 a #10)                | `POST /api/imports` transmite el avance por _Server-Sent Events_; Apify lee LinkedIn y Claude lee el PDF           |
+| Perfil adaptado a una vacante sin inventar datos (#31)                                                      | `POST /api/profiles/[id]/tailor`; `checkTailored` en el dominio rechaza lo que no esté en el perfil                |
+| Hoja de vida en formato Harvard en `/cv`, lista para guardar como PDF                                       | `toHarvardCv` en el dominio arma el documento desde el perfil; un solo componente lo dibuja en todas las pantallas |
+| La hoja de vida adaptada junto a la original, con cada cambio marcado: lado a lado o solo los cambios (#31) | `diffCv` y `diffWords` en el dominio calculan las diferencias palabra por palabra; la pantalla solo las pinta      |
+| Validación, límite de solicitudes y registro sin datos personales (#33, #34, #36)                           | `takeToken` en el dominio; `withRequestLog` envuelve cada ruta con un id de correlación                            |
 
 ### Historias priorizadas
 
@@ -97,15 +102,17 @@ leen la base de datos a través de `apps/web/lib/queries.ts`, y los _route handl
 `apps/web/app/api/` exponen la misma información como JSON. Debajo hay tres paquetes con una regla
 de dependencia en un solo sentido: `packages/core` contiene las reglas de negocio y solo importa
 `packages/types`; `packages/db` contiene todo el SQL; `apps/web` usa los tres. Así el motor de
-puntaje se prueba sin base de datos y sin servidor.
+puntaje se prueba sin base de datos y sin servidor. Dos servicios externos se llaman solo desde el
+servidor, nunca desde el navegador: Apify, que lee un perfil público de LinkedIn, y la API de
+Claude, que lee una hoja de vida en PDF y adapta el perfil a una vacante.
 
 | Resumen de la arquitectura |                                                                                                                                                                                                                                                   |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Tipo Aplicación**        | Web                                                                                                                                                                                                                                               |
 | **Estilo Arquitectónico**  | **Layered** (dominio, acceso a datos, aplicación). **Component-Based** (cada capa es un paquete con frontera propia). **Client/Server, 3-Tiers** (navegador → servidor Next.js → PostgreSQL). Se descartan SOA y Message Bus: es un solo servicio |
 | **Lenguaje programación**  | TypeScript sobre Node.js 22                                                                                                                                                                                                                       |
-| **Aspectos técnicos**      | PostgreSQL 17 en Docker; migraciones _forward-only_; sub-objetos del perfil en `JSONB`; la aplicación no arranca sin `DATABASE_URL`; modelos 3D en formato glTF                                                                                   |
-| **Frameworks**             | Next.js 15 y React 19; Tailwind CSS 4; three.js con react-three-fiber; Turborepo y pnpm _workspaces_; Vitest                                                                                                                                      |
+| **Aspectos técnicos**      | PostgreSQL 17 en Docker; migraciones _forward-only_; sub-objetos del perfil en `JSONB`; la aplicación no arranca sin `DATABASE_URL`; servicios externos Apify y API de Claude con sus llaves en `.env.local`; modelo 3D construido en código      |
+| **Frameworks**             | Next.js 15 y React 19; Tailwind CSS 4; three.js con react-three-fiber; SDK de Anthropic y zod; Turborepo y pnpm _workspaces_; Vitest                                                                                                              |
 
 ### Vista Lógica — Diagrama de Clases de Implementación
 
@@ -120,7 +127,12 @@ Lo que el diagrama debe mostrar, tal como está en el código:
 - Los repositorios de `packages/db/src/repositories/`: perfiles, vacantes, postulaciones y eventos.
 - Los tipos de `packages/types`: `Profile`, `Vacancy`, `Application`, `ApplicationEvent`,
   `ScoreResult`.
-- Los _route handlers_ de `apps/web/app/api/` y la fachada `apps/web/lib/queries.ts`.
+- Las reglas nuevas del dominio: `mapLinkedInProfile`, `mergeImport`, `checkTailored`, `takeToken`,
+  y las de la hoja de vida en `packages/core/src/cv.ts`: `toHarvardCv`, `diffCv` y `diffWords`.
+- Los adaptadores a servicios externos de `apps/web/lib/`: `apify.ts`, `resume.ts`, `tailor.ts`,
+  y el error común `UserFacingError`.
+- Los _route handlers_ de `apps/web/app/api/`, el envoltorio `withRequestLog` y la fachada
+  `apps/web/lib/queries.ts`.
 
 ### Vista Física — Diagrama de Despliegue
 
@@ -128,9 +140,11 @@ Lo que el diagrama debe mostrar, tal como está en el código:
 
 | Nodo / Proceso                  | Contenido                                                                       | Comunicación                                               |
 | ------------------------------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| Navegador del candidato         | Interfaz React; escena WebGL de la luna                                         | HTTP al mismo origen; descarga los `.glb` de `/models`     |
+| Navegador del candidato         | Interfaz React; escena WebGL del portátil                                       | HTTP al mismo origen                                       |
 | Servidor de aplicación          | Proceso Next.js 15 en Node.js 22: páginas, _route handlers_ y archivos públicos | TCP/SQL contra PostgreSQL                                  |
 | Contenedor `moonlight-postgres` | PostgreSQL 17 con volumen persistente `moonlight-pgdata`                        | Puerto `5433` del anfitrión hacia el `5432` del contenedor |
+| Apify                           | Actor `atomus/linkedin-profile-scraper`                                         | HTTPS desde el servidor de aplicación                      |
+| API de Claude (Anthropic)       | Modelo `claude-opus-5-5`                                                        | HTTPS desde el servidor de aplicación                      |
 
 ### Persistencia
 
@@ -173,9 +187,9 @@ las llaves foráneas cuidan esas reglas en la base de datos. Los sub-objetos del
 | **Creador**                | `createApplication` crea la postulación y `publish` en `apps/web/lib/events.ts` crea el evento con su id y su hora |
 | **Controlador**            | Cada _route handler_ de `apps/web/app/api/` recibe la petición, valida y delega en el dominio y el repositorio     |
 | **Polimorfismo**           | `SORTS` y `WEIGHTS` eligen el comportamiento por llave en lugar de cadenas de `if`                                 |
-| **Fabricación Pura**       | `apps/web/lib/queries.ts` y los repositorios no son del dominio: existen para separar responsabilidades            |
+| **Fabricación Pura**       | `lib/queries.ts`, `lib/apify.ts`, `lib/resume.ts` y los repositorios existen para separar responsabilidades        |
 | **Indirección**            | `ApplicationEvents` se interpone entre las rutas que cambian una postulación y el registro de actividades          |
-| **Variaciones protegidas** | `parseProfile` reconstruye todo perfil que llega por HTTP; `@moonlight/db` oculta el driver `pg` al resto          |
+| **Variaciones protegidas** | `parseProfile` reconstruye todo perfil que llega por HTTP; `mapLinkedInProfile` aísla el formato del scraper       |
 
 ### 5.3. Clean Code
 
@@ -276,6 +290,23 @@ las llaves foráneas cuidan esas reglas en la base de datos. Los sub-objetos del
 | **Usos conocidos**        | Flujos de pedidos y de tickets en sistemas de gestión                                                                                      |
 | **Patrones relacionados** | Strategy                                                                                                                                   |
 
+### Adapter
+
+|                           |                                                                                                                                               |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Nombre del patrón**     | Adapter                                                                                                                                       |
+| **Clasificación**         | Estructura                                                                                                                                    |
+| **Intención**             | Que un registro de LinkedIn y una hoja de vida en PDF lleguen al perfil con la misma forma, `ImportedProfile`                                 |
+| **Aplicabilidad**         | Dos fuentes con formatos que no controlamos y que el resto de la aplicación no debe conocer                                                   |
+| **Estructura**            | {PENDIENTE: images/6-adapter.png}                                                                                                             |
+| **Participantes**         | Adaptados: el registro del actor de Apify y la salida de Claude. Adaptadores: `mapLinkedInProfile` y `readResume`. Destino: `ImportedProfile` |
+| **Colaboraciones**        | La ruta de importación llama al servicio, pasa su respuesta por el adaptador y entrega `ImportedProfile` a la pantalla de revisión            |
+| **Consecuencias**         | (+) si el scraper cambia su formato, solo cambia `mapLinkedInProfile`. (−) un campo nuevo de la fuente no aparece hasta mapearlo              |
+| **Implementación**        | Funciones puras que leen el registro campo por campo, descartan lo desconocido y normalizan fechas con `toYearMonth`                          |
+| **Código de ejemplo**     | [`packages/core/src/import.ts`](https://github.com/pablomanjarres/Magneto/blob/main/packages/core/src/import.ts)                              |
+| **Usos conocidos**        | Los conectores de cualquier ATS que importa hojas de vida de varias fuentes                                                                   |
+| **Patrones relacionados** | Facade, Repository                                                                                                                            |
+
 ---
 
 ## Sección 7. Funcionalidad y demostración
@@ -288,11 +319,11 @@ las llaves foráneas cuidan esas reglas en la base de datos. Los sub-objetos del
 moonlight/
 ├── apps/
 │   └── web/
-│       ├── app/            # páginas: dashboard, jobs, applications, onboarding, profile
+│       ├── app/            # páginas: dashboard, jobs, applications, onboarding, profile, cv, import
 │       │   └── api/        # route handlers: la API HTTP
-│       ├── components/     # piezas reutilizables y la escena 3D (moon/)
+│       ├── components/     # piezas reutilizables, la hoja de vida (cv/) y el portátil 3D (toys/)
 │       ├── lib/            # fachadas de lectura y escritura, y el bus de eventos
-│       └── public/models/  # modelos 3D de NASA (.glb)
+│       └── public/samples/ # una hoja de vida de ejemplo para probar la importación
 ├── packages/
 │   ├── core/               # dominio: puntaje, completitud, brechas, estados, eventos
 │   ├── db/                 # SQL: migraciones, semilla y repositorios
@@ -331,11 +362,13 @@ return Response.json({ application });
 
 ### Historias de usuario demostradas
 
-| HU       | Historia                                          | Dónde se ve                                                                                  |
-| -------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| #11, #16 | Guardar mi perfil y ver qué tan completo está     | `/onboarding`: el asistente guarda el perfil y la luna se llena mientras se completan campos |
-| #23, #24 | Ver mi puntaje y las vacantes ordenadas por match | `/jobs` y `/jobs/[id]`; en el panel, las mejores vacantes orbitan la luna                    |
-| #30, #43 | Seguir mis postulaciones y anotar el próximo paso | `/applications`: tablero de cuatro estados, próximo paso y registro de actividades           |
+| HU       | Historia                                            | Dónde se ve                                                                                        |
+| -------- | --------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| #11, #16 | Guardar mi perfil y ver qué tan completo está       | `/onboarding`: el portátil 3D escribe en vivo cada campo y la completitud sube mientras se escribe |
+| #23, #24 | Ver mi puntaje y las vacantes ordenadas por match   | `/jobs` y `/jobs/[id]`; el panel muestra las tres mejores coincidencias                            |
+| #30, #43 | Seguir mis postulaciones y anotar el próximo paso   | `/applications`: tablero de cuatro estados, próximo paso y registro de actividades                 |
+| #4 a #10 | Importar mi perfil desde LinkedIn o mi hoja de vida | `/import`: escaneo animado con el avance real, revisión por sección con su origen y edición        |
+| #31      | Ver mi perfil adaptado a una vacante                | `/jobs/[id]`: la hoja de vida original y la adaptada en formato Harvard, con cada cambio marcado   |
 
 ### Demostración pedida por la guía
 
@@ -365,9 +398,9 @@ equipo}
 - Larman, C. (2004). _Applying UML and Patterns_ (3.ª ed.). Prentice Hall.
 - Martin, R. C. (2008). _Clean Code: A Handbook of Agile Software Craftsmanship_. Prentice Hall.
 - Microsoft. _Architectural Patterns and Styles_. <http://msdn.microsoft.com/en-us/library/ee658117.aspx>
-- NASA's Goddard Space Flight Center. _Moon 3D Models for Web, AR, and Animation_.
-  <https://svs.gsfc.nasa.gov/14959/>
-- NASA. _NASA 3D Resources_. <https://github.com/nasa/NASA-3D-Resources>
+- Apify. _LinkedIn Profile Scraper (atomus/linkedin-profile-scraper)_.
+  <https://apify.com/atomus/linkedin-profile-scraper>
+- Anthropic. _Claude API documentation_. <https://platform.claude.com/docs>
 - Decisión de arquitectura del equipo: [`docs/adr/0001-backend-choice.md`](../../../adr/0001-backend-choice.md)
 
 {PENDIENTE: otras fuentes consultadas durante el sprint}

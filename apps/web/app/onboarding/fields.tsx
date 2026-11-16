@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import type { CompletenessResult } from "@moonlight/types";
+import type { CompletenessResult, Profile } from "@moonlight/types";
 
 import { CompletenessPanel } from "../../components/CompletenessPanel";
 import { Icon } from "../../components/Icon";
-import { MoonHero } from "../../components/moon/MoonHero";
 import { Card, Eyebrow, buttonClass, inputClass } from "../../components/primitives";
+import { Laptop } from "../../components/toys/Laptop";
+import type { Typing } from "./typing";
 
 /** An input left empty is a missing value, not an empty string. */
 export function optionalText(value: string): string | undefined {
@@ -18,16 +19,43 @@ export function optionalNumber(value: string): number | undefined {
 }
 
 /**
+ * The laptop that types the profile as the candidate writes it: focusing any
+ * field opens it, and clicking it jumps to the step's first field.
+ */
+export function LaptopPanel({
+  typing,
+  profile,
+  completeness,
+  onActivate,
+}: {
+  typing: Typing;
+  profile: Profile;
+  completeness: number;
+  onActivate: () => void;
+}) {
+  return (
+    <div className="h-56 animate-rise overflow-hidden rounded-3xl bg-navy [animation-delay:120ms] sm:h-64">
+      <Laptop
+        profile={profile}
+        completeness={completeness}
+        text={typing.text}
+        writing={typing.writing}
+        keystrokes={typing.keystrokes}
+        prompt={typing.prompt}
+        onActivate={onActivate}
+        caption={typing.writing ? undefined : "Haz clic en el portátil o escribe en un campo"}
+      />
+    </div>
+  );
+}
+
+/**
  * The whole point of the wizard, on screen at every step. It is fed the draft's
- * completeness, so the moon fills while the candidate types, not after saving.
+ * completeness, so the figure moves while the candidate types, not after saving.
  */
 export function CompletenessRail({ completeness }: { completeness: CompletenessResult }) {
   return (
-    <Card className="flex animate-rise flex-col gap-5 p-6 [animation-delay:150ms] lg:sticky lg:top-24">
-      <div className="relative h-64 overflow-hidden rounded-3xl bg-navy">
-        <MoonHero percentage={completeness.percentage} />
-      </div>
-
+    <Card className="flex animate-rise flex-col gap-5 p-6 [animation-delay:150ms]">
       <div>
         <Eyebrow>Completitud del perfil</Eyebrow>
         <p className="mt-1 text-5xl font-black text-navy tabular-nums" aria-live="polite">

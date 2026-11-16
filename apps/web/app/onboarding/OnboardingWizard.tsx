@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type {
   Education,
@@ -16,8 +17,9 @@ import { Icon } from "../../components/Icon";
 import { Card, Eyebrow, ProgressBar, buttonClass } from "../../components/primitives";
 import { saveProfile } from "../../lib/client";
 import { BLANK_EDUCATION, BLANK_EXPERIENCE, EducationStep, ExperienceStep } from "./entry-steps";
-import { CompletenessRail } from "./fields";
+import { CompletenessRail, LaptopPanel } from "./fields";
 import { BasicsStep, ExpectationsStep, SkillsStep } from "./steps";
+import { useTyping } from "./typing";
 
 /**
  * Five steps over one draft profile. Only this component holds the draft; the
@@ -75,6 +77,7 @@ export function OnboardingWizard({
 
   const current = STEPS[step] ?? STEPS[0];
   const completeness = profileCompleteness(profile);
+  const { typing, area, fieldEvents, focusFirstField } = useTyping();
 
   function patch(changes: Partial<Profile>): void {
     setProfile((p) => ({ ...p, ...changes }));
@@ -163,7 +166,7 @@ export function OnboardingWizard({
       </div>
 
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
-        <Card className="flex animate-rise flex-col gap-6 p-6 [animation-delay:80ms] sm:p-8">
+        <Card className="flex animate-rise flex-col gap-6 p-6 [animation-delay:80ms] max-lg:order-2 sm:p-8">
           <div>
             <Eyebrow>
               Paso {step + 1} de {STEPS.length}
@@ -172,7 +175,8 @@ export function OnboardingWizard({
             <p className="mt-2 max-w-[52ch] text-sm text-pretty text-muted">{current.blurb}</p>
           </div>
 
-          <div key={step} className="flex animate-rise flex-col gap-5">
+          <div key={step} ref={area} className="flex animate-rise flex-col gap-5" {...fieldEvents}>
+            {step === 0 && <ImportPrompt />}
             {step === 0 && <BasicsStep profile={profile} onPatch={patch} />}
 
             {step === 1 && (
@@ -262,7 +266,20 @@ export function OnboardingWizard({
           </div>
         </Card>
 
-        <CompletenessRail completeness={completeness} />
+        {/* On phones the laptop goes above the form, so it is in sight while typing. */}
+        <div className="flex flex-col gap-6 max-lg:contents lg:sticky lg:top-24">
+          <div className="max-lg:order-1">
+            <LaptopPanel
+              typing={typing}
+              profile={profile}
+              completeness={completeness.percentage}
+              onActivate={focusFirstField}
+            />
+          </div>
+          <div className="max-lg:order-3">
+            <CompletenessRail completeness={completeness} />
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -299,5 +316,29 @@ function Stepper({ step, onGo }: { step: number; onGo: (index: number) => void }
         );
       })}
     </ol>
+  );
+}
+
+/** The shortcut past typing it all: bring the entries from LinkedIn or a résumé. */
+function ImportPrompt() {
+  return (
+    <Link
+      href="/import"
+      className="group flex items-center gap-3 rounded-3xl border border-brand/30 bg-brand-wash p-4 transition hover:border-brand"
+    >
+      <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-canvas text-brand">
+        <Icon name="upload" size={18} />
+      </span>
+      <span className="flex-1 text-sm text-ink">
+        <span className="font-bold text-slate">¿Tienes LinkedIn o una hoja de vida en PDF?</span>{" "}
+        Impórtala y revisa lo que encontremos.
+      </span>
+      <span className="flex items-center gap-1 text-sm font-bold text-brand">
+        Importar
+        <span className="transition group-hover:translate-x-0.5">
+          <Icon name="arrowRight" size={16} />
+        </span>
+      </span>
+    </Link>
   );
 }

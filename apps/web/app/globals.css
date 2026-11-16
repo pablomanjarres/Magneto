@@ -7,6 +7,7 @@
  */
 @theme {
   --font-sans: var(--font-lato), "Lato", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-cv: var(--font-garamond), "EB Garamond", Garamond, "Times New Roman", serif;
 
   /* Brand: the purple band, active states, focus and the moon's glow. */
   --color-brand: #7c00ff;
@@ -46,6 +47,7 @@
   --animate-pop: pop 0.45s cubic-bezier(0.2, 1.4, 0.4, 1) both;
   --animate-shimmer: shimmer 2.4s linear infinite;
   --animate-aurora: aurora 18s ease-in-out infinite alternate;
+  --animate-scan: scan 2.4s ease-in-out infinite;
 
   @keyframes rise {
     from {
@@ -67,6 +69,14 @@
   @keyframes shimmer {
     to {
       background-position: -200% 0;
+    }
+  }
+  @keyframes scan {
+    from {
+      transform: translateY(-100%);
+    }
+    to {
+      transform: translateY(100%);
     }
   }
   @keyframes aurora {
