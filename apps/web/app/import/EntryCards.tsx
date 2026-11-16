@@ -178,3 +178,47 @@ function ResumeCard({ lastFile, onFile }: { lastFile: File | null; onFile: (file
         <span className="font-bold text-slate">
           {dragging ? "Suelta tu PDF aquí" : "Arrastra tu PDF o haz clic para elegirlo"}
         </span>
+        <span className="text-xs text-muted">Solo PDF, máximo 5 MB</span>
+        <input
+          type="file"
+          accept="application/pdf,.pdf"
+          className="sr-only"
+          onChange={(e) => {
+            take(e.target.files?.[0]);
+            e.target.value = "";
+          }}
+        />
+      </label>
+
+      {problem && (
+        <p
+          className="rounded-2xl bg-danger-wash px-4 py-3 text-sm font-bold text-danger"
+          role="alert"
+        >
+          {problem}
+        </p>
+      )}
+
+      <div className="flex flex-wrap gap-2">
+        {lastFile && (
+          <button
+            type="button"
+            className={buttonClass("quiet", "sm")}
+            onClick={() => onFile(lastFile)}
+          >
+            Reintentar con {lastFile.name}
+          </button>
+        )}
+        <button
+          type="button"
+          className={buttonClass("ghost", "sm")}
+          onClick={loadSample}
+          disabled={loadingSample}
+        >
+          <Icon name="sparkles" size={14} />
+          {loadingSample ? "Cargando ejemplo…" : "Usar una hoja de vida de ejemplo"}
+        </button>
+      </div>
+    </EntryCard>
+  );
+}
