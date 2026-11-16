@@ -8,7 +8,7 @@ repository, not when it has been discussed.
 - Board: https://github.com/users/pablomanjarres/projects/3
 - Document: [`document/Entrega3.md`](document/Entrega3.md)
 
-**Status: 26 of 50 done.** Verified against the repository on 2026-11-16.
+**Status: 32 of 57 done.** Verified against the repository on 2026-11-16.
 
 ## Roles
 
@@ -33,7 +33,7 @@ patrones 20% (exposición 10%, análisis 10%) · Funcionalidad y demostración 5
 
 - [ ] **Sustentación** on the date agreed with the PO; either member can be asked to present (Both)
 - [ ] **Meeting with the Tech Lead and/or the PO through Teams.** Mandatory and graded (Both)
-- [ ] **Replace every placeholder.** 22 lines with `{PENDIENTE}` are still in `Entrega3.md` (Both)
+- [ ] **Replace every placeholder.** 23 lines with `{PENDIENTE}` are still in `Entrega3.md` (Both)
 - [x] Product name, team and version on the cover (Pablo)
 - [x] Table of contents covering every section (Pablo)
 - [ ] Page numbers in the table of contents. Only applies once the markdown is exported (Valentina)
@@ -67,7 +67,8 @@ patrones 20% (exposición 10%, análisis 10%) · Funcionalidad y demostración 5
 - [ ] Implementation class diagram, drawn by the team: classes, attributes, methods, relations
       (Valentina)
 - [x] What that diagram has to show, listed from the code (Pablo)
-- [ ] Deployment diagram, updated: no Express service, 3D models served by Next.js (Valentina)
+- [ ] Deployment diagram, updated: no Express service, Apify and the Claude API as external
+      nodes (Valentina)
 - [x] Persistence: the engine and why, and the tables with their keys (Pablo)
 - [ ] Entity-relationship diagram updated with `application_events` (Valentina)
 
@@ -85,6 +86,7 @@ patrones 20% (exposición 10%, análisis 10%) · Funcionalidad y demostración 5
 - [x] Repository: `packages/db/src/repositories/` (Pablo)
 - [x] Facade: `apps/web/lib/queries.ts` and `client.ts` (Pablo)
 - [x] State: `ALLOWED_MOVES` and `canMove` (Pablo)
+- [x] Adapter: `mapLinkedInProfile` and the résumé reader into `ImportedProfile` (Pablo)
 - [ ] A class diagram for each pattern's "Estructura" row, drawn by the team (Valentina)
 
 ## 7. Funcionalidad y demostración (50%)
@@ -98,9 +100,19 @@ patrones 20% (exposición 10%, análisis 10%) · Funcionalidad y demostración 5
       (Pablo)
 - [x] No login in the demo: the app opens on the profile (Pablo)
 - [x] Every screen restyled as a magneto365 page, in Spanish, Tailwind only (Pablo)
-- [x] The 3D moon: completeness as its phase, top matches orbiting, click to act (Pablo)
+- [x] The 3D laptop in the profile wizard: click it and it opens and writes what you type; the
+      dashboard shows it closed with the name and completeness (Pablo)
 - [x] The activity log the brief asks for ("registro de actividades") (Pablo)
-- [x] `pnpm lint`, `typecheck`, `test` (83 passing) and `build` green (Pablo)
+- [x] Import from LinkedIn (Apify) and from a PDF résumé (Claude), with review, edit and the source
+      of every entry (#4 to #10) (Pablo)
+- [x] Profile tailored to a vacancy, checked against the profile so nothing is invented (#31)
+      (Pablo)
+- [x] The résumé in Harvard format at `/cv`, ready to save as PDF (Pablo)
+- [x] The tailored résumé next to the original with every change marked, side by side or
+      changes only (#31) (Pablo)
+- [x] Input validation, rate limiting and logs without personal data (#33, #34, #36) (Pablo)
+- [ ] Sign-up and login (#3, #32): left out on purpose, login is not graded in this delivery
+- [x] `pnpm lint`, `typecheck`, `test` (137 passing) and `build` green (Pablo)
 - [ ] Screenshots of the screens (Valentina)
 - [ ] Rehearse the demo end to end from `pnpm db:seed` (Both)
 
@@ -110,5 +122,5 @@ patrones 20% (exposición 10%, análisis 10%) · Funcionalidad y demostración 5
 
 ## Referencias
 
-- [x] Books and sources behind sections 5 and 6, and the NASA model credits (Pablo)
+- [x] Books and sources behind sections 5 and 6 (Pablo)
 - [ ] Other sources used during the sprint, in APA or IEEE (Valentina)
