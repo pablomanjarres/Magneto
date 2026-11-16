@@ -178,3 +178,43 @@ export function useCanvasTexture(
     c.height = height;
     const t = new THREE.CanvasTexture(c);
     t.colorSpace = THREE.SRGBColorSpace;
+    t.anisotropy = 8;
+    return { canvas: c, texture: t };
+  }, [width, height]);
+
+  useEffect(() => {
+    const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+    ctx.clearRect(0, 0, width, height);
+    draw(ctx, width, height);
+    texture.needsUpdate = true;
+    // `draw` is rebuilt every render; `deps` says when its output changes.
+  }, [canvas, texture, width, height, ...deps]);
+
+  useEffect(() => () => texture.dispose(), [texture]);
+  return texture;
+}
+
+/** A caret that blinks while `active`: true half the time. */
+export function useCaret(active: boolean): boolean {
+  const [on, setOn] = useState(true);
+  useEffect(() => {
+    if (!active) return;
+    const id = window.setInterval(() => setOn((v) => !v), 530);
+    return () => window.clearInterval(id);
+  }, [active]);
+  return active && on;
+}
+
+/** A 0→1 pulse fired whenever `signal` changes, fading back to 0: for keystroke reactions. */
+export function usePulse(signal: number, fade = 7): React.MutableRefObject<number> {
+  const pulse = useRef(0);
+  const last = useRef(signal);
+  useFrame((_, delta) => {
+    if (signal !== last.current) {
+      last.current = signal;
+      pulse.current = 1;
+    }
+    pulse.current = THREE.MathUtils.damp(pulse.current, 0, fade, delta);
+  });
+  return pulse;
+}
