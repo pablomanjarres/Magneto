@@ -1,0 +1,52 @@
+{
+  "id": "test-movil",
+  "email": "julian.mosquera@example.com",
+  "fullName": "Julián Mosquera",
+  "city": "Cali",
+  "headline": "Desarrollador móvil con Flutter y Kotlin",
+  "summary": "Seis años construyendo apps para Android e iOS, de la idea a la tienda, incluida una app de pagos con más de 40.000 usuarios. Busco un equipo remoto donde crecer en arquitectura móvil.",
+  "skills": [
+    { "name": "Flutter" },
+    { "name": "Dart" },
+    { "name": "Kotlin" },
+    { "name": "Firebase" },
+    { "name": "Git" },
+    { "name": "REST" },
+    { "name": "Android" },
+    { "name": "Inglés B1" }
+  ],
+  "experience": [
+    {
+      "company": "Pagos del Pacífico S.A.S.",
+      "title": "Desarrollador Móvil",
+      "startDate": "2022-08",
+      "description": "Desarrollo en Flutter la app de cobros para comercios, con más de 40.000 usuarios activos al mes. Migré las notificaciones a Firebase Cloud Messaging y reduje a la mitad los fallos reportados. Mantengo en Kotlin el módulo nativo que conecta el lector de tarjetas."
+    },
+    {
+      "company": "Estudio Farallones",
+      "title": "Desarrollador Android Junior",
+      "startDate": "2020-09",
+      "endDate": "2022-07",
+      "description": "Construí apps en Kotlin para clientes de comercio y salud. Integré APIs REST y publiqué cinco apps en Google Play."
+    }
+  ],
+  "education": [
+    {
+      "institution": "Universidad del Valle",
+      "degree": "Ingeniería de Sistemas",
+      "startYear": 2015,
+      "endYear": 2020
+    }
+  ],
+  "expectations": {
+    "targetRole": "Desarrollador Móvil",
+    "targetArea": "Desarrollo de software",
+    "targetSeniority": "Semi senior",
+    "salaryMin": 7000000,
+    "salaryMax": 10000000,
+    "currency": "COP",
+    "workModes": ["remote", "hybrid"],
+    "willRelocate": true,
+    "cities": ["Bogotá", "Medellín"]
+  }
+}

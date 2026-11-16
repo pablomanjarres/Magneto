@@ -1,0 +1,52 @@
+{
+  "id": "test-analista",
+  "email": "daniela.rincon@example.com",
+  "fullName": "Daniela Rincón",
+  "city": "Bogotá",
+  "headline": "Analista de datos especializada en SQL, Python y Power BI",
+  "summary": "Seis años convirtiendo datos de ventas y operación en tableros y reportes que los equipos sí usan. Busco un rol semi senior en Bogotá, híbrido o remoto.",
+  "skills": [
+    { "name": "SQL" },
+    { "name": "Python" },
+    { "name": "Power BI" },
+    { "name": "Excel" },
+    { "name": "Pandas" },
+    { "name": "Estadística" },
+    { "name": "Looker Studio" },
+    { "name": "Inglés B2" }
+  ],
+  "experience": [
+    {
+      "company": "Retail Andino S.A.S.",
+      "title": "Analista de Datos",
+      "startDate": "2022-03",
+      "description": "Construyo los tableros de ventas en Power BI que revisan cada semana los gerentes de 120 tiendas. Automaticé con Python el informe de inventario, que pasó de tomar un día a 20 minutos. Escribo y optimizo las consultas SQL que alimentan los pronósticos de demanda."
+    },
+    {
+      "company": "Aseguradora Cordillera",
+      "title": "Analista Junior de Información",
+      "startDate": "2020-07",
+      "endDate": "2022-02",
+      "description": "Depuré y crucé las bases de pólizas en Excel y SQL Server. Preparé los indicadores mensuales de siniestralidad para el comité directivo."
+    }
+  ],
+  "education": [
+    {
+      "institution": "Universidad Nacional de Colombia",
+      "degree": "Estadística",
+      "startYear": 2015,
+      "endYear": 2020
+    }
+  ],
+  "expectations": {
+    "targetRole": "Analista de Datos",
+    "targetArea": "Datos",
+    "targetSeniority": "Semi senior",
+    "salaryMin": 5500000,
+    "salaryMax": 7500000,
+    "currency": "COP",
+    "workModes": ["hybrid", "remote"],
+    "willRelocate": false,
+    "cities": []
+  }
+}
