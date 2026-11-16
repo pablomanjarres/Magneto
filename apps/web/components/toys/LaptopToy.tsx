@@ -358,3 +358,183 @@ function drawScreen(
   command: string,
 ): void {
   const pad = 64;
+  const font = pageFont();
+  const maxWidth = w - pad * 2;
+  colors.dots.forEach((color, i) => {
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(pad + 12 + i * 44, 60, 14, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  const typed = text.trim();
+  const hint = command ? HINT_AFTER_PROMPT : HINT;
+  const { size, lines } = typed
+    ? fitText(ctx, typed, maxWidth, h - 230)
+    : { size: 80, lines: [hint] };
+
+  // The prompt and the text sit together in the middle, under the dots.
+  const y = 100 + Math.max(0, (h - 226 - lines.length * size * 1.05) / 2);
+  ctx.fillStyle = colors.prompt;
+  ctx.font = `700 50px ${MONO}`;
+  ctx.fillText(PROMPT, pad, y + 44);
+  if (command) {
+    // The command reads as typed, in the text colour, a step quieter than the text itself.
+    const x = pad + ctx.measureText(`${PROMPT} `).width;
+    ctx.globalAlpha = 0.8;
+    ctx.fillStyle = colors.screenText;
+    ctx.fillText(command, x, y + 44, pad + maxWidth - x);
+    ctx.globalAlpha = 1;
+  }
+  const top = y + 96;
+  ctx.font = `900 ${size}px ${font}`;
+  if (!typed) {
+    if (caret) caretBlock(ctx, pad, top, size, colors.caret);
+    ctx.globalAlpha = 0.55;
+    ctx.fillStyle = colors.hint;
+    ctx.fillText(hint, pad + size * 0.64, top + size * 0.9, maxWidth - size);
+    ctx.globalAlpha = 1;
+    return;
+  }
+  // Leave room for the caret; a word too long even at the smallest size is squeezed.
+  const room = maxWidth - size * 0.6;
+  ctx.fillStyle = colors.screenText;
+  lines.forEach((line, i) => ctx.fillText(line, pad, top + size * (0.9 + i * 1.05), room));
+  if (caret) {
+    const last = lines[lines.length - 1] ?? "";
+    const trailing = text.endsWith(" ") ? ctx.measureText(" ").width : 0;
+    const end = Math.min(ctx.measureText(last).width + trailing, room);
+    caretBlock(
+      ctx,
+      pad + end + size * 0.06,
+      top + size * 1.05 * Math.max(0, lines.length - 1),
+      size,
+      colors.caret,
+    );
+  }
+}
+
+/** The "HOLA, SOY" name sticker on the back of the lid. */
+function drawTag(
+  ctx: CanvasRenderingContext2D,
+  w: number,
+  h: number,
+  colors: LaptopColors,
+  profile: ToyProfile,
+): void {
+  const font = pageFont();
+  const band = 76;
+  ctx.save();
+  ctx.beginPath();
+  ctx.roundRect(0, 0, w, h, 44);
+  ctx.clip();
+  ctx.fillStyle = colors.tagPaper;
+  ctx.fillRect(0, 0, w, h);
+  ctx.fillStyle = colors.tagBand;
+  ctx.fillRect(0, 0, w, band);
+  ctx.restore();
+
+  ctx.textAlign = "center";
+  ctx.fillStyle = colors.tagBandText;
+  ctx.font = `900 44px ${font}`;
+  ctx.fillText("HOLA, SOY", w / 2, 55);
+
+  const name = profile.fullName.trim() || "Tu nombre";
+  let size = 88;
+  ctx.font = `900 ${size}px ${font}`;
+  while (size > 48 && ctx.measureText(name).width > w - 60) {
+    size -= 4;
+    ctx.font = `900 ${size}px ${font}`;
+  }
+  ctx.fillStyle = colors.tagName;
+  ctx.fillText(name, w / 2, band + 16 + size * 0.8, w - 60);
+
+  const role = profile.role.trim() || profile.skills.slice(0, 3).join(" · ");
+  ctx.fillStyle = colors.tagRole;
+  ctx.font = `700 36px ${font}`;
+  ctx.fillText(role, w / 2, band + 140, w - 80);
+
+  // Completeness, as a little bar with its percentage.
+  const pct = Math.max(0, Math.min(100, Math.round(profile.completeness)));
+  const barX = 56;
+  const barW = w - 210;
+  ctx.fillStyle = colors.barTrack;
+  ctx.globalAlpha = 0.45;
+  ctx.beginPath();
+  ctx.roundRect(barX, h - 62, barW, 26, 13);
+  ctx.fill();
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = colors.barFill;
+  ctx.beginPath();
+  ctx.roundRect(barX, h - 62, Math.max(26, (barW * pct) / 100), 26, 13);
+  ctx.fill();
+  ctx.textAlign = "right";
+  ctx.fillStyle = colors.barText;
+  ctx.font = `900 40px ${font}`;
+  ctx.fillText(`${pct}%`, w - 52, h - 34);
+}
+
+interface LaptopToyProps extends ToyProps {
+  /** What the prompt asks for, like "nombre"; the empty screen then reads "Escribe aquí". */
+  prompt?: string | undefined;
+}
+
+function LaptopToy({ text, writing, keystrokes, profile, onActivate, prompt }: LaptopToyProps) {
+  const still = usePrefersStill();
+  const caret = useCaret(writing);
+  const pulse = usePulse(keystrokes);
+  const [motion] = useState(createMotion);
+  const command = prompt?.trim() ?? "";
+
+  const screenTexture = useCanvasTexture(
+    1024,
+    596,
+    (ctx, w, h) => drawScreen(ctx, w, h, COLORS, text, caret, command),
+    [text, caret, command],
+  );
+  const tagTexture = useCanvasTexture(
+    680,
+    320,
+    (ctx, w, h) => drawTag(ctx, w, h, COLORS, profile),
+    [profile.fullName, profile.role, profile.completeness, profile.skills.join()],
+  );
+
+  const geometry = useMemo(
+    () => ({
+      base: roundedBox(W, BASE_T, D, 0.12, 8),
+      lid: roundedBox(W, LID_T, D, 0.07, 8),
+      key: roundedBox(0.16, 0.08, 0.16, 0.035, 6),
+      spacebar: roundedBox(0.92, 0.08, 0.16, 0.035, 6),
+      hinge: new THREE.CylinderGeometry(0.08, 0.08, 0.5, 32),
+      trackpad: puffy(roundedRect(0.8, 0.3, 0.1)),
+      light: new THREE.SphereGeometry(0.045, 24, 16),
+      screen: new THREE.ShapeGeometry(roundedRect(SCREEN_W, SCREEN_H, 0.14), 12),
+      words: new THREE.PlaneGeometry(SCREEN_W, SCREEN_H),
+      tag: new THREE.PlaneGeometry(TAG_W, TAG_H),
+      heart: puffy(heart(0.24)),
+      star: puffy(star(0.27, 0.13)),
+      dot: puffy(new THREE.Shape().absarc(0, 0, 0.17, 0, Math.PI * 2, false)),
+      eye: new THREE.SphereGeometry(0.024, 16, 12),
+      smile: new THREE.TorusGeometry(0.055, 0.013, 8, 24, Math.PI),
+    }),
+    [],
+  );
+  useEffect(
+    () => () => {
+      for (const shape of Object.values(geometry)) shape.dispose();
+    },
+    [geometry],
+  );
+
+  // Painted from the palette once, and disposed with the laptop.
+  const kit = useMemo(() => {
+    const material = {
+      body: candy(COLORS.body),
+      key: candy("#ffffff"), // white, so each keycap shows its own instance colour
+      spacebar: candy(COLORS.spacebar),
+      trackpad: candy(COLORS.trackpad),
+      hinges: candy(COLORS.hinges),
+      heart: candy(COLORS.heartSticker),
+      star: candy(COLORS.starSticker),
+      dot: candy(COLORS.dotSticker),
+      smiley: candy(COLORS.smileyInk),
