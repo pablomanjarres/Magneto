@@ -998,5 +998,185 @@
     "city": "Medellín",
     "workMode": "hybrid",
     "salaryMin": 3500000,
+    "salaryMax": 5000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Cypress",
+        "kind": "must-have"
+      },
+      {
+        "skill": "JavaScript",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Git",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Postman",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v033",
+    "title": "Cloud Engineer",
+    "company": "Promigas",
+    "city": "Barranquilla",
+    "workMode": "hybrid",
+    "salaryMin": 8000000,
+    "salaryMax": 12000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Azure",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Linux",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Terraform",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Docker",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Python",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v034",
+    "title": "Junior Flutter Developer",
+    "company": "Frisby",
+    "city": "Pereira",
+    "workMode": "hybrid",
+    "salaryMin": 3200000,
+    "salaryMax": 4600000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Flutter",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Dart",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Git",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Figma",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v035",
+    "title": "Business Intelligence Analyst",
+    "company": "Olímpica",
+    "city": "Barranquilla",
+    "workMode": "onsite",
+    "salaryMin": 4500000,
+    "salaryMax": 6500000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "SQL",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Power BI",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Excel",
+        "kind": "must-have"
+      },
+      {
+        "skill": "ETL",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v036",
+    "title": "Senior Backend Engineer",
+    "company": "Lulo Bank",
+    "city": "Bogotá",
+    "workMode": "hybrid",
+    "salaryMin": 13000000,
+    "salaryMax": 18000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Node.js",
+        "kind": "must-have"
+      },
+      {
+        "skill": "NestJS",
+        "kind": "must-have"
+      },
+      {
+        "skill": "TypeScript",
+        "kind": "must-have"
+      },
+      {
+        "skill": "PostgreSQL",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Kafka",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "AWS",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v037",
+    "title": "iOS Developer",
+    "company": "Mercado Libre",
+    "city": "Bogotá",
+    "workMode": "hybrid",
+    "salaryMin": 10000000,
+    "salaryMax": 14000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Swift",
+        "kind": "must-have"
+      },
+      {
+        "skill": "SwiftUI",
+        "kind": "must-have"
+      },
+      {
+        "skill": "REST",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Git",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "CI/CD",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v038",
+    "title": "Machine Learning Engineer",
   }
 ]
