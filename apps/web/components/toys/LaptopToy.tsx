@@ -538,3 +538,183 @@ function LaptopToy({ text, writing, keystrokes, profile, onActivate, prompt }: L
       star: candy(COLORS.starSticker),
       dot: candy(COLORS.dotSticker),
       smiley: candy(COLORS.smileyInk),
+      light: new THREE.MeshBasicMaterial({ color: TINTS.light, toneMapped: false }),
+      screen: new THREE.MeshBasicMaterial({ color: TINTS.screenOff, toneMapped: false }),
+      words: new THREE.MeshBasicMaterial({
+        map: screenTexture,
+        transparent: true,
+        opacity: 0,
+        depthWrite: false,
+        toneMapped: false,
+      }),
+      tag: new THREE.MeshBasicMaterial({
+        map: tagTexture,
+        transparent: true,
+        depthWrite: false,
+        toneMapped: false,
+      }),
+    };
+    const keys = new THREE.InstancedMesh(geometry.key, material.key, SPACE);
+    const dummy = new THREE.Object3D();
+    for (let i = 0; i < SPACE; i++) {
+      dummy.position.set(keyX(i), KEY_Y, keyZ(i));
+      dummy.updateMatrix();
+      keys.setMatrixAt(i, dummy.matrix);
+      keys.setColorAt(i, restOf(TINTS, i));
+    }
+    return { material, keys, dummy, tint: new THREE.Color() };
+  }, [geometry, screenTexture, tagTexture]);
+
+  useEffect(
+    () => () => {
+      for (const material of Object.values(kit.material)) material.dispose();
+      kit.keys.dispose();
+    },
+    [kit],
+  );
+
+  const hovered = useRef(false);
+  const hover = (on: boolean): void => {
+    hovered.current = on;
+    document.body.style.cursor = on ? "pointer" : "";
+  };
+  useEffect(
+    () => () => {
+      if (hovered.current) document.body.style.cursor = "";
+    },
+    [],
+  );
+
+  // Every keystroke presses a key: the spacebar for a space, any other key otherwise.
+  const seenKeystrokes = useRef(keystrokes);
+  useEffect(() => {
+    if (keystrokes === seenKeystrokes.current) return;
+    seenKeystrokes.current = keystrokes;
+    let i = text.endsWith(" ") ? SPACE : Math.floor(Math.random() * SPACE);
+    if (i === motion.lastKey && i !== SPACE) i = (i + 1 + Math.floor(Math.random() * 10)) % SPACE;
+    motion.lastKey = i;
+    const key = motion.keys[i];
+    if (!key) return;
+    key.x = 1;
+    key.v = 0;
+    key.glow = 1.6; // above 1 so the colour holds for a beat before it fades
+    key.tint = TINTS.flash[Math.floor(Math.random() * TINTS.flash.length)] ?? null;
+  }, [keystrokes, text, motion]);
+
+  // A happy little hop whenever it turns, either way.
+  const seenWriting = useRef(writing);
+  useEffect(() => {
+    if (writing === seenWriting.current) return;
+    seenWriting.current = writing;
+    motion.y.v += 2.6;
+  }, [writing, motion]);
+
+  const root = useRef<THREE.Group>(null);
+  const tilt = useRef<THREE.Group>(null);
+  const turn = useRef<THREE.Group>(null);
+  const lid = useRef<THREE.Group>(null);
+  const words = useRef<THREE.Mesh>(null);
+  const spacebar = useRef<THREE.Mesh>(null);
+
+  useFrame((state, delta) => {
+    if (!root.current || !tilt.current || !turn.current || !lid.current) return;
+    if (!words.current || !spacebar.current) return;
+    const pose = writing ? WRITE : IDLE;
+    const breath = still || writing ? 0 : Math.sin(state.clock.elapsedTime * 1.6);
+
+    step(motion.turn, pose.turn + breath * 0.04, delta, 50, 9.5, still);
+    step(motion.tilt, pose.tilt, delta, 50, 9.5, still);
+    step(motion.y, pose.y + breath * 0.03, delta, 70, 8, still);
+    step(motion.scale, pose.scale, delta, 70, 10, still);
+    // It turns to face you first, then the lid springs open: an open lid swinging round leaves the frame.
+    const facing = writing && Math.abs(motion.turn.x - WRITE.turn) < FACING;
+    step(motion.open, (facing ? WRITE : IDLE).open + breath * 0.05, delta, 110, 11, still);
+    if (motion.open.x < 0) {
+      // The closing lid taps the base and bounces.
+      motion.open.x = 0;
+      motion.open.v *= -0.35;
+    }
+    const lit = writing && motion.open.x > 1.1 ? 1 : 0;
+    motion.light = still ? lit : THREE.MathUtils.damp(motion.light, lit, 6, delta);
+
+    const pop = still ? 0 : pulse.current;
+    step(motion.pop, 1 + 0.1 * pop, delta, 320, 14, still);
+    const s = motion.scale.x;
+    root.current.position.y = motion.y.x;
+    root.current.scale.set(s * (1 + 0.015 * pop), s * (1 - 0.025 * pop), s * (1 + 0.015 * pop));
+    tilt.current.rotation.x = motion.tilt.x;
+    turn.current.rotation.y = motion.turn.x;
+    lid.current.rotation.x = -motion.open.x;
+    words.current.scale.setScalar(motion.pop.x);
+
+    const { material } = kit;
+    material.screen.color.copy(TINTS.screenOff).lerp(TINTS.screenOn, motion.light);
+    material.words.opacity = motion.light;
+    material.light.color.copy(TINTS.light).multiplyScalar(writing ? 1 : 0.6 + 0.25 * breath);
+
+    let dirty = false;
+    for (let i = 0; i <= SPACE; i++) {
+      const key = motion.keys[i];
+      if (!key || (key.x === 0 && key.v === 0 && key.glow === 0)) continue;
+      step(key, 0, delta, 200, 11, still);
+      key.glow = THREE.MathUtils.damp(key.glow, 0, 4, delta);
+      if (Math.abs(key.x) < 1e-3 && Math.abs(key.v) < 1e-2) {
+        key.x = 0;
+        key.v = 0;
+      }
+      if (key.glow < 0.01) key.glow = 0;
+      kit.tint.copy(restOf(TINTS, i));
+      if (key.tint) kit.tint.lerp(key.tint, Math.min(1, key.glow));
+      const y = KEY_Y - key.x * PRESS;
+      if (i === SPACE) {
+        spacebar.current.position.y = y;
+        material.spacebar.color.copy(kit.tint);
+        continue;
+      }
+      kit.dummy.position.set(keyX(i), y, keyZ(i));
+      kit.dummy.updateMatrix();
+      kit.keys.setMatrixAt(i, kit.dummy.matrix);
+      kit.keys.setColorAt(i, kit.tint);
+      dirty = true;
+    }
+    if (dirty) {
+      kit.keys.instanceMatrix.needsUpdate = true;
+      if (kit.keys.instanceColor) kit.keys.instanceColor.needsUpdate = true;
+    }
+  });
+
+  const { material: m } = kit;
+  const g = geometry;
+  return (
+    <group
+      ref={root}
+      onClick={(e: ThreeEvent<MouseEvent>) => {
+        e.stopPropagation();
+        if (e.delta < 5) onActivate();
+      }}
+      onPointerOver={() => hover(true)}
+      onPointerOut={() => hover(false)}
+    >
+      <group ref={tilt}>
+        <group ref={turn}>
+          <mesh geometry={g.base} material={m.body} />
+          <primitive object={kit.keys} />
+          <mesh
+            ref={spacebar}
+            geometry={g.spacebar}
+            material={m.spacebar}
+            position={[0, KEY_Y, keyZ(SPACE)]}
+          />
+          <mesh
+            geometry={g.trackpad}
+            material={m.trackpad}
+            position={[0, BASE_T / 2, 0.56]}
+            rotation={[-Math.PI / 2, 0, 0]}
+          />
+          <mesh geometry={g.light} material={m.light} position={[0.95, 0, D / 2 - 0.01]} />
+          {[-0.85, 0.85].map((x) => (
+            <mesh
+              key={x}
+              geometry={g.hinge}
+              material={m.hinges}
+              position={[x, HINGE_Y, -D / 2]}
