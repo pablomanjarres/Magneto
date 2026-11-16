@@ -1,28 +1,27 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { Lato } from "next/font/google";
 
 import "./globals.css";
 
+// magneto365.com sets everything in Lato; 900 carries its headlines.
+const lato = Lato({
+  subsets: ["latin"],
+  weight: ["400", "700", "900"],
+  variable: "--font-lato",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: "Moon Light",
-  description: "A profile driven to 100%, and jobs ranked by a score the candidate can read.",
+  title: "Moon Light · Profile Manager",
+  description: "Tu perfil al 100% y vacantes ordenadas por un puntaje que puedes leer.",
   icons: { icon: "/brand/favicon.svg" },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
-      <head>
-        {/* Linked rather than bundled: the app runs local, and the fallback
-            stacks in globals.css carry the design if the fonts do not load. */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Instrument+Serif&display=swap"
-        />
-      </head>
-      <body>{children}</body>
+    <html lang="es" className={lato.variable}>
+      <body className="font-sans">{children}</body>
     </html>
   );
 }
