@@ -16,6 +16,14 @@ const TYPED =
 
 type TypedField = HTMLInputElement | HTMLTextAreaElement;
 
+/** What the laptop shows for a field: numbers grouped the Colombian way, "10.000.000". */
+function shown(field: TypedField): string {
+  const n = Number(field.value);
+  return field.type === "number" && field.value !== "" && Number.isFinite(n)
+    ? n.toLocaleString("es-CO")
+    : field.value;
+}
+
 function typedField(target: EventTarget): TypedField | null {
   return target instanceof HTMLElement && target.matches(TYPED) ? (target as TypedField) : null;
 }
@@ -49,7 +57,7 @@ export function useTyping() {
     const field = typedField(e.target);
     if (!field) return;
     window.clearTimeout(closing.current);
-    setTyping((t) => ({ ...t, prompt: promptOf(field), text: field.value, writing: true }));
+    setTyping((t) => ({ ...t, prompt: promptOf(field), text: shown(field), writing: true }));
   }
 
   function onBlur(e: FocusEvent): void {
@@ -61,7 +69,7 @@ export function useTyping() {
   function onInput(e: FormEvent): void {
     const field = typedField(e.target);
     if (!field) return;
-    setTyping((t) => ({ ...t, text: field.value, keystrokes: t.keystrokes + 1 }));
+    setTyping((t) => ({ ...t, text: shown(field), keystrokes: t.keystrokes + 1 }));
   }
 
   /** Clicking the laptop starts typing in the step's first field, after what it already holds. */

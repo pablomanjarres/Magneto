@@ -39,3 +39,38 @@ export function checkTailored(
 
   return { ok: problems.length === 0, problems };
 }
+
+/**
+ * The profile once the candidate accepts a tailored version: its wording, its
+ * order and what it left out become the profile's own, and a headline or
+ * summary it carries is kept. Jobs and skills are matched by the same keys
+ * checkTailored uses, so only entries the profile already has can come through.
+ */
+export function acceptTailored(profile: Profile, tailored: TailoredProfile): Profile {
+  const jobs = new Map(profile.experience.map((e) => [experienceKey(e), e]));
+  const experience = tailored.experience.flatMap((entry) => {
+    const key = experienceKey(entry);
+    const own = jobs.get(key);
+    if (!own) return [];
+    jobs.delete(key);
+    return [
+      { ...own, description: entry.description?.trim() ? entry.description : own.description },
+    ];
+  });
+
+  const taken = new Set<string>();
+  const skills = tailored.skills.flatMap((name) => {
+    const own = profile.skills.find((s) => normalizeSkill(s.name) === normalizeSkill(name));
+    if (!own || taken.has(own.name)) return [];
+    taken.add(own.name);
+    return [own];
+  });
+
+  return {
+    ...profile,
+    headline: tailored.headline.trim() || profile.headline,
+    summary: tailored.summary.trim() || profile.summary,
+    experience,
+    skills,
+  };
+}

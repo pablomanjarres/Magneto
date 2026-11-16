@@ -31,6 +31,7 @@ const PATHS: Record<string, React.ReactNode> = {
   ),
   arrowRight: <path d="M5 12h13M12 5l7 7-7 7" />,
   arrowLeft: <path d="M19 12H6M12 19l-7-7 7-7" />,
+  undo: <path d="M9 14 4 9l5-5M4 9h10.5a5.5 5.5 0 0 1 0 11H11" />,
   check: <path d="M4 12.5 9 17.5 20 6.5" />,
   close: <path d="M6 6l12 12M18 6L6 18" />,
   plus: <path d="M12 5v14M5 12h14" />,

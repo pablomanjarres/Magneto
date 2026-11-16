@@ -330,7 +330,7 @@ moonlight/
 │   ├── core/               # dominio: puntaje, completitud, brechas, estados, eventos
 │   ├── db/                 # SQL: migraciones, semilla y repositorios
 │   └── types/              # tipos compartidos
-├── data/                   # 20 vacantes y el perfil de demostración
+├── data/                   # 50 vacantes, el perfil de demostración y dos de prueba
 ├── docs/                   # entregas, ADR, diagramas
 └── infra/                  # PostgreSQL 17 en Docker
 ```

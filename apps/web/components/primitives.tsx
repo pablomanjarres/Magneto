@@ -204,8 +204,17 @@ export function EmptyState({ title, children }: { title: string; children?: Reac
 }
 
 /** Text inputs and selects share one look: a pill with a visible boundary. */
-export const inputClass =
-  "h-11 w-full rounded-full border border-control bg-canvas px-4 text-[15px] text-ink placeholder:text-faint outline-none transition focus:border-brand focus:ring-4 focus:ring-brand-wash";
+const FIELD =
+  "w-full border border-control bg-canvas text-ink placeholder:text-faint outline-none transition focus:border-brand focus:ring-4 focus:ring-brand-wash";
+
+export const inputClass = `h-11 rounded-full px-4 text-[15px] ${FIELD}`;
+
+/**
+ * A field of several lines: the input's border and focus with corners that do
+ * not clip the text. A pill shape cannot hold a paragraph, so it is never the
+ * input's class with overrides. Callers set the height and the text size.
+ */
+export const textareaClass = `resize-y rounded-2xl px-4 py-3 leading-relaxed ${FIELD}`;
 
 /**
  * One labelled input. Pass `group` when the label covers several controls

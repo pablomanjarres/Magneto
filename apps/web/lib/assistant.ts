@@ -42,11 +42,35 @@ type Turn = {
   profile: Profile;
   tailored: z.infer<typeof Draft> | undefined;
   actions: AssistantAction[];
+  /** The profile before this answer first saved it, for the browser's undo. */
+  before?: Profile;
 };
 
 const tool = <S extends z.ZodType>(t: Tool<S>): Tool<S> => t;
 
+const text = z.string().trim().min(1);
+const MONTH = z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/, "usa YYYY-MM");
+/** A job's or a study's number [n] in the list the prompt shows. */
+const position = z.number().int().nonnegative().describe("Su número [n] en la lista");
+
+const Job = z.object({
+  company: text,
+  title: text,
+  startDate: MONTH.describe("Mes de inicio, YYYY-MM"),
+  endDate: MONTH.optional().describe("Mes de fin, YYYY-MM; sin él, es su trabajo actual"),
+  description: text.optional(),
+});
+
+const Study = z.object({
+  institution: text,
+  degree: text,
+  startYear: z.number().int().describe("Año de inicio; 0 si no lo sabe"),
+  endYear: z.number().int().optional().describe("Año de fin; sin él, aún estudia"),
+});
+
 const ProfileChanges = z.object({
+  fullName: text.optional(),
+  email: text.optional(),
   addSkills: z.array(z.string()).optional(),
   removeSkills: z.array(z.string()).optional(),
   city: z.string().optional(),
@@ -59,6 +83,39 @@ const ProfileChanges = z.object({
   workModes: z.array(z.enum(WORK_MODES)).optional(),
   willRelocate: z.boolean().optional(),
   relocationCities: z.array(z.string()).optional(),
+  addExperience: z.array(Job).optional(),
+  updateExperience: z
+    .array(
+      Job.partial().extend({
+        index: position,
+        endDate: MONTH.nullable().optional().describe("Mes de fin; null si aún trabaja ahí"),
+        description: text.nullable().optional().describe("null la borra"),
+      }),
+    )
+    .optional()
+    .describe("Solo los campos que cambian, con el número [n] del cargo"),
+  removeExperience: z.array(position).optional().describe("Números [n] de los cargos a quitar"),
+  addEducation: z.array(Study).optional(),
+  updateEducation: z
+    .array(
+      Study.partial().extend({
+        index: position,
+        endYear: z.number().int().nullable().optional().describe("Año de fin; null si aún estudia"),
+      }),
+    )
+    .optional()
+    .describe("Solo los campos que cambian, con el número [n] del estudio"),
+  removeEducation: z.array(position).optional().describe("Números [n] de los estudios a quitar"),
+});
+
+/** The candidate's jobs and studies, numbered the way update_profile edits and removes them. */
+const numbered = (profile: Profile) => ({
+  experiencia: profile.experience.map(
+    (e, i) => `[${i}] ${e.title} en ${e.company}, ${e.startDate} a ${e.endDate ?? "hoy"}`,
+  ),
+  educacion: profile.education.map(
+    (e, i) => `[${i}] ${e.degree}, ${e.institution}, ${e.startYear || "?"} a ${e.endYear ?? "hoy"}`,
+  ),
 });
 
 /** Lowercase and without accents, so "medellin" finds "Medellín". */
@@ -86,7 +143,7 @@ const TOOLS = {
 
   tailor_cv: tool({
     description:
-      "Adapta la hoja de vida según instrucciones (enfoque, longitud, tono, idioma, un tipo de cargo). Nunca agrega datos que no estén en el perfil. Si ya hay una versión adaptada, la refina. El candidato verá el resultado en /cv junto a la original.",
+      "Propone cambios al texto de la hoja de vida: quitar o corregir una frase, reescribir una descripción, cambiar el orden, agregar un resumen, o adaptarla toda (enfoque, longitud, idioma, un tipo de cargo). Cambia solo lo que el candidato pidió y deja el resto igual. Nunca agrega datos que no estén en el perfil. Si ya hay una propuesta abierta, la refina. El candidato la ve en /cv junto a la original y decide si la acepta o la descarta.",
     input: z.object({
       instructions: z
         .string()
@@ -118,19 +175,41 @@ const TOOLS = {
 
   update_profile: tool({
     description:
-      "Cambia el perfil guardado del candidato: agregar o quitar habilidades, ciudad, cargo objetivo, área, seniority, rango salarial y moneda, modalidades de trabajo, disponibilidad para reubicarse y ciudades a las que se mudaría. Solo lo que el candidato pidió.",
+      "Cambia el perfil guardado del candidato: nombre, correo, agregar o quitar habilidades, ciudad, cargo objetivo, área, seniority, rango salarial y moneda, modalidades de trabajo, disponibilidad para reubicarse y ciudades a las que se mudaría. También agrega cargos y estudios, y edita o quita uno por su número [n] de la lista; agregar uno que ya está lo actualiza en vez de repetirlo. Solo lo que el candidato pidió.",
     input: ProfileChanges,
     run: async (changes, turn) => {
       const { profile: next, done } = applyEdits(turn.profile, changes);
-      if (done.length === 0) return { ok: true, cambios: [], nota: "No había nada que cambiar." };
+      if (done.length === 0) {
+        return {
+          ok: true,
+          cambios: [],
+          nota: "No cambió nada: ya estaba así, o el correo o el número [n] no era válido.",
+        };
+      }
       const parsed = parseProfile(next);
-      if ("errors" in parsed) return { error: parsed.errors.join(", ") };
-      turn.profile = await saveProfile(parsed.profile);
+      if ("errors" in parsed) {
+        return {
+          error: "No guardé nada. Pregúntale al candidato el dato que falta o corrígelo.",
+          errores: parsed.errors,
+        };
+      }
+      try {
+        const before = turn.profile;
+        turn.profile = await saveProfile(parsed.profile);
+        turn.before ??= before;
+      } catch (cause) {
+        // profiles.email is unique, so an address another profile has cannot be saved.
+        if ((cause as { code?: string }).code === "23505") {
+          return { error: "Ese correo ya es de otro perfil. Pídele otro al candidato." };
+        }
+        throw cause;
+      }
       turn.actions.push({ type: "refresh" });
       return {
         ok: true,
         cambios: done,
         completitud: profileCompleteness(turn.profile).percentage,
+        ...numbered(turn.profile),
       };
     },
   }),
@@ -210,10 +289,10 @@ const DEFINITIONS: Anthropic.Tool[] = Object.entries(TOOLS).map(([name, t]) => (
 function system(profile: Profile, path: string, tailored: boolean): string {
   const facts = {
     nombre: profile.fullName,
+    correo: profile.email,
     ciudad: profile.city ?? null,
     habilidades: profile.skills.map((s) => s.name),
-    experiencia: profile.experience.map((e) => `${e.title} en ${e.company}`),
-    educacion: profile.education.map((e) => `${e.degree}, ${e.institution}`),
+    ...numbered(profile),
     expectativas: profile.expectations,
     faltaParaCompletar: profileCompleteness(profile).missing,
   };
@@ -228,10 +307,15 @@ Páginas: /dashboard (inicio), /jobs (vacantes), /jobs/<id> (una vacante), /appl
 
 Reglas:
 - Usa las herramientas para hacer lo que pide. Di solo lo que las herramientas hicieron de verdad; si una falla, dilo y no finjas que funcionó.
-- El perfil de arriba es como estaba al empezar esta respuesta; lo que cambies con update_profile aparece en el resultado de la herramienta.
+- El perfil de arriba es como estaba al empezar esta respuesta. El resultado de update_profile trae lo que cambió y los cargos y estudios con sus números [n] al día; desde ahí, usa esos números. Lo que no aparezca en "cambios" no se hizo.
 - Habla de lo que hiciste en primera persona ("agregué", "busqué"), nunca de "el sistema".
 - Postula a una vacante solo si el candidato lo pidió claramente para esa vacante. Si hay duda, pregunta primero.
-- No inventes experiencia, habilidades ni cifras.
+- No inventes experiencia, habilidades ni cifras. Para agregar un cargo necesitas empresa, cargo y mes de inicio; para un estudio, institución, título y al menos un año. Si falta alguno, pregúntalo antes de guardar; nunca lo supongas.
+- Un cargo o estudio que ya está en la lista se edita con su número [n]; no lo agregues otra vez.
+- El texto de la hoja de vida (frases, descripciones, orden, resumen) se cambia con tailor_cv: queda como propuesta que el candidato acepta o descarta en /cv. Los datos del perfil (nombre, correo, ciudad, habilidades, expectativas, agregar o quitar cargos y estudios) se cambian con update_profile.
+- Haz exactamente lo que pidió y nada más: si pide quitar una frase, la propuesta solo quita esa frase.
+- Antes de quitar un cargo o un estudio, confirma cuál con el candidato, salvo que lo haya pedido claramente.
+- Si update_profile devuelve errores, no se guardó nada: dile al candidato qué falta y pregúntaselo.
 - Responde en texto plano, sin Markdown, en 1 a 4 frases. Al listar vacantes, una por línea con cargo, empresa y puntaje.`;
 }
 
@@ -280,7 +364,8 @@ export async function answer(
         .join("\n")
         .trim();
       if (!reply) break;
-      return { reply, actions: turn.actions };
+      const saved: AssistantAction[] = turn.before ? [{ type: "saved", before: turn.before }] : [];
+      return { reply, actions: [...turn.actions, ...saved] };
     }
 
     const results: Anthropic.ToolResultBlockParam[] = [];

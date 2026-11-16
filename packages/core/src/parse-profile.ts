@@ -175,6 +175,8 @@ export function parseProfile(input: unknown): { profile: Profile } | { errors: s
       email,
       fullName,
       city: optionalStr(input["city"]),
+      headline: optionalStr(input["headline"]),
+      summary: optionalStr(input["summary"]),
       skills: list(input["skills"])
         .filter(isRecord)
         .map((s) => ({ name: str(s["name"]), ...source(s["source"]) }))

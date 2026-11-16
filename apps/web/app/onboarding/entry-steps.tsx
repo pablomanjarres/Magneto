@@ -2,7 +2,7 @@
 
 import type { Education, Experience } from "@moonlight/types";
 
-import { EmptyState, Field, inputClass } from "../../components/primitives";
+import { EmptyState, Field, inputClass, textareaClass } from "../../components/primitives";
 import { AddButton, EntryCard, FieldGrid, optionalNumber, optionalText } from "./fields";
 
 export const BLANK_EXPERIENCE: Experience = {
@@ -126,7 +126,7 @@ export function ExperienceFields({
       </FieldGrid>
       <Field label="Descripción">
         <textarea
-          className={`${inputClass} h-auto min-h-24 rounded-3xl py-3`}
+          className={`${textareaClass} min-h-32 text-[15px]`}
           value={value.description ?? ""}
           onChange={(e) => onChange({ description: optionalText(e.target.value) })}
           placeholder="React y TypeScript en un portal bancario interno."

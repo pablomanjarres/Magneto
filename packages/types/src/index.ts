@@ -46,6 +46,9 @@ export interface Profile {
   email: string;
   fullName: string;
   city?: string | undefined;
+  /** The résumé's opening line and short summary, once the candidate accepts them. */
+  headline?: string | undefined;
+  summary?: string | undefined;
   skills: Skill[];
   experience: Experience[];
   education: Education[];

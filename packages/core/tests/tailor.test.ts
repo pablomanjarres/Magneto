@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Profile, TailoredProfile } from "@moonlight/types";
 
-import { checkTailored } from "../src/index.js";
+import { acceptTailored, checkTailored } from "../src/index.js";
 
 const PROFILE: Profile = {
   id: "p1",
@@ -93,5 +93,74 @@ describe("checkTailored", () => {
       ok: false,
       problems: ['La habilidad "Kubernetes" no está en tu perfil.'],
     });
+  });
+});
+
+describe("acceptTailored", () => {
+  const own: Profile = {
+    id: "p1",
+    email: "a@b.co",
+    fullName: "Laura Restrepo",
+    skills: [{ name: "React" }, { name: "SQL" }, { name: "Figma", source: "linkedin" }],
+    experience: [
+      { company: "Nequi", title: "Data Intern", startDate: "2026-11", description: "Old wording." },
+      {
+        company: "Globant",
+        title: "Frontend Developer",
+        startDate: "2022-03",
+        endDate: "2024-01",
+        source: "resume",
+      },
+      { company: "Freelance", title: "Web Developer", startDate: "2020-01", endDate: "2021-12" },
+    ],
+    education: [{ institution: "EAFIT", degree: "Ingeniería", startYear: 2016 }],
+    expectations: { workModes: [], cities: [] },
+  };
+  const version: TailoredProfile = {
+    headline: "",
+    summary: "",
+    experience: [
+      {
+        company: "Globant",
+        title: "Frontend Developer",
+        startDate: "2022-03",
+        endDate: "2024-01",
+        description: "New wording.",
+      },
+      { company: "Nequi", title: "Data Intern", startDate: "2026-11", description: "Old wording." },
+    ],
+    skills: ["SQL", "React"],
+  };
+
+  it("makes the version's wording, order and omissions the profile's own", () => {
+    const next = acceptTailored(own, version);
+    expect(next.experience).toEqual([
+      {
+        company: "Globant",
+        title: "Frontend Developer",
+        startDate: "2022-03",
+        endDate: "2024-01",
+        description: "New wording.",
+        source: "resume",
+      },
+      own.experience[0],
+    ]);
+    expect(next.skills).toEqual([{ name: "SQL" }, { name: "React" }]);
+    expect(next.education).toEqual(own.education);
+    expect(next.headline).toBeUndefined();
+  });
+
+  it("keeps a headline and summary the version adds, and the profile's own when it adds none", () => {
+    const written = acceptTailored(own, {
+      ...version,
+      headline: "Frontend con datos",
+      summary: "Construyo interfaces.",
+    });
+    expect([written.headline, written.summary]).toEqual([
+      "Frontend con datos",
+      "Construyo interfaces.",
+    ]);
+    const kept = acceptTailored({ ...own, headline: "Mía", summary: "Mi resumen." }, version);
+    expect([kept.headline, kept.summary]).toEqual(["Mía", "Mi resumen."]);
   });
 });

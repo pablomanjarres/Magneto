@@ -45,6 +45,8 @@ function prompt(profile: Profile, task: string, returns: string): string {
   const facts = {
     nombre: profile.fullName,
     ciudad: profile.city ?? null,
+    titular: profile.headline ?? null,
+    resumen: profile.summary ?? null,
     cargoObjetivo: profile.expectations.targetRole ?? null,
     habilidades: profile.skills.map((s) => s.name),
     experiencia: profile.experience.map((e) => ({
@@ -151,15 +153,15 @@ export async function tailorFromInstructions(
   instructions: string,
   current?: z.infer<typeof Draft>,
 ): Promise<{ tailored: TailoredProfile; reply: string }> {
-  const task = `Ajusta la hoja de vida de este candidato según sus instrucciones. Escribe en español de Colombia, salvo que pida otro idioma.
+  const task = `Aplica a la hoja de vida de este candidato solo lo que piden sus instrucciones. Todo lo que no mencionen queda exactamente igual, palabra por palabra. Escribe en español de Colombia, salvo que pida otro idioma.
 ${current ? `\nVersión actual (JSON), la que debes refinar:\n${JSON.stringify(current, null, 2)}\n` : ""}
 Instrucciones del candidato: ${instructions}
 
 Si las instrucciones piden algo que no está en el perfil (por ejemplo cifras o habilidades que no tiene), no lo inventes y dilo en reply.`;
-  const returns = `- headline: una sola línea que presente al candidato.
-- summary: 2 o 3 frases.
-- experience: las experiencias del candidato en el orden que mejor sirva a las instrucciones, con descripciones reescritas; omite alguna solo si las instrucciones lo piden.
-- skills: las habilidades del candidato, en el orden que mejor sirva a las instrucciones.
+  const returns = `- headline: una línea que presente al candidato, solo si las instrucciones piden un titular, un perfil o un resumen, o adaptar toda la hoja de vida a un rol o vacante; si no, el titular actual igual o texto vacío.
+- summary: 2 o 3 frases, en los mismos casos que headline; si no, el resumen actual igual o texto vacío.
+- experience: todas las experiencias, en el mismo orden y con las descripciones exactamente como están, salvo lo que las instrucciones pidan cambiar; omite una solo si lo piden.
+- skills: las mismas habilidades en el mismo orden, salvo lo que las instrucciones pidan cambiar.
 - reply: una o dos frases en español que digan qué cambiaste.`;
 
   return rewrite(profile, prompt(profile, task, returns));

@@ -1,5 +1,13 @@
+import { cookies } from "next/headers";
 import type { Profile, Vacancy } from "@moonlight/types";
-import { getProfile, listApplications, listEvents, listVacancies } from "@moonlight/db";
+import {
+  getProfile,
+  listApplications,
+  listEvents,
+  listProfiles,
+  listVacancies,
+  type ProfileSummary,
+} from "@moonlight/db";
 import {
   applicationCards,
   describeEvent,
@@ -16,16 +24,37 @@ import {
  */
 
 /**
- * The one candidate the app works as. There is no sign-in: login is outside
- * what Entrega 3 grades, so the app opens straight on the seeded profile.
+ * The candidate the app opens as. There is no sign-in: login is outside what
+ * Entrega 3 grades, so the app opens straight on the seeded profile, and the
+ * header can switch it to another one.
  */
 export const PROFILE_ID = "demo-candidate";
 
-/** The candidate, or a clear stop when the database was never seeded. */
+/** The profile picked in the header. Set by POST /api/session, read only here. */
+export const PROFILE_COOKIE = "moonlight-profile";
+
+/** The seeded test profiles (data/sample-profiles/test-*.json) share this id prefix. */
+const TEST_PREFIX = "test-";
+
+/**
+ * The candidate picked in the header, or the seeded one when nothing was
+ * picked or the pick no longer exists; a clear stop when the database was
+ * never seeded.
+ */
 export async function requireProfile(): Promise<Profile> {
-  const profile = await getProfile(PROFILE_ID);
+  const picked = (await cookies()).get(PROFILE_COOKIE)?.value;
+  const profile = (picked ? await getProfile(picked) : null) ?? (await getProfile(PROFILE_ID));
   if (!profile) throw new Error(`Profile "${PROFILE_ID}" not found. Run pnpm db:seed.`);
   return profile;
+}
+
+/** A profile as the header's switcher lists it. */
+export type ProfileChoice = ProfileSummary & { test: boolean };
+
+/** Every profile the header can switch to, with the seeded test ones marked. */
+export async function loadProfileChoices(): Promise<ProfileChoice[]> {
+  const profiles = await listProfiles();
+  return profiles.map((p) => ({ ...p, test: p.id.startsWith(TEST_PREFIX) }));
 }
 
 /** The dataset on its own, for a screen that scores in the browser as you type. */

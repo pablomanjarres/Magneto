@@ -638,5 +638,949 @@
         "kind": "nice-to-have"
       }
     ]
+  },
+  {
+    "id": "v021",
+    "title": "Senior Full Stack Developer",
+    "company": "Pragma",
+    "city": "Medellín",
+    "workMode": "hybrid",
+    "salaryMin": 12000000,
+    "salaryMax": 16500000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "TypeScript",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Next.js",
+        "kind": "must-have"
+      },
+      {
+        "skill": "NestJS",
+        "kind": "must-have"
+      },
+      {
+        "skill": "PostgreSQL",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Docker",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "AWS",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v022",
+    "title": "Junior Data Analyst",
+    "company": "ESSA",
+    "city": "Bucaramanga",
+    "workMode": "onsite",
+    "salaryMin": 3200000,
+    "salaryMax": 4500000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "SQL",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Excel",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Power BI",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v023",
+    "title": "Flutter Developer",
+    "company": "Imagine Apps",
+    "city": "Medellín",
+    "workMode": "hybrid",
+    "salaryMin": 6500000,
+    "salaryMax": 9500000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Flutter",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Dart",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Firebase",
+        "kind": "must-have"
+      },
+      {
+        "skill": "REST",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Git",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v024",
+    "title": "Senior Java Developer",
+    "company": "Banco de Occidente",
+    "city": "Cali",
+    "workMode": "hybrid",
+    "salaryMin": 10500000,
+    "salaryMax": 14500000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Java",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Spring Boot",
+        "kind": "must-have"
+      },
+      {
+        "skill": "SQL",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Docker",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Azure",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v025",
+    "title": "UX/UI Designer",
+    "company": "Wompi",
+    "city": "Medellín",
+    "workMode": "hybrid",
+    "salaryMin": 6000000,
+    "salaryMax": 9000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Figma",
+        "kind": "must-have"
+      },
+      {
+        "skill": "UX Research",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Design Systems",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Miro",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "HTML",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v026",
+    "title": "Go Backend Developer",
+    "company": "Truora",
+    "city": "Remote",
+    "workMode": "remote",
+    "salaryMin": 9000000,
+    "salaryMax": 13500000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Go",
+        "kind": "must-have"
+      },
+      {
+        "skill": "PostgreSQL",
+        "kind": "must-have"
+      },
+      {
+        "skill": "AWS",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Docker",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "gRPC",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v027",
+    "title": "Data Analyst",
+    "company": "Bavaria",
+    "city": "Bogotá",
+    "workMode": "hybrid",
+    "salaryMin": 5500000,
+    "salaryMax": 8000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "SQL",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Python",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Power BI",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Excel",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Pandas",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v028",
+    "title": "Senior Frontend Engineer",
+    "company": "Platzi",
+    "city": "Remote",
+    "workMode": "remote",
+    "salaryMin": 11000000,
+    "salaryMax": 15000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "React",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Next.js",
+        "kind": "must-have"
+      },
+      {
+        "skill": "TypeScript",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Tailwind CSS",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Jest",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "GraphQL",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v029",
+    "title": "Android Developer",
+    "company": "Tigo",
+    "city": "Medellín",
+    "workMode": "hybrid",
+    "salaryMin": 7000000,
+    "salaryMax": 10500000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Kotlin",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Jetpack Compose",
+        "kind": "must-have"
+      },
+      {
+        "skill": "REST",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Firebase",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Git",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v030",
+    "title": "Data Scientist",
+    "company": "Grupo Éxito",
+    "city": "Envigado",
+    "workMode": "hybrid",
+    "salaryMin": 9500000,
+    "salaryMax": 13500000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Python",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Machine Learning",
+        "kind": "must-have"
+      },
+      {
+        "skill": "SQL",
+        "kind": "must-have"
+      },
+      {
+        "skill": "scikit-learn",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Pandas",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v031",
+    "title": "Semi Senior Full Stack Developer",
+    "company": "Sistemas y Computadores",
+    "city": "Bucaramanga",
+    "workMode": "hybrid",
+    "salaryMin": 6000000,
+    "salaryMax": 9000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "TypeScript",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Next.js",
+        "kind": "must-have"
+      },
+      {
+        "skill": "NestJS",
+        "kind": "must-have"
+      },
+      {
+        "skill": "PostgreSQL",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Jest",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v032",
+    "title": "Junior QA Automation Analyst",
+    "company": "Choucair",
+    "city": "Medellín",
+    "workMode": "hybrid",
+    "salaryMin": 3500000,
+    "salaryMax": 5000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Cypress",
+        "kind": "must-have"
+      },
+      {
+        "skill": "JavaScript",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Git",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Postman",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v033",
+    "title": "Cloud Engineer",
+    "company": "Promigas",
+    "city": "Barranquilla",
+    "workMode": "hybrid",
+    "salaryMin": 8000000,
+    "salaryMax": 12000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Azure",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Linux",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Terraform",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Docker",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Python",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v034",
+    "title": "Junior Flutter Developer",
+    "company": "Frisby",
+    "city": "Pereira",
+    "workMode": "hybrid",
+    "salaryMin": 3200000,
+    "salaryMax": 4600000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Flutter",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Dart",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Git",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Figma",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v035",
+    "title": "Business Intelligence Analyst",
+    "company": "Olímpica",
+    "city": "Barranquilla",
+    "workMode": "onsite",
+    "salaryMin": 4500000,
+    "salaryMax": 6500000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "SQL",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Power BI",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Excel",
+        "kind": "must-have"
+      },
+      {
+        "skill": "ETL",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v036",
+    "title": "Senior Backend Engineer",
+    "company": "Lulo Bank",
+    "city": "Bogotá",
+    "workMode": "hybrid",
+    "salaryMin": 13000000,
+    "salaryMax": 18000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Node.js",
+        "kind": "must-have"
+      },
+      {
+        "skill": "NestJS",
+        "kind": "must-have"
+      },
+      {
+        "skill": "TypeScript",
+        "kind": "must-have"
+      },
+      {
+        "skill": "PostgreSQL",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Kafka",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "AWS",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v037",
+    "title": "iOS Developer",
+    "company": "Mercado Libre",
+    "city": "Bogotá",
+    "workMode": "hybrid",
+    "salaryMin": 10000000,
+    "salaryMax": 14000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Swift",
+        "kind": "must-have"
+      },
+      {
+        "skill": "SwiftUI",
+        "kind": "must-have"
+      },
+      {
+        "skill": "REST",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Git",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "CI/CD",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v038",
+    "title": "Machine Learning Engineer",
+    "company": "Addi",
+    "city": "Bogotá",
+    "workMode": "remote",
+    "salaryMin": 14000000,
+    "salaryMax": 19000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Python",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Machine Learning",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Docker",
+        "kind": "must-have"
+      },
+      {
+        "skill": "PyTorch",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "AWS",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Airflow",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v039",
+    "title": "Cybersecurity Analyst",
+    "company": "Davivienda",
+    "city": "Bogotá",
+    "workMode": "onsite",
+    "salaryMin": 7500000,
+    "salaryMax": 11000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "SIEM",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Linux",
+        "kind": "must-have"
+      },
+      {
+        "skill": "OWASP",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Python",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "ISO 27001",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v040",
+    "title": "Junior Full Stack Developer",
+    "company": "Carvajal",
+    "city": "Cali",
+    "workMode": "hybrid",
+    "salaryMin": 3500000,
+    "salaryMax": 5000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "JavaScript",
+        "kind": "must-have"
+      },
+      {
+        "skill": "React",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Node.js",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "PostgreSQL",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Git",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v041",
+    "title": "Power BI Developer",
+    "company": "Audifarma",
+    "city": "Pereira",
+    "workMode": "onsite",
+    "salaryMin": 5000000,
+    "salaryMax": 7500000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Power BI",
+        "kind": "must-have"
+      },
+      {
+        "skill": "SQL",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Excel",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Azure",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v042",
+    "title": "Senior Flutter Engineer",
+    "company": "Nubank",
+    "city": "Remote",
+    "workMode": "remote",
+    "salaryMin": 13000000,
+    "salaryMax": 18000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Flutter",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Dart",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Kotlin",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Swift",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "CI/CD",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v043",
+    "title": "DevOps Engineer",
+    "company": "Endava",
+    "city": "Bogotá",
+    "workMode": "hybrid",
+    "salaryMin": 8500000,
+    "salaryMax": 12500000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Kubernetes",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Terraform",
+        "kind": "must-have"
+      },
+      {
+        "skill": "CI/CD",
+        "kind": "must-have"
+      },
+      {
+        "skill": "GCP",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Python",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v044",
+    "title": "Senior Python Developer",
+    "company": "BairesDev",
+    "city": "Remote",
+    "workMode": "remote",
+    "salaryMin": 12000000,
+    "salaryMax": 17000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Python",
+        "kind": "must-have"
+      },
+      {
+        "skill": "FastAPI",
+        "kind": "must-have"
+      },
+      {
+        "skill": "PostgreSQL",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Docker",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "AWS",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v045",
+    "title": "Product Manager",
+    "company": "Habi",
+    "city": "Bogotá",
+    "workMode": "hybrid",
+    "salaryMin": 11000000,
+    "salaryMax": 15000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Product Discovery",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Scrum",
+        "kind": "must-have"
+      },
+      {
+        "skill": "SQL",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Jira",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Figma",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v046",
+    "title": "Data Engineer",
+    "company": "Tecnoquímicas",
+    "city": "Cali",
+    "workMode": "hybrid",
+    "salaryMin": 8000000,
+    "salaryMax": 11500000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Python",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Spark",
+        "kind": "must-have"
+      },
+      {
+        "skill": "SQL",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Databricks",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Azure",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v047",
+    "title": "React Native Developer",
+    "company": "Globant",
+    "city": "Medellín",
+    "workMode": "hybrid",
+    "salaryMin": 8000000,
+    "salaryMax": 12000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "React Native",
+        "kind": "must-have"
+      },
+      {
+        "skill": "TypeScript",
+        "kind": "must-have"
+      },
+      {
+        "skill": "REST",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Firebase",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Jest",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v048",
+    "title": "Senior Data Analyst",
+    "company": "Rappi",
+    "city": "Bogotá",
+    "workMode": "remote",
+    "salaryMin": 8500000,
+    "salaryMax": 12000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "SQL",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Python",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Tableau",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Snowflake",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v049",
+    "title": "Java Tech Lead",
+    "company": "Bancolombia",
+    "city": "Medellín",
+    "workMode": "hybrid",
+    "salaryMin": 18000000,
+    "salaryMax": 24000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Java",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Spring Boot",
+        "kind": "must-have"
+      },
+      {
+        "skill": "AWS",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Kafka",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Kubernetes",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Terraform",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v050",
+    "title": "Junior Support Engineer",
+    "company": "Siigo",
+    "city": "Bogotá",
+    "workMode": "onsite",
+    "salaryMin": 2800000,
+    "salaryMax": 4000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "SQL",
+        "kind": "must-have"
+      },
+      {
+        "skill": "REST",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Jira",
+        "kind": "nice-to-have"
+      }
+    ]
   }
 ]

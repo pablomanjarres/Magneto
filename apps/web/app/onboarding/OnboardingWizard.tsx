@@ -15,6 +15,7 @@ import { normalizeSkill, profileCompleteness } from "@moonlight/core";
 
 import { Icon } from "../../components/Icon";
 import { Card, Eyebrow, ProgressBar, buttonClass } from "../../components/primitives";
+import { useSlidingPill } from "../../components/sliding-pill";
 import { saveProfile } from "../../lib/client";
 import { BLANK_EDUCATION, BLANK_EXPERIENCE, EducationStep, ExperienceStep } from "./entry-steps";
 import { CompletenessRail, LaptopPanel } from "./fields";
@@ -286,36 +287,42 @@ export function OnboardingWizard({
 }
 
 function Stepper({ step, onGo }: { step: number; onGo: (index: number) => void }) {
+  // Steps are drawn from where the pill is, so they change colour as it moves on.
+  const { pill, at, lit } = useSlidingPill(step);
   return (
-    <ol className="flex flex-wrap gap-2">
-      {STEPS.map((s, i) => {
-        const tone =
-          i === step
-            ? "bg-navy text-white"
-            : i < step
-              ? "bg-mint-wash text-mint-deep hover:bg-mint"
-              : "bg-surface text-muted hover:bg-surface-strong";
-        return (
-          <li key={s.label}>
-            <button
-              type="button"
-              onClick={() => onGo(i)}
-              aria-current={i === step ? "step" : undefined}
-              className={`inline-flex h-10 items-center gap-2 rounded-full pr-4 pl-1.5 text-sm font-bold transition ${tone}`}
-            >
-              <span
-                className={`flex size-7 items-center justify-center rounded-full text-xs tabular-nums ${
-                  i === step ? "bg-white/15" : "bg-canvas"
+    <div className="relative">
+      {pill}
+      <ol className="flex flex-wrap gap-2">
+        {STEPS.map((s, i) => {
+          const tone = lit(i);
+          return (
+            <li key={s.label}>
+              <button
+                type="button"
+                onClick={() => onGo(i)}
+                aria-current={i === step ? "step" : undefined}
+                className={`inline-flex h-10 items-center gap-2 rounded-full pr-4 pl-1.5 text-sm font-bold transition ${
+                  tone ??
+                  (i < at
+                    ? "bg-mint-wash text-mint-deep hover:bg-mint"
+                    : "bg-surface text-muted hover:bg-surface-strong")
                 }`}
               >
-                {i < step ? <Icon name="check" size={13} strokeWidth={3} /> : i + 1}
-              </span>
-              {s.label}
-            </button>
-          </li>
-        );
-      })}
-    </ol>
+                {/* Only the content is relative: the pill passes over the other chips' fill, under their text. */}
+                <span
+                  className={`relative flex size-7 items-center justify-center rounded-full text-xs tabular-nums transition ${
+                    tone ? "bg-white/15" : "bg-canvas"
+                  }`}
+                >
+                  {i < at ? <Icon name="check" size={13} strokeWidth={3} /> : i + 1}
+                </span>
+                <span className="relative">{s.label}</span>
+              </button>
+            </li>
+          );
+        })}
+      </ol>
+    </div>
   );
 }
 

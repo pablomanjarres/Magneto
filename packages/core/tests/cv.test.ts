@@ -778,3 +778,37 @@ describe("toHarvardCv skills", () => {
     ]);
   });
 });
+
+describe("toHarvardCv profile section", () => {
+  const base: Profile = {
+    id: "p",
+    email: "a@b.co",
+    fullName: "Laura Restrepo",
+    headline: "Frontend con datos",
+    summary: "Construyo interfaces.",
+    skills: [],
+    experience: [],
+    education: [],
+    expectations: { workModes: [], cities: [] },
+  };
+
+  it("opens the plain CV with the profile's own headline and summary", () => {
+    expect(toHarvardCv(base).sections.find((s) => s.key === "profile")?.lines).toEqual([
+      "Frontend con datos",
+      "Construyo interfaces.",
+    ]);
+  });
+
+  it("keeps the profile's headline and summary where a tailored version leaves them empty", () => {
+    const cv = toHarvardCv(base, {
+      headline: "",
+      summary: "Otro resumen.",
+      experience: [],
+      skills: [],
+    });
+    expect(cv.sections.find((s) => s.key === "profile")?.lines).toEqual([
+      "Frontend con datos",
+      "Otro resumen.",
+    ]);
+  });
+});

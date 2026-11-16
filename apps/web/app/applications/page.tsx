@@ -28,14 +28,14 @@ export default async function ApplicationsPage() {
         }
       />
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_280px]">
+      <div className="flex flex-col gap-6">
         {cards.length === 0 ? (
           <EmptyState title="Aún no te has postulado">
             Cada vacante ya está evaluada contra tu perfil. Elige una en Vacantes y aparecerá en la
             primera columna.
           </EmptyState>
         ) : (
-          <div className="-mx-4 grid animate-rise snap-x auto-cols-[minmax(210px,1fr)] grid-flow-col gap-3 overflow-x-auto px-4 pb-2 [animation-delay:100ms] sm:mx-0 sm:px-0">
+          <div className="-mx-4 grid animate-rise snap-x auto-cols-[minmax(260px,1fr)] grid-flow-col gap-3 overflow-x-auto px-4 pb-2 [animation-delay:100ms] sm:mx-0 sm:px-0">
             {groupByStatus(cards).map((column) => (
               <BoardColumn
                 key={column.status}

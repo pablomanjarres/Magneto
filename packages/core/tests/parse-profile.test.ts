@@ -125,6 +125,18 @@ describe("parseProfile", () => {
     expect(outside(2101)).toEqual(["education 1 needs a start or end year between 1900 and 2100"]);
   });
 
+  it("keeps a headline and a summary, trimmed", () => {
+    const profile = ok({
+      ...valid,
+      headline: "  Frontend con datos ",
+      summary: " Construyo interfaces. ",
+    });
+    expect([profile.headline, profile.summary]).toEqual([
+      "Frontend con datos",
+      "Construyo interfaces.",
+    ]);
+  });
+
   it("keeps only real work modes", () => {
     const profile = ok({
       ...valid,
@@ -260,8 +272,10 @@ describe("parseProfile", () => {
       "expectations",
       "experience",
       "fullName",
+      "headline",
       "id",
       "skills",
+      "summary",
     ]);
   });
 

@@ -177,7 +177,11 @@ export function toHarvardCv(profile: Profile, tailored?: TailoredProfile): CvDoc
       key: "profile",
       title: "Perfil",
       entries: [],
-      lines: tailored ? present([tailored.headline, tailored.summary]) : [],
+      // A tailored line left empty keeps the profile's own, so a small edit never drops it.
+      lines: present([
+        tailored?.headline.trim() || profile.headline,
+        tailored?.summary.trim() || profile.summary,
+      ]),
     },
     {
       key: "education",
