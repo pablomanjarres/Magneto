@@ -14,6 +14,7 @@ const LINKS: ReadonlyArray<{
   { href: "/dashboard", label: "Inicio", icon: "dashboard" },
   { href: "/jobs", label: "Vacantes", icon: "briefcase", count: "vacancies" },
   { href: "/applications", label: "Postulaciones", icon: "board", count: "applications" },
+  { href: "/cv", label: "Mi CV", icon: "document" },
   { href: "/profile", label: "Mi perfil", icon: "user" },
 ];
 
@@ -38,12 +39,12 @@ export function TopNav({ counts }: { counts: { vacancies: number; applications: 
             }`}
           >
             <Icon name={link.icon} size={16} />
-            {/* On a phone only the current section keeps its label; the rest are icons. */}
-            <span className={active ? "" : "sr-only sm:not-sr-only"}>{link.label}</span>
+            {/* Five labels do not fit a phone, so there every section is an icon with a hidden name. */}
+            <span className="sr-only sm:not-sr-only">{link.label}</span>
             {link.count && (
               <span
-                className={`rounded-full px-1.5 text-xs tabular-nums ${
-                  active ? "bg-white/15" : "hidden bg-surface text-muted sm:inline"
+                className={`hidden rounded-full px-1.5 text-xs tabular-nums sm:inline ${
+                  active ? "bg-white/15" : "bg-surface text-muted"
                 }`}
               >
                 {counts[link.count]}

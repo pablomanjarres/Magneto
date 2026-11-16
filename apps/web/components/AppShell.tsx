@@ -19,7 +19,7 @@ export async function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-dvh flex-col">
-      <div className="bg-brand text-white">
+      <div className="bg-brand text-white print:hidden">
         <div className="mx-auto flex h-10 max-w-7xl items-end justify-between gap-4 px-4 sm:px-6">
           <div className="flex h-full items-end gap-3 text-sm">
             <span className="hidden self-center sm:inline">Profile Manager para:</span>
@@ -36,7 +36,7 @@ export async function AppShell({ children }: { children: ReactNode }) {
         </div>
       </div>
 
-      <header className="sticky top-0 z-30 border-b border-line bg-canvas/90 backdrop-blur-md">
+      <header className="sticky top-0 z-30 border-b border-line bg-canvas/90 backdrop-blur-md print:hidden">
         <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6">
           <Link href="/dashboard" className="flex shrink-0 items-center gap-2">
             <Image src="/brand/crescent.svg" alt="" width={30} height={30} priority />
@@ -65,20 +65,17 @@ export async function AppShell({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-8 px-4 py-8 sm:px-6">
+      <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-8 px-4 py-8 sm:px-6 print:max-w-none print:bg-canvas print:p-0">
         {children}
       </main>
 
-      <footer className="bg-surface-strong">
+      <footer className="bg-surface-strong print:hidden">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2 px-4 py-6 text-xs text-muted sm:px-6">
           <span>
             <strong className="text-slate">Moon Light</strong> · Profile Manager para el reto de
             Magneto 365
           </span>
-          <span>
-            Modelos 3D: NASA Goddard (Luna, datos LRO) y NASA 3D Resources · Universidad EAFIT ·
-            SI2005 · 2026-2
-          </span>
+          <span>Universidad EAFIT · SI2005 · 2026-2</span>
         </div>
       </footer>
     </div>
