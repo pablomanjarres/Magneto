@@ -11,6 +11,7 @@ import {
   PageHeader,
 } from "../../components/primitives";
 import { Icon } from "../../components/Icon";
+import { SourceChip } from "../../components/SourceChip";
 import { requireProfile } from "../../lib/queries";
 import { initials, salaryRange, shortDate, workModeLabel } from "../../lib/format";
 import { Detail, type Entry, EntryList, ProfileSection } from "./ProfileSection";
@@ -51,6 +52,7 @@ export default async function ProfilePage() {
       period: period(job.startDate, job.endDate),
       subtitle: job.company,
       description: job.description,
+      source: job.source,
     }));
 
   const education: Entry[] = [...profile.education]
@@ -60,6 +62,7 @@ export default async function ProfilePage() {
       title: degree.degree,
       period: years(degree.startYear, degree.endYear),
       subtitle: degree.institution,
+      source: degree.source,
     }));
 
   const facts = [
@@ -74,10 +77,16 @@ export default async function ProfilePage() {
         title={profile.fullName}
         lead="Este es el perfil con el que se construyen tus postulaciones. Si cambias algo, cada vacante se vuelve a evaluar."
         actions={
-          <ButtonLink href="/onboarding">
-            <Icon name="edit" size={16} />
-            Editar perfil
-          </ButtonLink>
+          <>
+            <ButtonLink href="/onboarding">
+              <Icon name="edit" size={16} />
+              Editar perfil
+            </ButtonLink>
+            <ButtonLink href="/cv" variant="quiet">
+              <Icon name="document" size={16} />
+              Ver mi hoja de vida
+            </ButtonLink>
+          </>
         }
       />
 
@@ -154,6 +163,7 @@ export default async function ProfilePage() {
                 {profile.skills.map((skill) => (
                   <Chip key={skill.name} tone="brand">
                     {skill.name}
+                    {skill.source && <SourceChip source={skill.source} />}
                   </Chip>
                 ))}
               </div>
