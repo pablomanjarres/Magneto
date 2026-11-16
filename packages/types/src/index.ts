@@ -117,3 +117,17 @@ export interface MarketGap {
   demandCount: number;
   sharePercent: number;
 }
+
+/** What a candidate did on the board. One row each, kept after a withdrawal. */
+export type ApplicationEventKind = "applied" | "moved" | "note" | "withdrawn";
+
+/** One line of the activity log. `detail` carries "from→to" for a move. */
+export interface ApplicationEvent {
+  id: string;
+  profileId: string;
+  vacancyId: string;
+  applicationId: string;
+  kind: ApplicationEventKind;
+  detail?: string | undefined;
+  createdAt: string;
+}
