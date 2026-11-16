@@ -55,6 +55,33 @@ export const tailorProfile = (
     body: JSON.stringify({ vacancyId }),
   });
 
+export type ChatMessage = { role: "user" | "assistant"; content: string };
+
+/** What the browser does after Luna answers, in order. */
+export type AssistantAction =
+  | { type: "navigate"; path: string }
+  | { type: "refresh" }
+  | { type: "tailored"; tailored: TailoredProfile };
+
+/** One turn with Luna: the conversation so far, the page it is on and the last adapted CV. */
+export const askAssistant = (
+  messages: ChatMessage[],
+  path: string,
+  tailored?: TailoredProfile,
+): Promise<{ reply: string; actions: AssistantAction[] }> =>
+  send("/api/assistant", {
+    method: "POST",
+    body: JSON.stringify({
+      messages,
+      path,
+      // JSON drops undefined, and the API wants every open-ended job as an explicit null.
+      tailored: tailored && {
+        ...tailored,
+        experience: tailored.experience.map((e) => ({ ...e, endDate: e.endDate ?? null })),
+      },
+    }),
+  });
+
 export const saveProfile = (profile: Profile): Promise<{ profile: Profile }> =>
   send("/api/profiles", { method: "POST", body: JSON.stringify(profile) });
 

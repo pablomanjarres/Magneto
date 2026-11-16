@@ -15,7 +15,8 @@ export class TailorError extends UserFacingError {
   }
 }
 
-const Output = z.object({
+/** A rewritten profile as the model returns it, and as the browser sends it back to refine. */
+export const Draft = z.object({
   headline: z.string(),
   summary: z.string(),
   experience: z.array(
@@ -30,6 +31,8 @@ const Output = z.object({
   skills: z.array(z.string()),
 });
 
+const Output = Draft.extend({ reply: z.string() });
+
 const RULES = `Reglas estrictas:
 - Usa solo hechos que estén en el perfil. Nunca agregues empresas, cargos, fechas, títulos, habilidades ni cifras.
 - Copia company, title, startDate y endDate de cada experiencia exactamente como vienen (endDate null si no tiene). Incluye cada experiencia una sola vez.
@@ -37,7 +40,8 @@ const RULES = `Reglas estrictas:
 - Puedes reordenar y reescribir descripciones, pero sin afirmar nada que el perfil no diga.
 - No supongas el género del candidato: escribe en primera persona o con frases que no lo marquen.`;
 
-function prompt(profile: Profile, vacancy: Vacancy): string {
+/** The one prompt both kinds of tailoring share: the task, the profile's facts, what to return and the rules. */
+function prompt(profile: Profile, task: string, returns: string): string {
   const facts = {
     nombre: profile.fullName,
     ciudad: profile.city ?? null,
@@ -57,34 +61,29 @@ function prompt(profile: Profile, vacancy: Vacancy): string {
       hasta: e.endYear ?? null,
     })),
   };
-  const asks = vacancy.requirements.map(
-    (r) => `${r.skill} (${r.kind === "must-have" ? "obligatorio" : "deseable"})`,
-  );
 
-  return `Adapta este perfil de candidato a una vacante. Escribe todo en español de Colombia.
-
-Vacante: ${vacancy.title} en ${vacancy.company}.
-Requisitos: ${asks.join(", ") || "no especificados"}.
+  return `${task}
 
 Perfil (JSON):
 ${JSON.stringify(facts, null, 2)}
 
 Devuelve:
-- headline: una sola línea que presente al candidato para esta vacante.
-- summary: 2 o 3 frases dirigidas a esta vacante.
-- experience: las experiencias del candidato ordenadas por relevancia para la vacante, con descripciones reescritas para resaltar lo que la vacante pide.
-- skills: las habilidades del candidato, primero las que la vacante pide.
+${returns}
 
 ${RULES}`;
 }
 
 /**
- * A version of the profile rewritten for one vacancy. Every answer goes through
- * core's anti-fabrication check; one retry names what was wrong, and a second
- * failure throws TailorError rather than show invented facts.
+ * Asks for a rewrite and puts every answer through core's anti-fabrication
+ * check; one retry names what was wrong, and a second failure throws
+ * TailorError rather than show invented facts.
  */
-export async function tailorProfile(profile: Profile, vacancy: Vacancy): Promise<TailoredProfile> {
-  const messages: Anthropic.MessageParam[] = [{ role: "user", content: prompt(profile, vacancy) }];
+async function rewrite(
+  profile: Profile,
+  request: string,
+  vacancyId?: string,
+): Promise<{ tailored: TailoredProfile; reply: string }> {
+  const messages: Anthropic.MessageParam[] = [{ role: "user", content: request }];
   let problems: string[] = [];
 
   for (let attempt = 0; attempt < 2; attempt++) {
@@ -101,14 +100,14 @@ export async function tailorProfile(profile: Profile, vacancy: Vacancy): Promise
     }
 
     const tailored: TailoredProfile = {
-      vacancyId: vacancy.id,
+      ...(vacancyId ? { vacancyId } : {}),
       headline: parsed.headline,
       summary: parsed.summary,
       experience: parsed.experience.map((e) => ({ ...e, endDate: e.endDate ?? undefined })),
       skills: parsed.skills,
     };
     const check = checkTailored(profile, tailored);
-    if (check.ok) return tailored;
+    if (check.ok) return { tailored, reply: parsed.reply };
 
     problems = check.problems;
     messages.push(
@@ -121,4 +120,47 @@ export async function tailorProfile(profile: Profile, vacancy: Vacancy): Promise
   }
 
   throw new TailorError(problems);
+}
+
+/** A version of the profile rewritten for one vacancy. */
+export async function tailorProfile(profile: Profile, vacancy: Vacancy): Promise<TailoredProfile> {
+  const asks = vacancy.requirements.map(
+    (r) => `${r.skill} (${r.kind === "must-have" ? "obligatorio" : "deseable"})`,
+  );
+  const task = `Adapta este perfil de candidato a una vacante. Escribe todo en español de Colombia.
+
+Vacante: ${vacancy.title} en ${vacancy.company}.
+Requisitos: ${asks.join(", ") || "no especificados"}.`;
+  const returns = `- headline: una sola línea que presente al candidato para esta vacante.
+- summary: 2 o 3 frases dirigidas a esta vacante.
+- experience: las experiencias del candidato ordenadas por relevancia para la vacante, con descripciones reescritas para resaltar lo que la vacante pide.
+- skills: las habilidades del candidato, primero las que la vacante pide.
+- reply: una frase que resuma qué cambiaste.`;
+
+  const { tailored } = await rewrite(profile, prompt(profile, task, returns), vacancy.id);
+  return tailored;
+}
+
+/**
+ * The hoja de vida rewritten from the candidate's own instructions. `current`
+ * is the version written last, so a new instruction refines it instead of
+ * starting over.
+ */
+export async function tailorFromInstructions(
+  profile: Profile,
+  instructions: string,
+  current?: z.infer<typeof Draft>,
+): Promise<{ tailored: TailoredProfile; reply: string }> {
+  const task = `Ajusta la hoja de vida de este candidato según sus instrucciones. Escribe en español de Colombia, salvo que pida otro idioma.
+${current ? `\nVersión actual (JSON), la que debes refinar:\n${JSON.stringify(current, null, 2)}\n` : ""}
+Instrucciones del candidato: ${instructions}
+
+Si las instrucciones piden algo que no está en el perfil (por ejemplo cifras o habilidades que no tiene), no lo inventes y dilo en reply.`;
+  const returns = `- headline: una sola línea que presente al candidato.
+- summary: 2 o 3 frases.
+- experience: las experiencias del candidato en el orden que mejor sirva a las instrucciones, con descripciones reescritas; omite alguna solo si las instrucciones lo piden.
+- skills: las habilidades del candidato, en el orden que mejor sirva a las instrucciones.
+- reply: una o dos frases en español que digan qué cambiaste.`;
+
+  return rewrite(profile, prompt(profile, task, returns));
 }
