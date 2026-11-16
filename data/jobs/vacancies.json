@@ -1538,5 +1538,49 @@
         "kind": "must-have"
       },
       {
+        "skill": "Spring Boot",
+        "kind": "must-have"
+      },
+      {
+        "skill": "AWS",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Kafka",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Kubernetes",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Terraform",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v050",
+    "title": "Junior Support Engineer",
+    "company": "Siigo",
+    "city": "Bogotá",
+    "workMode": "onsite",
+    "salaryMin": 2800000,
+    "salaryMax": 4000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "SQL",
+        "kind": "must-have"
+      },
+      {
+        "skill": "REST",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Jira",
+        "kind": "nice-to-have"
+      }
+    ]
   }
 ]
