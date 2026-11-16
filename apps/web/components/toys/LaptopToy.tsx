@@ -155,8 +155,8 @@ const WRITE: Pose = {
   turn: 0,
   tilt: 0.38,
   open: THREE.MathUtils.degToRad(105),
-  y: -0.8,
-  scale: 0.9,
+  y: -0.9,
+  scale: 1.08,
 };
 const FACING = 0.6; // how close to facing the camera, in radians, before the lid opens
 
@@ -323,11 +323,11 @@ type Layout = (ctx: CanvasRenderingContext2D, text: string, room: number) => str
 // Tried in order, each from its biggest size to its smallest: one big line,
 // then wrapped by words, and only then with long words split by letters.
 const LAYOUTS: ReadonlyArray<readonly [number, number, Layout]> = [
-  [160, 100, (_, text) => [text]],
-  [132, 64, (ctx, text, room) => wrapText(ctx, text, room)],
+  [200, 120, (_, text) => [text]],
+  [156, 76, (ctx, text, room) => wrapText(ctx, text, room)],
   [
-    132,
-    36,
+    156,
+    44,
     (ctx, text, room) => wrapText(ctx, text, room).flatMap((line) => splitLetters(ctx, line, room)),
   ],
 ];
@@ -344,7 +344,7 @@ function fitText(ctx: CanvasRenderingContext2D, text: string, width: number, hei
       if (fits && lines.length * size * 1.05 <= height) return { size, lines };
     }
   }
-  return { size: 36, lines: [text] };
+  return { size: 44, lines: [text] };
 }
 
 /** The lit screen: the prompt and any `command`, then the typed text as big as it fits. */
@@ -370,23 +370,24 @@ function drawScreen(
   const typed = text.trim();
   const hint = command ? HINT_AFTER_PROMPT : HINT;
   const { size, lines } = typed
-    ? fitText(ctx, typed, maxWidth, h - 230)
-    : { size: 80, lines: [hint] };
+    ? fitText(ctx, typed, maxWidth, h - 250)
+    : { size: 96, lines: [hint] };
 
   // The prompt and the text sit together in the middle, under the dots.
-  const y = 100 + Math.max(0, (h - 226 - lines.length * size * 1.05) / 2);
+  const y = 100 + Math.max(0, (h - 250 - lines.length * size * 1.05) / 2);
+  // With a field to show, the prompt shrinks to "~$" so the field's name can be big enough to read.
+  const prompt = command ? "~$" : PROMPT;
   ctx.fillStyle = colors.prompt;
-  ctx.font = `700 50px ${MONO}`;
-  ctx.fillText(PROMPT, pad, y + 44);
+  ctx.font = `700 ${command ? 68 : 54}px ${MONO}`;
+  ctx.fillText(prompt, pad, y + 56);
   if (command) {
-    // The command reads as typed, in the text colour, a step quieter than the text itself.
-    const x = pad + ctx.measureText(`${PROMPT} `).width;
-    ctx.globalAlpha = 0.8;
+    const x = pad + ctx.measureText(`${prompt} `).width;
+    ctx.globalAlpha = 0.9;
     ctx.fillStyle = colors.screenText;
-    ctx.fillText(command, x, y + 44, pad + maxWidth - x);
+    ctx.fillText(command, x, y + 56, pad + maxWidth - x);
     ctx.globalAlpha = 1;
   }
-  const top = y + 96;
+  const top = y + 112;
   ctx.font = `900 ${size}px ${font}`;
   if (!typed) {
     if (caret) caretBlock(ctx, pad, top, size, colors.caret);
