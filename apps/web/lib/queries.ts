@@ -1,8 +1,12 @@
 import type { Profile, Vacancy } from "@moonlight/types";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import { getProfile, listApplications, listVacancies } from "@moonlight/db";
-import { applicationCards, marketGaps, profileCompleteness, rankVacancies } from "@moonlight/core";
+import { getProfile, listApplications, listEvents, listVacancies } from "@moonlight/db";
+import {
+  applicationCards,
+  describeEvent,
+  marketGaps,
+  profileCompleteness,
+  rankVacancies,
+} from "@moonlight/core";
 
 /**
  * Everything the server components read, in one place. Pages stay a layout and
@@ -12,22 +16,15 @@ import { applicationCards, marketGaps, profileCompleteness, rankVacancies } from
  */
 
 /**
- * Which candidate the browser is working as. This is NOT authentication: there
- * is no password and no check, and anyone editing the cookie becomes somebody
- * else. Sign-in is HU_NF #32 and is not built. It exists only so the app knows
- * whose profile to show after the registration form.
+ * The one candidate the app works as. There is no sign-in: login is outside
+ * what Entrega 3 grades, so the app opens straight on the seeded profile.
  */
-export const CANDIDATE_COOKIE = "moonlight_candidate";
+export const PROFILE_ID = "demo-candidate";
 
-export async function currentProfile(): Promise<Profile | null> {
-  const id = (await cookies()).get(CANDIDATE_COOKIE)?.value;
-  return id ? getProfile(id) : null;
-}
-
-/** The current candidate, or a trip to the registration form. */
+/** The candidate, or a clear stop when the database was never seeded. */
 export async function requireProfile(): Promise<Profile> {
-  const profile = await currentProfile();
-  if (!profile) redirect("/register");
+  const profile = await getProfile(PROFILE_ID);
+  if (!profile) throw new Error(`Profile "${PROFILE_ID}" not found. Run pnpm db:seed.`);
   return profile;
 }
 
@@ -68,4 +65,15 @@ export async function loadBoard(profile: Profile) {
 export async function loadAppliedIds(profileId: string): Promise<Set<string>> {
   const applications = await listApplications(profileId);
   return new Set(applications.map((a) => a.vacancyId));
+}
+
+/** The last `limit` things the candidate did, already written as sentences. */
+export async function loadActivity(profileId: string, limit = 10) {
+  const [events, vacancies] = await Promise.all([listEvents(profileId, limit), listVacancies()]);
+  const titles = new Map(vacancies.map((v) => [v.id, v.title]));
+  return events.map((event) => ({
+    id: event.id,
+    createdAt: event.createdAt,
+    sentence: describeEvent(event, titles.get(event.vacancyId) ?? "una vacante"),
+  }));
 }
