@@ -358,3 +358,24 @@ equipo}
 
 ---
 
+## Referencias
+
+- Gamma, E., Helm, R., Johnson, R. y Vlissides, J. (1994). _Design Patterns: Elements of Reusable
+  Object-Oriented Software_. Addison-Wesley.
+- Larman, C. (2004). _Applying UML and Patterns_ (3.ª ed.). Prentice Hall.
+- Martin, R. C. (2008). _Clean Code: A Handbook of Agile Software Craftsmanship_. Prentice Hall.
+- Microsoft. _Architectural Patterns and Styles_. <http://msdn.microsoft.com/en-us/library/ee658117.aspx>
+- NASA's Goddard Space Flight Center. _Moon 3D Models for Web, AR, and Animation_.
+  <https://svs.gsfc.nasa.gov/14959/>
+- NASA. _NASA 3D Resources_. <https://github.com/nasa/NASA-3D-Resources>
+- Decisión de arquitectura del equipo: [`docs/adr/0001-backend-choice.md`](../../../adr/0001-backend-choice.md)
+
+{PENDIENTE: otras fuentes consultadas durante el sprint}
+
+{PENDIENTE: herramientas de IA utilizadas y los _prompts_ con los que se usaron}
+
+---
+
+<p align="center">
+  <em>Universidad EAFIT — Departamento de Informática y Sistemas — Ingeniería de Software</em>
+</p>
