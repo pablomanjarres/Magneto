@@ -1,11 +1,10 @@
-import type { Education, Experience, ImportedProfile, Profile, Skill } from "@moonlight/types";
+import type { Education, Experience, ImportedProfile, Skill } from "@moonlight/types";
 
-import { normalizeSkill } from "./index.js";
+import { dedupeSkills } from "./merge.js";
 
 /**
- * Imports from LinkedIn and résumés: recognising a profile URL, turning the
- * scraper's record into our shapes, and merging what the candidate confirmed
- * into their profile without duplicating anything already there.
+ * Imports from LinkedIn: recognising a profile URL and turning the scraper's
+ * record into our shapes. Bringing an import into a profile is in merge.ts.
  */
 
 const PROFILE_URL =
@@ -142,65 +141,5 @@ export function mapLinkedInProfile(item: unknown): ImportedProfile {
     experience,
     education,
     skills,
-  };
-}
-
-/** Two spellings of one skill collapse into the first one seen. */
-export function dedupeSkills(names: readonly string[]): string[] {
-  const seen = new Set<string>();
-  return names.filter((name) => {
-    const key = normalizeSkill(name);
-    if (!name.trim() || seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
-}
-
-const norm = (s: string): string => normalizeSkill(s);
-
-export const hasSkill = (profile: Profile, name: string): boolean =>
-  profile.skills.some((s) => norm(s.name) === norm(name));
-
-export const hasExperience = (profile: Profile, e: Experience): boolean =>
-  profile.experience.some(
-    (x) => norm(x.company) === norm(e.company) && norm(x.title) === norm(e.title),
-  );
-
-export const hasEducation = (profile: Profile, e: Education): boolean =>
-  profile.education.some(
-    (x) => norm(x.institution) === norm(e.institution) && norm(x.degree) === norm(e.degree),
-  );
-
-/**
- * Adds the confirmed entries the profile does not have yet. A name or city is
- * only filled when the profile has none: an import never overwrites what the
- * candidate typed. Pure; the caller saves the result.
- */
-export function mergeImport(
-  profile: Profile,
-  imported: ImportedProfile,
-): { profile: Profile; added: { experience: number; education: number; skills: number } } {
-  const experience = imported.experience.filter((e) => !hasExperience(profile, e));
-  const education = imported.education.filter((e) => !hasEducation(profile, e));
-  const skills = dedupeSkills(imported.skills.map((s) => s.name))
-    .filter((name) => !hasSkill(profile, name))
-    .map((name) => ({ name, source: imported.source }));
-
-  return {
-    profile: {
-      ...profile,
-      fullName: profile.fullName.trim() || imported.fullName || profile.fullName,
-      city: profile.city?.trim() ? profile.city : (imported.city ?? profile.city),
-      experience: [
-        ...profile.experience,
-        ...experience.map((e) => ({ ...e, source: imported.source })),
-      ],
-      education: [
-        ...profile.education,
-        ...education.map((e) => ({ ...e, source: imported.source })),
-      ],
-      skills: [...profile.skills, ...skills],
-    },
-    added: { experience: experience.length, education: education.length, skills: skills.length },
   };
 }
