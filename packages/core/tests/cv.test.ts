@@ -718,3 +718,39 @@ describe("diffCv", () => {
       ["exp:globant|frontenddeveloper|2021-02", "changed", -1],
       ["exp:rappi|softwareengineer|2023-02", "changed", 1],
       ["exp:freelance|desarrolladoraweb|2019-03", "removed", 0],
+    ]);
+    // Two new profile lines, three experience entries, one skills line.
+    expect(diff.changes).toBe(6);
+
+    // A section added or removed with nothing inside counts once on its own.
+    const bare: CvDocument = { name: "Ana", contact: [], sections: [] };
+    const hollow: CvDocument = {
+      ...bare,
+      sections: [{ key: "skills", title: "Habilidades", entries: [], lines: [] }],
+    };
+    expect(diffCv(bare, hollow).changes).toBe(1);
+    expect(diffCv(hollow, bare).changes).toBe(1);
+    expect(diffCv(hollow, hollow).changes).toBe(0);
+  });
+
+  it("rebuilds both CVs from the diff of a whole tailored CV, in either direction", () => {
+    const other = toHarvardCv(PROFILE, {
+      ...TAILORED,
+      experience: [...TAILORED.experience].reverse(),
+      skills: ["SQL"],
+    });
+    const pairs: Array<[CvDocument, CvDocument]> = [
+      [plain, tailored],
+      [tailored, plain],
+      [tailored, other],
+      [toHarvardCv(EMPTY), tailored],
+      [plain, rewritten],
+      [rewritten, tailored],
+    ];
+    for (const [before, after] of pairs) {
+      const diff = diffCv(before, after);
+      expect(rebuild(diff, "after")).toEqual(joined(after));
+      expect(byKey(rebuild(diff, "before"))).toEqual(byKey(joined(before)));
+    }
+  });
+});
