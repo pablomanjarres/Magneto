@@ -99,8 +99,8 @@ export function scoreVacancy(profile: Profile, vacancy: Vacancy): ScoreResult {
   const mustsMet = musts.filter((l) => l.met).length;
   const reason =
     musts.length === 0
-      ? `Meets ${matched.length} of ${breakdown.length} requirements. None are mandatory.`
-      : `Meets ${matched.length} of ${breakdown.length} requirements, including ${mustsMet} of ${musts.length} must-haves.`;
+      ? `Cumple ${matched.length} de ${breakdown.length} requisitos. Ninguno es obligatorio.`
+      : `Cumple ${matched.length} de ${breakdown.length} requisitos, incluidos ${mustsMet} de ${musts.length} obligatorios.`;
 
   const result: ScoreResult = { vacancyId: vacancy.id, score, matched, missing, reason, breakdown };
   if (location) result.location = location;
@@ -140,19 +140,19 @@ export const COMPLETENESS_FIELDS: ReadonlyArray<{
   label: string;
   filled: (p: Profile) => boolean;
 }> = [
-  { label: "Full name", filled: (p) => p.fullName.trim().length > 0 },
-  { label: "City", filled: (p) => (p.city ?? "").trim().length > 0 },
-  { label: "At least one skill", filled: (p) => p.skills.length > 0 },
-  { label: "At least one position", filled: (p) => p.experience.length > 0 },
-  { label: "Education", filled: (p) => p.education.length > 0 },
-  { label: "Target role", filled: (p) => (p.expectations.targetRole ?? "").trim().length > 0 },
+  { label: "Nombre completo", filled: (p) => p.fullName.trim().length > 0 },
+  { label: "Ciudad", filled: (p) => (p.city ?? "").trim().length > 0 },
+  { label: "Al menos una habilidad", filled: (p) => p.skills.length > 0 },
+  { label: "Al menos un cargo", filled: (p) => p.experience.length > 0 },
+  { label: "Educación", filled: (p) => p.education.length > 0 },
+  { label: "Cargo objetivo", filled: (p) => (p.expectations.targetRole ?? "").trim().length > 0 },
   {
-    label: "Salary expectation",
+    label: "Aspiración salarial",
     filled: (p) => p.expectations.salaryMin !== undefined && p.expectations.salaryMax !== undefined,
   },
-  { label: "Work mode", filled: (p) => p.expectations.workModes.length > 0 },
+  { label: "Modalidad de trabajo", filled: (p) => p.expectations.workModes.length > 0 },
   {
-    label: "Relocation",
+    label: "Disponibilidad para reubicarse",
     filled: (p) =>
       p.expectations.willRelocate === false ||
       (p.expectations.willRelocate === true && p.expectations.cities.length > 0),
@@ -175,7 +175,7 @@ export function profileCompleteness(profile: Profile): CompletenessResult {
  */
 export function comparisonBlockers(profile: Profile): string[] {
   return COMPLETENESS_FIELDS.filter(
-    (f) => f.label === "At least one skill" && !f.filled(profile),
+    (f) => f.label === "Al menos una habilidad" && !f.filled(profile),
   ).map((f) => f.label);
 }
 
@@ -219,10 +219,10 @@ export const APPLICATION_STATUSES: readonly ApplicationStatus[] = [
 ];
 
 export const STATUS_LABELS: Record<ApplicationStatus, string> = {
-  applied: "Applied",
-  "in-review": "In review",
-  interview: "Interview",
-  rejected: "Rejected",
+  applied: "Postulado",
+  "in-review": "En revisión",
+  interview: "Entrevista",
+  rejected: "Descartado",
 };
 
 /**
@@ -264,8 +264,8 @@ export function parseNote(value: unknown): { note: string | null } | { error: st
 
 /**
  * Join applications to the vacancies behind them and score each one, so the
- * board shows the same number the ranked list does. Pure: both the Next route
- * handlers and the Express service call this and get the same payload.
+ * board shows the same number the ranked list does. Pure: the route handler
+ * and the board page call this and get the same payload.
  * An application whose vacancy is gone is dropped rather than half-rendered.
  */
 export function applicationCards(
@@ -315,3 +315,4 @@ export function pageOf<T>(
 }
 
 export { DEFAULT_CURRENCY, SENIORITIES, TARGET_AREAS, parseProfile } from "./parse-profile.js";
+export { ApplicationEvents, describeEvent } from "./activity.js";
