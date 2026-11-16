@@ -8,6 +8,10 @@ import { saveProfile } from "./repositories/profiles.js";
 const data = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "data");
 const vacancies = readJson<Vacancy[]>(join(data, "jobs", "vacancies.json"));
 const candidate = readJson<Profile>(join(data, "sample-profiles", "candidate.json"));
+/** Two more people to switch to from the header, marked as tests by their "test-" ids. */
+const testProfiles = ["test-analista.json", "test-movil.json"].map((file) =>
+  readJson<Profile>(join(data, "sample-profiles", file)),
+);
 
 /**
  * The demo pipeline. Fixed ids and fixed vacancies so the board looks the same
@@ -49,6 +53,8 @@ for (const v of vacancies) {
 }
 
 await saveProfile(candidate);
+// Only upserted: the test profiles' own pipelines are never reset.
+for (const profile of testProfiles) await saveProfile(profile);
 
 // Seeding resets the demo: the candidate's pipeline and its activity go back to
 // the fixed starting point, so every rehearsal starts from the same board.
@@ -67,7 +73,8 @@ const { rows } = await pool.query<{ vacancies: string; applications: string }>(
           (SELECT count(*) FROM applications) AS applications`,
 );
 console.log(
-  `seeded ${vacancies.length} vacancies and profile ${candidate.id}; ` +
+  `seeded ${vacancies.length} vacancies and profiles ` +
+    `${[candidate, ...testProfiles].map((p) => p.id).join(", ")}; ` +
     `tables now hold ${rows[0]?.vacancies ?? "0"} vacancies and ` +
     `${rows[0]?.applications ?? "0"} applications`,
 );
