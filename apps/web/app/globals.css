@@ -1,147 +1,57 @@
-:root {
-  /* Surfaces. The moon as the old joke has it: aged cheese rind, not a bright
-     yellow. Warm sand for the page, cream for anything sitting on it, and no
-     #ffffff anywhere. Every step and every ink below was measured. */
-  --ground: #dcd4c1;
-  --rail: #e8e2d2;
-  --panel: #f2ede1;
-  --panel-deep: #ece5d6;
-  --input: #e9e3d3;
-  --btn: #e3dccb;
-  --btn-hover: #d9d1bc;
-  --track: #c7bda4;
-  --cream: #f6f2e8;
+@import "tailwindcss";
 
-  /* Ink, warm through the whole ramp. All eight tones clear WCAG AA on all six
-     surfaces above, including the 11px meta text. */
-  --ink: #231c10;
-  --ink-active: #312817;
-  --ink-secondary: #3f3520;
-  --muted: #57492e;
-  --dim: #5f5134;
-  --faint: #635437;
+/*
+ * The only stylesheet in the app: Tailwind plus the design tokens. Every screen
+ * styles itself with utilities built from these. The palette and type were
+ * measured on magneto365.com/co so the product reads as one more page of it.
+ */
+@theme {
+  --font-sans: var(--font-lato), "Lato", system-ui, -apple-system, "Segoe UI", sans-serif;
 
-  /* Accents. --glow is the olive-brown for anything interactive, --gold fills a
-     shape, --gold-deep is gold you can read: it carries the score numbers and
-     the one primary button, which takes a cream label rather than a dark one. */
-  --glow: #5f5220;
-  --gold: #9c6524;
-  --gold-deep: #7a4e16;
+  /* Brand: the purple band, active states, focus and the moon's glow. */
+  --color-brand: #7c00ff;
+  --color-brand-soft: #9748ff;
+  --color-brand-wash: #f3eaff;
 
-  /* Lines. --control-line is solid and darker than instinct says, because WCAG
-     1.4.11 wants 3:1 on the boundary of anything pressable. The hairline this
-     replaced measured 1.2:1, which is why the buttons dissolved into the page. */
-  --line: rgba(35, 28, 16, 0.22);
-  --line-strong: rgba(35, 28, 16, 0.34);
-  --line-dashed: rgba(35, 28, 16, 0.38);
-  --control-line: #83756d;
-  --wash: rgba(122, 78, 22, 0.14);
-  /* A row or cell pressed very slightly into its surface. */
-  --tint: rgba(35, 28, 16, 0.06);
+  /* Mint is the candidate's one primary action per screen, with navy text. */
+  --color-mint: #9ee4b8;
+  --color-mint-hover: #86dba6;
+  --color-mint-ink: #001b38;
+  --color-mint-deep: #1c7c4a;
+  --color-mint-wash: #e3f7ea;
 
-  --shadow:
-    0 1px 2px rgba(35, 28, 16, 0.08), 0 2px 10px rgba(35, 28, 16, 0.06);
+  /* Navy: the strong secondary action and the score numerals. */
+  --color-navy: #1a324c;
+  --color-navy-hover: #10233a;
 
-  --radius: 12px;
-  --radius-sm: 8px;
+  /* Ink ramp, darkest first. Muted and up clear WCAG AA on white and surface. */
+  --color-ink-strong: #0a0c0e;
+  --color-ink: #292f37;
+  --color-slate: #47535f;
+  --color-muted: #5e6a77;
+  --color-faint: #8591a0;
 
-  --font-display: "Instrument Serif", Georgia, "Times New Roman", serif;
-  --font-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-}
+  /* Surfaces and lines. */
+  --color-canvas: #ffffff;
+  --color-surface: #f0f1f3;
+  --color-surface-strong: #e6e8eb;
+  --color-line: #e0e4e7;
+  --color-control: #8591a0;
 
-* {
-  box-sizing: border-box;
-}
+  --color-danger: #c2261b;
+  --color-danger-wash: #fdecea;
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-}
+  --animate-rise: rise 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-pop: pop 0.45s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+  --animate-shimmer: shimmer 2.4s linear infinite;
+  --animate-aurora: aurora 18s ease-in-out infinite alternate;
 
-body {
-  font-family: var(--font-ui);
-  font-size: 14px;
-  background: var(--ground);
-  color: var(--ink);
-  -webkit-font-smoothing: antialiased;
-}
-
-a {
-  color: var(--glow);
-  text-decoration: none;
-}
-
-a:hover {
-  color: var(--ink);
-}
-
-button {
-  font: inherit;
-}
-
-.num {
-  font-variant-numeric: tabular-nums;
-}
-
-/* ---------- shell ---------- */
-
-.shell {
-  display: grid;
-  grid-template-columns: 216px minmax(0, 1fr);
-  min-height: 100vh;
-}
-
-.rail {
-  display: flex;
-  flex-direction: column;
-  gap: 26px;
-  padding: 22px 14px;
-  background: var(--rail);
-  border-right: 1px solid var(--line);
-  position: sticky;
-  top: 0;
-  height: 100vh;
-}
-
-.rail__foot {
-  margin-top: auto;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 10px 0;
-  border-top: 1px solid var(--line);
-}
-
-.main {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.topbar {
-  height: 64px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 0 32px;
-  border-bottom: 1px solid var(--line-strong);
-}
-
-.content {
-  padding: 26px 32px 48px;
-  display: flex;
-  flex-direction: column;
-  gap: 22px;
-}
-
-/* ---------- brand + nav ---------- */
-
-.logo {
-  display: flex;
-  align-items: center;
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
   gap: 10px;
   padding: 0 8px;
   color: var(--ink);
