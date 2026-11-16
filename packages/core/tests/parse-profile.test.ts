@@ -221,9 +221,9 @@ describe("parseProfile", () => {
   it("keeps an area and a seniority from the lists", () => {
     const profile = ok({
       ...valid,
-      expectations: { ...valid.expectations, targetArea: "Data", targetSeniority: "Junior" },
+      expectations: { ...valid.expectations, targetArea: "Datos", targetSeniority: "Junior" },
     });
-    expect(profile.expectations).toMatchObject({ targetArea: "Data", targetSeniority: "Junior" });
+    expect(profile.expectations).toMatchObject({ targetArea: "Datos", targetSeniority: "Junior" });
   });
 
   it("drops an area or a seniority that is not on the lists", () => {

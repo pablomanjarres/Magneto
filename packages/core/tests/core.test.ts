@@ -83,7 +83,7 @@ describe("scoreVacancy", () => {
 
   it("explains the score", () => {
     const r = scoreVacancy(profile(["TypeScript"]), vacancy("v1", ["TypeScript", "Go"]));
-    expect(r.reason).toBe("Meets 1 of 2 requirements, including 1 of 2 must-haves.");
+    expect(r.reason).toBe("Cumple 1 de 2 requisitos, incluidos 1 de 2 obligatorios.");
     expect(r.missing.map((m) => m.skill)).toEqual(["Go"]);
   });
 });
@@ -217,8 +217,8 @@ describe("profileCompleteness", () => {
     });
     const result = profileCompleteness(bare);
     expect(result.percentage).toBe(0);
-    expect(result.missing).toContain("At least one skill");
-    expect(result.missing).toContain("Relocation");
+    expect(result.missing).toContain("Al menos una habilidad");
+    expect(result.missing).toContain("Disponibilidad para reubicarse");
   });
 
   it("counts only the name on a just-registered profile", () => {
@@ -230,7 +230,7 @@ describe("profileCompleteness", () => {
     const p = profile(["TypeScript"], {
       expectations: { workModes: ["remote"], willRelocate: false, cities: [] },
     });
-    expect(profileCompleteness(p).missing).not.toContain("Relocation");
+    expect(profileCompleteness(p).missing).not.toContain("Disponibilidad para reubicarse");
   });
 
   it("rises when a missing field is filled", () => {
@@ -241,20 +241,23 @@ describe("profileCompleteness", () => {
     );
   });
 
-  it("reaches 100 on the seeded candidate", () => {
+  it("leaves the seeded candidate three fields short, for the demo to fill", () => {
     const seed: unknown = JSON.parse(
       readFileSync(
         new URL("../../../data/sample-profiles/candidate.json", import.meta.url),
         "utf8",
       ),
     );
-    expect(profileCompleteness(ok(parseProfile(seed))).percentage).toBe(100);
+    expect(profileCompleteness(ok(parseProfile(seed)))).toEqual({
+      percentage: 67,
+      missing: ["Educación", "Aspiración salarial", "Disponibilidad para reubicarse"],
+    });
   });
 });
 
 describe("comparisonBlockers", () => {
   it("blocks the comparison while the profile has no skills", () => {
-    expect(comparisonBlockers(profile([]))).toEqual(["At least one skill"]);
+    expect(comparisonBlockers(profile([]))).toEqual(["Al menos una habilidad"]);
   });
 
   it("lets a profile with one skill compare", () => {
