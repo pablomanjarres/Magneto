@@ -538,3 +538,183 @@ describe("diffCv", () => {
       sections: plain.sections.map((s) =>
         s === experience ? { ...s, entries: [freelance!, rappi!, globant!] } : s,
       ),
+    };
+    const diff = diffCv(plain, reordered);
+    expect(
+      sectionDiff(diff, "experience").entries.map((e) => [e.title[0]?.text, e.status, e.moved]),
+    ).toEqual([
+      ["Freelance", "same", -2],
+      ["Rappi", "same", 1],
+      ["Globant", "same", 1],
+    ]);
+    expect(sectionDiff(diff, "experience").status).toBe("changed");
+    expect(diff.changes).toBe(3);
+  });
+
+  it("marks a rephrased bullet as changed, with the words removed and added", () => {
+    const [globant] = sectionDiff(diffCv(plain, tailored), "experience").entries;
+    expect(globant?.status).toBe("changed");
+    expect(globant?.title).toEqual([{ kind: "same", text: "Globant" }]);
+    expect(globant?.bullets).toEqual([
+      [{ kind: "same", text: "Interfaces en React" }],
+      [{ kind: "same", text: "Pruebas con Vitest" }],
+      [
+        { kind: "same", text: "Revisión de " },
+        { kind: "removed", text: "código" },
+        { kind: "added", text: "pull requests" },
+      ],
+    ]);
+  });
+
+  it("keeps untouched bullets whole when another one moves or is inserted", () => {
+    const [, rappi] = sectionDiff(diffCv(plain, tailored), "experience").entries;
+    expect(rappi?.bullets).toEqual([
+      [{ kind: "removed", text: "Diseñé APIs REST en Node.js." }],
+      [{ kind: "same", text: "Reduje la latencia un 30%." }],
+      [{ kind: "added", text: "Diseñé APIs REST en Node.js." }],
+    ]);
+
+    const [globant] = TAILORED.experience;
+    const inserted = toHarvardCv(PROFILE, {
+      ...TAILORED,
+      experience: [
+        {
+          ...globant!,
+          description:
+            "Mentoría a practicantes\nInterfaces en React\nPruebas con Vitest\nRevisión de código",
+        },
+      ],
+    });
+    const entry = sectionDiff(diffCv(plain, inserted), "experience").entries.find(
+      (e) => e.key === "exp:globant|frontenddeveloper|2021-02",
+    );
+    expect(entry?.bullets).toEqual([
+      [{ kind: "added", text: "Mentoría a practicantes" }],
+      [{ kind: "same", text: "Interfaces en React" }],
+      [{ kind: "same", text: "Pruebas con Vitest" }],
+      [{ kind: "same", text: "Revisión de código" }],
+    ]);
+  });
+
+  it("shows the tailored profile section as added, and as removed the other way round", () => {
+    expect(diffCv(plain, tailored).sections[0]).toEqual({
+      key: "profile",
+      title: "Perfil",
+      status: "added",
+      entries: [],
+      lines: [
+        [{ kind: "added", text: TAILORED.headline }],
+        [{ kind: "added", text: TAILORED.summary }],
+      ],
+    });
+
+    const back = diffCv(tailored, plain).sections;
+    expect(back.map((s) => [s.key, s.status])).toEqual([
+      ["profile", "removed"],
+      ["education", "same"],
+      ["experience", "changed"],
+      ["skills", "changed"],
+    ]);
+    expect(back[0]?.lines.flat().every((p) => p.kind === "removed")).toBe(true);
+  });
+
+  it("pairs reworded bullets in order when every position is reordered and rewritten", () => {
+    const experience = sectionDiff(diffCv(plain, rewritten), "experience").entries;
+    expect(experience.map((e) => [e.title[0]?.text, e.status, e.moved])).toEqual([
+      ["Globant", "changed", -1],
+      ["Rappi", "changed", 1],
+      ["Freelance", "changed", 0],
+    ]);
+    expect(experience[2]?.bullets).toEqual([
+      [
+        { kind: "removed", text: "Sitios para pymes." },
+        { kind: "added", text: "Logro 2 reescrito por completo." },
+      ],
+      [{ kind: "added", text: "Otro logro 2 nuevo." }],
+    ]);
+  });
+
+  it("pairs profile lines by what they say, so a missing headline does not shift the summary", () => {
+    const diff = diffCv(tailored, toHarvardCv(PROFILE, { ...TAILORED, headline: "" }));
+    expect(sectionDiff(diff, "profile")).toMatchObject({
+      status: "changed",
+      lines: [
+        [{ kind: "removed", text: TAILORED.headline }],
+        [{ kind: "same", text: TAILORED.summary }],
+      ],
+    });
+    expect(diff.changes).toBe(1);
+  });
+
+  it("handles empty profiles on either side", () => {
+    const empty = toHarvardCv(EMPTY);
+    expect(diffCv(empty, empty)).toEqual({
+      name: [{ kind: "same", text: "Ana Gómez" }],
+      contact: [{ kind: "same", text: "ana@example.com" }],
+      sections: [],
+      changes: 0,
+    });
+
+    const grown = diffCv(empty, plain);
+    expect(grown.sections.map((s) => s.status)).toEqual(["added", "added", "added"]);
+    // Four studies, three positions and one skills line.
+    expect(grown.changes).toBe(8);
+    expect(diffCv(plain, empty).changes).toBe(8);
+  });
+
+  it("strikes out a skill the tailored CV leaves out", () => {
+    const diff = diffCv(
+      plain,
+      toHarvardCv(PROFILE, { ...TAILORED, skills: ["TypeScript", "React", "SQL"] }),
+    );
+    expect(sectionDiff(diff, "skills")).toMatchObject({
+      status: "changed",
+      lines: [
+        [
+          { kind: "same", text: "Técnicas: TypeScript, React, " },
+          { kind: "removed", text: "Node.js, " },
+          { kind: "same", text: "SQL" },
+        ],
+      ],
+    });
+  });
+
+  it("keeps a removed entry where it was: above the entry that followed it, or at the end", () => {
+    const cv = (...keys: string[]): CvDocument => ({
+      name: "Ana",
+      contact: [],
+      sections: [
+        {
+          key: "experience",
+          title: "Experiencia",
+          lines: [],
+          entries: keys.map((key) => ({
+            key,
+            title: key,
+            place: "",
+            subtitle: "",
+            dates: "",
+            bullets: [],
+          })),
+        },
+      ],
+    });
+    const rows = (before: CvDocument, after: CvDocument) =>
+      diffCv(before, after).sections[0]?.entries.map((e) => `${e.key}:${e.status}:${e.moved}`);
+
+    expect(rows(cv("a", "b", "c"), cv("c", "x"))).toEqual([
+      "a:removed:0",
+      "b:removed:0",
+      "c:same:0",
+      "x:added:0",
+    ]);
+    expect(rows(cv("a", "b", "c"), cv("c", "a"))).toEqual(["b:removed:0", "c:same:-1", "a:same:1"]);
+    expect(rows(cv("a", "b"), cv("x", "a"))).toEqual(["x:added:0", "a:same:0", "b:removed:0"]);
+  });
+
+  it("counts one change per entry that differs or moved and per line that differs", () => {
+    const diff = diffCv(plain, tailored);
+    expect(sectionDiff(diff, "experience").entries.map((e) => [e.key, e.status, e.moved])).toEqual([
+      ["exp:globant|frontenddeveloper|2021-02", "changed", -1],
+      ["exp:rappi|softwareengineer|2023-02", "changed", 1],
+      ["exp:freelance|desarrolladoraweb|2019-03", "removed", 0],
