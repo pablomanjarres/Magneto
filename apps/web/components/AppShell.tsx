@@ -3,10 +3,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { profileCompleteness } from "@moonlight/core";
 
-import { loadNavCounts, requireProfile } from "../lib/queries";
-import { initials } from "../lib/format";
+import { loadNavCounts, loadProfileChoices, requireProfile } from "../lib/queries";
 import { buttonClass } from "./primitives";
 import { Icon } from "./Icon";
+import { ProfileSwitcher } from "./ProfileSwitcher";
 import { TopNav } from "./TopNav";
 
 /**
@@ -16,6 +16,7 @@ import { TopNav } from "./TopNav";
 export async function AppShell({ children }: { children: ReactNode }) {
   const profile = await requireProfile();
   const [counts, completeness] = [await loadNavCounts(profile.id), profileCompleteness(profile)];
+  const profiles = await loadProfileChoices();
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -54,14 +55,12 @@ export async function AppShell({ children }: { children: ReactNode }) {
                 Completar perfil
               </Link>
             )}
-            <Link
-              href="/profile"
-              aria-label={`Perfil de ${profile.fullName}`}
-              className="flex size-9 items-center justify-center rounded-full bg-brand-wash text-sm font-black text-brand"
-            >
-              {initials(profile.fullName)}
-            </Link>
           </div>
+          {/* Outside the row above, which phones hide, so every screen can switch. */}
+          <ProfileSwitcher
+            current={{ id: profile.id, fullName: profile.fullName }}
+            profiles={profiles}
+          />
         </div>
       </header>
 
