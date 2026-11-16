@@ -17,7 +17,7 @@ export function ReviewCard({
   period,
   source,
   selected,
-  exists,
+  joins,
   missing,
   delay,
   onToggle,
@@ -28,7 +28,8 @@ export function ReviewCard({
   period: string;
   source: ProfileSource;
   selected: boolean;
-  exists: boolean;
+  /** It matches an entry already in the profile, which it completes instead of repeating. */
+  joins: boolean;
   missing: string[];
   delay: number;
   onToggle: (selected: boolean) => void;
@@ -52,9 +53,8 @@ export function ReviewCard({
       <div className="flex items-start gap-3">
         <input
           type="checkbox"
-          className="mt-1 size-5 shrink-0 cursor-pointer accent-brand disabled:cursor-not-allowed"
+          className="mt-1 size-5 shrink-0 cursor-pointer accent-brand"
           checked={selected}
-          disabled={exists}
           onChange={(e) => onToggle(e.target.checked)}
           aria-label={`Importar ${title || "esta entrada"}`}
         />
@@ -67,22 +67,24 @@ export function ReviewCard({
           </div>
           <p className="text-sm text-muted">{subtitle || "Sin dato"}</p>
           <p className="text-xs font-bold text-muted tabular-nums">{period}</p>
-          {exists && <p className="mt-1 text-xs font-bold text-mint-deep">Ya está en tu perfil</p>}
+          {joins && (
+            <p className="mt-1 text-xs font-bold text-mint-deep">
+              Ya está en tu perfil: se completa, no se repite
+            </p>
+          )}
           {incomplete && (
             <p className="mt-1 text-xs font-bold text-danger">Falta: {missing.join(", ")}</p>
           )}
         </div>
-        {!exists && (
-          <button
-            type="button"
-            className={buttonClass("ghost", "sm")}
-            aria-expanded={editing}
-            onClick={() => setEditing(!editing)}
-          >
-            <Icon name={editing ? "check" : "edit"} size={14} />
-            {editing ? "Listo" : "Editar"}
-          </button>
-        )}
+        <button
+          type="button"
+          className={buttonClass("ghost", "sm")}
+          aria-expanded={editing}
+          onClick={() => setEditing(!editing)}
+        >
+          <Icon name={editing ? "check" : "edit"} size={14} />
+          {editing ? "Listo" : "Editar"}
+        </button>
       </div>
       {editing && <div className="flex animate-rise flex-col gap-4">{fields}</div>}
     </li>
