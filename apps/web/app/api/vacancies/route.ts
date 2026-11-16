@@ -1,7 +1,8 @@
 import { listVacancies } from "@moonlight/db";
+import { withRequestLog } from "../../../lib/log";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(): Promise<Response> {
+export const GET = withRequestLog("GET /api/vacancies", async (): Promise<Response> => {
   return Response.json(await listVacancies());
-}
+});
