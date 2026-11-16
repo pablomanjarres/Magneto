@@ -225,3 +225,63 @@ describe("applyEdits on studies", () => {
       endYear: 2023,
     };
     const { profile: next, done } = applyEdits(filled, {
+      addEducation: [{ ...course, source: "resume" }],
+    });
+    expect(next.education).toEqual([eafit, sena, course]);
+    expect(next.education[2]?.source).toBeUndefined();
+    expect(done).toEqual(["Estudio agregado: Curso de Python, Platzi"]);
+  });
+
+  it("updates the study already there instead of adding a second one", () => {
+    const { profile: next, done } = applyEdits(filled, {
+      addEducation: [
+        {
+          institution: "Universidad EAFIT",
+          degree: "Ingeniería de Sistemas",
+          startYear: 2016,
+          endYear: 2022,
+        },
+      ],
+    });
+    expect(next.education).toEqual([
+      {
+        institution: "Universidad EAFIT",
+        degree: "Ingeniería de Sistemas",
+        startYear: 2016,
+        endYear: 2022,
+      },
+      sena,
+    ]);
+    expect(next.education[0]?.source).toBeUndefined();
+    expect(done).toEqual(["Estudio actualizado: Ingeniería de Sistemas, Universidad EAFIT"]);
+  });
+
+  it("edits a study by its index and keeps where it came from", () => {
+    const { profile: next, done } = applyEdits(filled, {
+      updateEducation: [
+        { index: 1, degree: "Tecnólogo en análisis y desarrollo de software" },
+        { index: 0, endYear: null },
+      ],
+    });
+    expect(next.education).toEqual([
+      {
+        institution: "Universidad EAFIT",
+        degree: "Ingeniería de Sistemas",
+        startYear: 2016,
+        source: "linkedin",
+      },
+      { ...sena, degree: "Tecnólogo en análisis y desarrollo de software" },
+    ]);
+    expect(next.education[0]?.endYear).toBeUndefined();
+    expect(done).toEqual([
+      "Estudio actualizado: Ingeniería de Sistemas, Universidad EAFIT",
+      "Estudio actualizado: Tecnólogo en análisis y desarrollo de software, SENA",
+    ]);
+  });
+
+  it("removes a study by its index", () => {
+    const { profile: next, done } = applyEdits(filled, { removeEducation: [1] });
+    expect(next.education).toEqual([eafit]);
+    expect(done).toEqual(["Estudio quitado: Tecnólogo en análisis de datos, SENA"]);
+  });
+});
