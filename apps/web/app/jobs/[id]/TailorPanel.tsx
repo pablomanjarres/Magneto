@@ -1,14 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { diffCv, toHarvardCv } from "@moonlight/core";
 import type { CvDiff, CvDocument, CvEntry, Profile } from "@moonlight/types";
 
-import { HarvardCv } from "../../../components/cv/HarvardCv";
+import { CvComparison } from "../../../components/cv/CvComparison";
+import { PrintSheet } from "../../../components/cv/PrintSheet";
 import { Icon } from "../../../components/Icon";
-import { Card, Chip, Eyebrow, TogglePill, buttonClass } from "../../../components/primitives";
+import { Card, buttonClass } from "../../../components/primitives";
 import { tailorProfile } from "../../../lib/client";
-import { CvChanges, DiffLegend } from "./CvChanges";
 
 type Result = {
   check: { ok: boolean; problems: string[] };
@@ -16,13 +16,6 @@ type Result = {
   after: CvDocument;
   diff: CvDiff;
 };
-
-type View = "split" | "changes";
-
-const VIEWS: ReadonlyArray<{ id: View; label: string }> = [
-  { id: "split", label: "Lado a lado" },
-  { id: "changes", label: "Solo cambios" },
-];
 
 /** The tailored CV as plain text, the same one the download prints, ready to paste. */
 function asText(cv: CvDocument): string {
@@ -58,7 +51,6 @@ export function TailorPanel({
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
-  const [view, setView] = useState<View>("split");
 
   async function tailor(): Promise<void> {
     setPending(true);
@@ -84,30 +76,6 @@ export function TailorPanel({
       setError("No pudimos copiar el texto. Selecciónalo y cópialo a mano.");
     }
   }
-
-  // Once there is a tailored CV, paper gets only its sheet, from this button or Ctrl+P alike;
-  // "Guardar como PDF" names the file after the page title, so it names the candidate meanwhile.
-  useEffect(() => {
-    if (!result) return;
-    const title = document.title;
-    const rename = (): void => {
-      document.title = `${profile.fullName} · Hoja de vida · ${vacancyTitle}`;
-    };
-    const restore = (): void => {
-      document.title = title;
-    };
-    window.addEventListener("beforeprint", rename);
-    window.addEventListener("afterprint", restore);
-    return () => {
-      window.removeEventListener("beforeprint", rename);
-      window.removeEventListener("afterprint", restore);
-    };
-  }, [result, profile.fullName, vacancyTitle]);
-
-  const sides = [
-    { side: "before", label: "Versión original" },
-    { side: "after", label: `Adaptada para ${vacancyTitle}` },
-  ] as const;
 
   return (
     <>
@@ -155,21 +123,12 @@ export function TailorPanel({
         )}
 
         {result && (
-          <div className="flex animate-pop flex-col gap-5">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="flex flex-wrap items-center gap-2">
-                {result.check.ok && (
-                  <Chip tone="met">
-                    Verificado: no agrega empresas, cargos, fechas ni habilidades nuevas
-                  </Chip>
-                )}
-                <Chip tone="brand">
-                  {result.diff.changes === 0
-                    ? "Sin cambios"
-                    : `${result.diff.changes} ${result.diff.changes === 1 ? "cambio" : "cambios"}`}
-                </Chip>
-              </div>
-              <div className="flex flex-wrap gap-2">
+          <CvComparison
+            diff={result.diff}
+            verified={result.check.ok}
+            afterLabel={`Adaptada para ${vacancyTitle}`}
+            actions={
+              <>
                 <button
                   type="button"
                   className={buttonClass("quiet", "sm")}
@@ -186,42 +145,18 @@ export function TailorPanel({
                   <Icon name="download" size={14} strokeWidth={2.4} />
                   Descargar CV adaptado
                 </button>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div role="group" aria-label="Vista" className="flex flex-wrap gap-2">
-                {VIEWS.map(({ id, label }) => (
-                  <TogglePill key={id} on={view === id} onClick={() => setView(id)}>
-                    {label}
-                  </TogglePill>
-                ))}
-              </div>
-              <DiffLegend />
-            </div>
-
-            {view === "split" ? (
-              <div className="grid gap-6 md:grid-cols-2">
-                {sides.map(({ side, label }) => (
-                  // Named, so both sheets' identical section headings can be told apart.
-                  <section key={side} aria-label={label} className="flex min-w-0 flex-col gap-3">
-                    <Eyebrow>{label}</Eyebrow>
-                    <HarvardCv diff={result.diff} side={side} compact />
-                  </section>
-                ))}
-              </div>
-            ) : (
-              <CvChanges diff={result.diff} />
-            )}
-          </div>
+              </>
+            }
+          />
         )}
       </Card>
 
       {result && (
         // The vacancy page hides itself in print while this sheet exists.
-        <div data-print-sheet className="hidden print:block">
-          <HarvardCv doc={result.after} standalone />
-        </div>
+        <PrintSheet
+          doc={result.after}
+          title={`${profile.fullName} · Hoja de vida · ${vacancyTitle}`}
+        />
       )}
     </>
   );
