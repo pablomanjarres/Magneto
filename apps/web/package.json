@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "1.8.0",
     "@moonlight/core": "workspace:*",
     "@moonlight/db": "workspace:*",
     "@moonlight/types": "workspace:*",
@@ -17,7 +18,8 @@
     "next": "^15.1.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "three": "0.187.0"
+    "three": "0.187.0",
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "4.3.5",
