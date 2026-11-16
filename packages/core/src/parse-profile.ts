@@ -1,4 +1,4 @@
-import type { Education, Experience, Profile, WorkMode } from "@moonlight/types";
+import type { Education, Experience, Profile, ProfileSource, WorkMode } from "@moonlight/types";
 
 /**
  * The profile boundary. Anything arriving over HTTP is unknown until it has
@@ -52,6 +52,14 @@ const oneOf = (v: unknown, allowed: readonly string[]): string | undefined => {
   return allowed.includes(s) ? s : undefined;
 };
 
+const SOURCES: readonly ProfileSource[] = ["linkedin", "resume"];
+
+/** Where an entry was imported from; anything else is dropped, not stored. */
+const source = (v: unknown): { source?: ProfileSource } => {
+  const s = oneOf(v, SOURCES) as ProfileSource | undefined;
+  return s ? { source: s } : {};
+};
+
 const optionalNumber = (v: unknown): number | undefined =>
   typeof v === "number" && Number.isFinite(v) ? v : undefined;
 
@@ -84,6 +92,7 @@ function experienceList(v: unknown, errors: string[]): Experience[] {
         startDate,
         endDate: optionalStr(e["endDate"]),
         description: optionalStr(e["description"]),
+        ...source(e["source"]),
       },
     ];
   });
@@ -104,7 +113,9 @@ function educationList(v: unknown, errors: string[]): Education[] {
     }
     if (!institution || !degree || startYear === undefined) return [];
 
-    return [{ institution, degree, startYear, endYear: year(e["endYear"]) }];
+    return [
+      { institution, degree, startYear, endYear: year(e["endYear"]), ...source(e["source"]) },
+    ];
   });
 }
 
@@ -166,9 +177,8 @@ export function parseProfile(input: unknown): { profile: Profile } | { errors: s
       city: optionalStr(input["city"]),
       skills: list(input["skills"])
         .filter(isRecord)
-        .map((s) => str(s["name"]))
-        .filter(Boolean)
-        .map((name) => ({ name })),
+        .map((s) => ({ name: str(s["name"]), ...source(s["source"]) }))
+        .filter((s) => s.name),
       experience,
       education,
       expectations: {
