@@ -112,17 +112,22 @@ export function ChipInput({
           // typed is kept instead of being dropped by the next step.
           onBlur={add}
           placeholder={placeholder}
-          }}
         />
-        <button type="button" className="btn btn--sm" onClick={add} disabled={draft.trim() === ""}>
-          Add
+        <button
+          type="button"
+          className={buttonClass("strong")}
+          onClick={add}
+          disabled={draft.trim() === ""}
+        >
+          <Icon name="plus" size={16} strokeWidth={2.4} />
+          Agregar
         </button>
       </div>
     </div>
   );
 }
 
-/** A repeatable block: the accent bar, the fields, and the one way out. */
+/** A repeatable block: the fields and the one way out. */
 export function EntryCard({
   removeLabel,
   onRemove,
@@ -133,20 +138,15 @@ export function EntryCard({
   children: ReactNode;
 }) {
   return (
-    <div className="card row" style={{ gap: 14, alignItems: "stretch", padding: "16px 18px" }}>
-      <span style={{ width: 3, borderRadius: 2, background: "var(--glow)", flexShrink: 0 }} />
-      <div className="stack grow" style={{ gap: 14 }}>
-        {children}
-      </div>
+    <div className="flex animate-rise flex-col gap-4 rounded-3xl border border-line bg-surface/40 p-5">
+      {children}
       <button
         type="button"
-        className="btn btn--sm"
-        aria-label={removeLabel}
-        title={removeLabel}
+        className={`${buttonClass("danger", "sm")} self-end`}
         onClick={onRemove}
-        style={{ alignSelf: "flex-start" }}
       >
-        <Icon name="close" size={13} strokeWidth={2.4} />
+        <Icon name="trash" size={14} />
+        {removeLabel}
       </button>
     </div>
   );
@@ -156,25 +156,16 @@ export function AddButton({ label, onClick }: { label: string; onClick: () => vo
   return (
     <button
       type="button"
-      className="row"
       onClick={onClick}
-      style={{
-        justifyContent: "center",
-        gap: 8,
-        width: "100%",
-        height: 48,
-        border: "1px dashed var(--line-dashed)",
-        borderRadius: 10,
-        background: "transparent",
-        color: "var(--muted)",
-        fontSize: 13.5,
-        cursor: "pointer",
-      }}
+      className={`${buttonClass("ghost")} w-full border border-dashed border-control`}
     >
-      <span style={{ color: "var(--gold-deep)", display: "flex" }}>
-        <Icon name="plus" size={16} strokeWidth={2.2} />
-      </span>
+      <Icon name="plus" size={16} strokeWidth={2.4} />
       {label}
     </button>
   );
+}
+
+/** Pairs of fields side by side on wide screens, stacked on phones. */
+export function FieldGrid({ children }: { children: ReactNode }) {
+  return <div className="grid gap-4 sm:grid-cols-2">{children}</div>;
 }
