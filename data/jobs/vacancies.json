@@ -1178,5 +1178,185 @@
   {
     "id": "v038",
     "title": "Machine Learning Engineer",
+    "company": "Addi",
+    "city": "Bogotá",
+    "workMode": "remote",
+    "salaryMin": 14000000,
+    "salaryMax": 19000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Python",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Machine Learning",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Docker",
+        "kind": "must-have"
+      },
+      {
+        "skill": "PyTorch",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "AWS",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Airflow",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v039",
+    "title": "Cybersecurity Analyst",
+    "company": "Davivienda",
+    "city": "Bogotá",
+    "workMode": "onsite",
+    "salaryMin": 7500000,
+    "salaryMax": 11000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "SIEM",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Linux",
+        "kind": "must-have"
+      },
+      {
+        "skill": "OWASP",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Python",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "ISO 27001",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v040",
+    "title": "Junior Full Stack Developer",
+    "company": "Carvajal",
+    "city": "Cali",
+    "workMode": "hybrid",
+    "salaryMin": 3500000,
+    "salaryMax": 5000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "JavaScript",
+        "kind": "must-have"
+      },
+      {
+        "skill": "React",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Node.js",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "PostgreSQL",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Git",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v041",
+    "title": "Power BI Developer",
+    "company": "Audifarma",
+    "city": "Pereira",
+    "workMode": "onsite",
+    "salaryMin": 5000000,
+    "salaryMax": 7500000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Power BI",
+        "kind": "must-have"
+      },
+      {
+        "skill": "SQL",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Excel",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Azure",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v042",
+    "title": "Senior Flutter Engineer",
+    "company": "Nubank",
+    "city": "Remote",
+    "workMode": "remote",
+    "salaryMin": 13000000,
+    "salaryMax": 18000000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Flutter",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Dart",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Kotlin",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "Swift",
+        "kind": "nice-to-have"
+      },
+      {
+        "skill": "CI/CD",
+        "kind": "nice-to-have"
+      }
+    ]
+  },
+  {
+    "id": "v043",
+    "title": "DevOps Engineer",
+    "company": "Endava",
+    "city": "Bogotá",
+    "workMode": "hybrid",
+    "salaryMin": 8500000,
+    "salaryMax": 12500000,
+    "currency": "COP",
+    "requirements": [
+      {
+        "skill": "Kubernetes",
+        "kind": "must-have"
+      },
+      {
+        "skill": "Terraform",
+        "kind": "must-have"
+      },
+      {
+        "skill": "CI/CD",
+        "kind": "must-have"
+      },
+      {
   }
 ]
