@@ -178,3 +178,183 @@ describe("toHarvardCv", () => {
       ["Rappi", "", "Software Engineer", "Febrero 2023 – Actualidad"],
       ["Globant", "", "Frontend Developer", "Febrero 2021 – Enero 2023"],
       ["Freelance", "", "Desarrolladora web", "Marzo 2019 – Enero 2021"],
+    ]);
+
+    const longRunning = toHarvardCv({
+      ...EMPTY,
+      experience: [
+        { company: "Proyecto", title: "Consultora", startDate: "2020-01", endDate: "2021-06" },
+        { company: "Bancolombia", title: "Analista", startDate: "2018-05" },
+      ],
+    });
+    expect(section(longRunning, "experience").entries.map((e) => e.title)).toEqual([
+      "Bancolombia",
+      "Proyecto",
+    ]);
+  });
+
+  it("lists studies ongoing first, then by end year and start year", () => {
+    expect(section(plain, "education").entries).toEqual([
+      {
+        key: "edu:platzi|escueladedata",
+        title: "Platzi",
+        place: "",
+        subtitle: "Escuela de Data",
+        dates: "2024 – Actualidad",
+        bullets: [],
+      },
+      expect.objectContaining({ title: "Coursera", dates: "2019 – 2020" }),
+      expect.objectContaining({ title: "Universidad EAFIT", dates: "2015 – 2020" }),
+      expect.objectContaining({ title: "SENA", dates: "2013 – 2014" }),
+    ]);
+  });
+
+  it("drops a missing date cleanly and shows an unreadable one as written", () => {
+    const cv = toHarvardCv({
+      ...EMPTY,
+      experience: [
+        { company: "A", title: "Año sin mes", startDate: "2019", endDate: "2020-12" },
+        { company: "B", title: "Sin inicio", startDate: "", endDate: "2024-01" },
+        { company: "C", title: "Sin fechas", startDate: "" },
+        { company: "D", title: "Texto libre", startDate: "Feb 2023", endDate: "2023-13" },
+      ],
+      education: [
+        { institution: "E", degree: "Solo fin", startYear: 0, endYear: 2018 },
+        { institution: "F", degree: "Sin años", startYear: 0 },
+      ],
+    });
+    const dates = (key: CvSectionKey) =>
+      Object.fromEntries(section(cv, key).entries.map((e) => [e.subtitle, e.dates]));
+    expect(dates("experience")).toEqual({
+      "Año sin mes": "2019 – Diciembre 2020",
+      "Sin inicio": "Enero 2024",
+      "Sin fechas": "Actualidad",
+      "Texto libre": "Feb 2023 – 2023",
+    });
+    expect(dates("education")).toEqual({ "Solo fin": "2018", "Sin años": "" });
+  });
+
+  it("shows a span that starts and ends in the same month or year once", () => {
+    const cv = toHarvardCv({
+      ...EMPTY,
+      experience: [{ company: "A", title: "B", startDate: "2020-03", endDate: "2020-03" }],
+      education: [{ institution: "C", degree: "Diplomado", startYear: 2021, endYear: 2021 }],
+    });
+    expect(cv.sections.map((s) => s.entries[0]?.dates)).toEqual(["2021", "Marzo 2020"]);
+  });
+
+  it("splits a description into one bullet per line, or per sentence when it is one line", () => {
+    const bullets = (description: string | undefined) =>
+      toHarvardCv({
+        ...EMPTY,
+        experience: [{ company: "A", title: "B", startDate: "2020-01", description }],
+      }).sections[0]?.entries[0]?.bullets;
+
+    expect(section(plain, "experience").entries.map((e) => e.bullets)).toEqual([
+      ["Diseñé APIs REST en Node.js.", "Reduje la latencia un 30%."],
+      ["Interfaces en React", "Pruebas con Vitest", "Revisión de código"],
+      ["Sitios para pymes."],
+    ]);
+    expect(
+      bullets(
+        "Lideré un equipo de aprox. 20 personas. Migré el portal a Next.js 15.  ¿El resultado? Menos errores.",
+      ),
+    ).toEqual([
+      "Lideré un equipo de aprox. 20 personas.",
+      "Migré el portal a Next.js 15.",
+      "¿El resultado?",
+      "Menos errores.",
+    ]);
+    expect(bullets("Primera frase. Segunda frase.\r\nTercera línea")).toEqual([
+      "Primera frase. Segunda frase.",
+      "Tercera línea",
+    ]);
+    expect(bullets("• Uno\n* Dos\n   \n-5% de errores")).toEqual(["Uno", "Dos", "-5% de errores"]);
+    expect(bullets(undefined)).toEqual([]);
+    expect(bullets(" \n ")).toEqual([]);
+    expect(
+      bullets("Lideré la migración del portal de pagos a microservicios sin punto final"),
+    ).toEqual(["Lideré la migración del portal de pagos a microservicios sin punto final"]);
+  });
+
+  it("drops a mark left alone on its line and the marks Word and PDFs paste", () => {
+    const cv = toHarvardCv({
+      ...EMPTY,
+      experience: [
+        {
+          company: "A",
+          title: "B",
+          startDate: "2020-01",
+          description: "•\nDiseñé APIs\n– Guion de Word\n·   Viñeta de Symbol\n▪ Cuadro\n- Uno\n-",
+        },
+      ],
+    });
+    expect(section(cv, "experience").entries[0]?.bullets).toEqual([
+      "Diseñé APIs",
+      "Guion de Word",
+      "Viñeta de Symbol",
+      "Cuadro",
+      "Uno",
+    ]);
+  });
+
+  it("does not end a sentence at a title or an initial", () => {
+    const bullets = (description: string) =>
+      section(
+        toHarvardCv({
+          ...EMPTY,
+          experience: [{ company: "A", title: "B", startDate: "2020-01", description }],
+        }),
+        "experience",
+      ).entries[0]?.bullets;
+
+    expect(
+      bullets("Asesoré al Dr. García y a la Ing. Pérez. Viví en EE. UU. Reporté a Juan P. Gómez."),
+    ).toEqual([
+      "Asesoré al Dr. García y a la Ing. Pérez.",
+      "Viví en EE. UU.",
+      "Reporté a Juan P. Gómez.",
+    ]);
+    expect(bullets("Lideré el área de TI. Trabajé en Rappi S.A.S. Migré todo a la nube.")).toEqual([
+      "Lideré el área de TI.",
+      "Trabajé en Rappi S.A.S.",
+      "Migré todo a la nube.",
+    ]);
+  });
+
+  it("single-spaces and composes the text, so text that reads the same compares the same", () => {
+    const decomposed = (text: string) => text.normalize("NFD");
+    const messy = toHarvardCv({
+      ...PROFILE,
+      fullName: decomposed("Laura  Restrepo"),
+      city: decomposed(" Medellín "),
+      skills: [{ name: "TypeScript " }, { name: "React" }, { name: "Node.js" }, { name: "SQL" }],
+      experience: PROFILE.experience.map((e) => ({
+        ...e,
+        company: decomposed(e.company),
+        description: decomposed(e.description ?? "").replace(/ /g, "  \t"),
+      })),
+      education: PROFILE.education.map((e) => ({ ...e, degree: decomposed(e.degree) })),
+    });
+
+    expect(messy).toEqual(plain);
+    expect(diffCv(plain, messy).changes).toBe(0);
+  });
+
+  it("leaves out every section with nothing to show", () => {
+    const bare = toHarvardCv({ ...PROFILE, city: " ", education: [], skills: [] });
+    expect(bare.contact).toEqual(["laura@example.com"]);
+    expect(bare.sections.map((s) => s.key)).toEqual(["experience"]);
+    expect(toHarvardCv(EMPTY).sections).toEqual([]);
+    const blank = toHarvardCv(PROFILE, { ...TAILORED, headline: " ", summary: "" });
+    expect(blank.sections.map((s) => s.key)).toEqual(["education", "experience", "skills"]);
+  });
+
+  it("keys an entry by its facts, the same in the plain and the tailored CV", () => {
+    const keys = (cv: CvDocument) => section(cv, "experience").entries.map((e) => e.key);
+    expect(keys(plain)).toEqual([
+      "exp:rappi|softwareengineer|2023-02",
+      "exp:globant|frontenddeveloper|2021-02",
+      "exp:freelance|desarrolladoraweb|2019-03",
+    ]);
+    expect(keys(tailored)).toEqual([
