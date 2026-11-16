@@ -52,136 +52,38 @@
       opacity: 0;
       transform: translateY(14px);
     }
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: var(--ink-secondary);
-  cursor: pointer;
-}
-
-/* ---------- wizard ---------- */
-
-.steps {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.step {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12.5px;
-  color: var(--faint);
-}
-
-.step__dot {
-  width: 24px;
-  height: 24px;
-  border-radius: 999px;
-  border: 1px solid var(--line-dashed);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11.5px;
-}
-
-.step--active {
-  color: var(--ink-active);
-}
-
-.step--active .step__dot {
-  border-color: var(--gold);
-  background: var(--gold);
-  color: var(--ink);
-}
-
-.step--done {
-  color: var(--ink-secondary);
-}
-
-.step--done .step__dot {
-  border-color: var(--glow);
-  background: var(--wash);
-  color: var(--ink-active);
-}
-
-.step__rule {
-  width: 22px;
-  height: 1px;
-  background: var(--line-dashed);
-}
-
-/* ---------- layout helpers ---------- */
-
-.stack {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  min-width: 0;
-}
-
-.row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-}
-
-.split {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.grow {
-  flex-grow: 1;
-  min-width: 0;
-}
-
-.two-col {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 400px;
-  gap: 22px;
-  align-items: start;
-}
-
-.empty {
-  border: 1px dashed var(--line-dashed);
-  border-radius: var(--radius);
-  padding: 28px;
-  text-align: center;
-  color: var(--muted);
-}
-
-@media (max-width: 1100px) {
-  .two-col {
-    grid-template-columns: minmax(0, 1fr);
   }
-
-  .board {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  @keyframes float {
+    50% {
+      transform: translateY(-6px);
+    }
+  }
+  @keyframes pop {
+    from {
+      opacity: 0;
+      transform: scale(0.92);
+    }
+  }
+  @keyframes shimmer {
+    to {
+      background-position: -200% 0;
+    }
+  }
+  @keyframes aurora {
+    from {
+      transform: translate3d(-6%, -4%, 0) rotate(0deg) scale(1);
+    }
+    to {
+      transform: translate3d(6%, 4%, 0) rotate(12deg) scale(1.15);
+    }
   }
 }
 
-@media (max-width: 760px) {
-  .shell {
-    grid-template-columns: minmax(0, 1fr);
+@layer base {
+  body {
+    @apply bg-surface text-ink antialiased;
   }
-
-  .rail {
-    position: static;
-    height: auto;
-  }
-
-  .board {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .content,
-  .topbar {
-    padding-left: 18px;
-    padding-right: 18px;
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-brand;
   }
 }
