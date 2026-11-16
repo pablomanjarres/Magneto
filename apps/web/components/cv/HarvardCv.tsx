@@ -178,3 +178,114 @@ function Entry({ entry, side, marked }: { entry: CvEntryDiff; side: Side; marked
         )}
         {moved !== 0 && (
           <Flag>
+            <MovedChip by={moved} />
+          </Flag>
+        )}
+      </Row>
+      {hasSecondRow && (
+        <Row
+          aside={
+            !blank(entry.dates, side) && (
+              <span className="tabular-nums lining-nums">
+                <Words parts={entry.dates} side={side} />
+              </span>
+            )
+          }
+        >
+          <em>
+            <Words parts={entry.subtitle} side={side} />
+          </em>
+        </Row>
+      )}
+      {bullets.length > 0 && (
+        <ul className="mt-[0.15em] list-disc space-y-[0.1em] pl-[1.3em]">
+          {bullets.map((bullet, i) => (
+            <li key={i} className="pl-[0.15em] text-pretty">
+              <Words parts={bullet} side={side} />
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+function Section({ section, side }: { section: CvSectionDiff; side: Side }) {
+  const change = section.status === SHOWS[side] ? SHOWS[side] : null;
+  const lines = section.lines.filter((line) => !blank(line, side));
+  const entries =
+    side === "before"
+      ? inBeforeOrder(section.entries)
+      : section.entries.filter((entry) => entry.status !== "removed");
+  if (lines.length === 0 && entries.length === 0) return null;
+  const Line = section.key === "skills" ? Labelled : Words;
+
+  return (
+    <section className="relative mt-[1.1em]">
+      {change && <Bar change={change} />}
+      <h3 className="mb-[0.45em] border-b border-ink-strong pb-[0.1em] text-center text-[1em] font-bold tracking-widest uppercase break-after-avoid">
+        {section.title}
+        {change && (
+          <Flag>
+            <StatusChip status={change} />
+          </Flag>
+        )}
+      </h3>
+      {lines.length > 0 && (
+        <div className="space-y-[0.2em]">
+          {lines.map((line, i) => (
+            <p key={i} className="text-pretty">
+              <Line parts={line} side={side} />
+            </p>
+          ))}
+        </div>
+      )}
+      {entries.length > 0 && (
+        <div className={`space-y-[0.65em] ${lines.length > 0 ? "mt-[0.5em]" : ""}`}>
+          {entries.map((entry) => (
+            <Entry key={entry.key} entry={entry} side={side} marked={change !== null} />
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+/**
+ * A CV in the Harvard format, drawn as the printed page. Give it a `doc`, or a
+ * `diff` and the side to draw: "after" marks what was added, "before" what was
+ * removed. `standalone` makes the name a heading under the page's h1; sections are h3.
+ */
+export function HarvardCv(
+  props: ({ doc: CvDocument } | { diff: CvDiff; side: Side }) & {
+    compact?: boolean;
+    standalone?: boolean;
+  },
+) {
+  // A plain CV is a diff with nothing changed, so both modes draw through the same markup.
+  const [diff, side]: [CvDiff, Side] =
+    "doc" in props ? [diffCv(props.doc, props.doc), "after"] : [props.diff, props.side];
+  const Name = props.standalone ? "h2" : "p";
+
+  return (
+    <div className="@container">
+      <article className={`${SHEET} ${props.compact ? TYPE.compact : TYPE.regular}`}>
+        <header className="text-center">
+          <Name className="text-[1.9em] leading-tight font-bold">
+            <Words parts={diff.name} side={side} />
+          </Name>
+          {!blank(diff.contact, side) && (
+            <p className="mt-[0.3em] text-[0.95em]">
+              <Words parts={diff.contact} side={side} />
+            </p>
+          )}
+        </header>
+        {diff.sections
+          .filter((section) => section.status !== HIDES[side])
+          .map((section) => (
+            <Section key={section.key} section={section} side={side} />
+          ))}
+      </article>
+    </div>
+  );
+}
