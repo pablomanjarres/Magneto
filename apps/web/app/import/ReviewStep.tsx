@@ -178,3 +178,117 @@ export function ReviewStep({
               <TogglePill
                 on={skill.selected}
                 onClick={() =>
+                  update("skills", review.skills.indexOf(skill), { selected: !skill.selected })
+                }
+              >
+                {skill.value}
+              </TogglePill>
+            </span>
+          ))}
+        </div>
+        {known.length > 0 && (
+          <p className="text-sm text-muted">
+            <span className="font-bold text-mint-deep">Ya está en tu perfil:</span>{" "}
+            {known.map((s) => s.value).join(", ")}
+          </p>
+        )}
+      </ReviewSection>
+
+      <Card className="sticky bottom-4 flex flex-wrap items-center justify-between gap-4 p-5 shadow-[0_18px_40px_-24px_rgba(124,0,255,0.45)]">
+        <p className="text-sm text-muted" aria-live="polite">
+          {error ? (
+            <span className="font-bold text-danger" role="alert">
+              {error}
+            </span>
+          ) : blocked ? (
+            <span className="font-bold text-danger">
+              Completa los campos que faltan para continuar.
+            </span>
+          ) : nothing ? (
+            "No hay nada nuevo marcado para agregar."
+          ) : (
+            <>
+              Se agregan <strong className="text-ink">{summary(merged.added)}</strong>.
+            </>
+          )}
+        </p>
+        <button
+          type="button"
+          className={buttonClass("primary")}
+          onClick={confirm}
+          disabled={saving || blocked || nothing}
+        >
+          {saving ? "Guardando…" : "Confirmar e importar"}
+          {!saving && <Icon name="check" size={16} strokeWidth={2.6} />}
+        </button>
+      </Card>
+    </div>
+  );
+}
+
+/** "2 cargos, 1 estudio y 5 habilidades", leaving out what is zero. */
+export function summary(added: Added): string {
+  const parts = [
+    added.experience > 0 && `${added.experience} ${plural(added.experience, "cargo", "cargos")}`,
+    added.education > 0 && `${added.education} ${plural(added.education, "estudio", "estudios")}`,
+    added.skills > 0 && `${added.skills} ${plural(added.skills, "habilidad", "habilidades")}`,
+  ].filter((p): p is string => Boolean(p));
+  return parts.length > 1
+    ? `${parts.slice(0, -1).join(", ")} y ${parts.at(-1)}`
+    : (parts[0] ?? "nada nuevo");
+}
+
+function Completeness({
+  label,
+  value,
+  accent = false,
+}: {
+  label: string;
+  value: number;
+  accent?: boolean;
+}) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <div className="flex items-baseline justify-between text-sm">
+        <span className="font-bold text-ink">{label}</span>
+        <span className={`text-xl font-black tabular-nums ${accent ? "text-brand" : "text-navy"}`}>
+          <CountUp value={value} duration={900} />%
+        </span>
+      </div>
+      <ProgressBar percentage={value} label={`Completitud ${label.toLowerCase()}`} thin />
+    </div>
+  );
+}
+
+function ReviewSection({
+  title,
+  icon,
+  count,
+  list = true,
+  children,
+}: {
+  title: string;
+  icon: IconName;
+  count: number;
+  list?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <Card className="flex animate-rise flex-col gap-4 p-6">
+      <div className="flex items-center gap-3">
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand-wash text-brand">
+          <Icon name={icon} size={18} />
+        </span>
+        <h2 className="text-xl font-black text-slate">{title}</h2>
+        <span className="text-sm font-bold text-muted tabular-nums">{count}</span>
+      </div>
+      {count === 0 ? (
+        <p className="text-sm text-muted">No encontramos nada en esta sección.</p>
+      ) : list ? (
+        <ul className="flex flex-col gap-3">{children}</ul>
+      ) : (
+        children
+      )}
+    </Card>
+  );
+}
