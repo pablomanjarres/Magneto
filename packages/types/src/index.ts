@@ -142,6 +142,7 @@ export interface ApplicationEvent {
 export interface ImportedProfile {
   source: ProfileSource;
   fullName?: string | undefined;
+  email?: string | undefined;
   city?: string | undefined;
   headline?: string | undefined;
   experience: Experience[];
@@ -160,7 +161,8 @@ export type ImportEvent =
  * reordered and rephrased, never new ones.
  */
 export interface TailoredProfile {
-  vacancyId: string;
+  /** The vacancy it was written for; absent when the candidate's own instructions shaped it. */
+  vacancyId?: string;
   headline: string;
   summary: string;
   experience: Experience[];
