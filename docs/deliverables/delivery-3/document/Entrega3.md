@@ -153,7 +153,7 @@ Lo que el diagrama debe mostrar, tal como está en el código:
 
 ### Vista Física — Diagrama de Despliegue
 
-<img src="images/despliegue" style="transform: rotate(90deg);" alt="Imagen girada" />
+
 
 | Nodo / Proceso                  | Contenido                                                                       | Comunicación                                               |
 | ------------------------------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------- |
