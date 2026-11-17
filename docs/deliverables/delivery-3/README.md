@@ -79,7 +79,7 @@ patrones 20% (exposición 10%, análisis 10%) · Funcionalidad y demostración 5
 - [x] Facade: `apps/web/lib/queries.ts` and `client.ts` (Pablo)
 - [x] State: `ALLOWED_MOVES` and `canMove` (Pablo)
 - [x] Adapter: `mapLinkedInProfile` and the résumé reader into `ImportedProfile` (Pablo)
-- [ ] A class diagram for each pattern's "Estructura" row, drawn by the team (Valentina)
+- [x] A class diagram for each pattern's "Estructura" row, drawn by the team (Valentina)
 
 ## 7. Funcionalidad y demostración (50%)
 
