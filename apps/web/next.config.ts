@@ -13,9 +13,6 @@ if (!process.env["DATABASE_URL"]) {
 const config: NextConfig = {
   transpilePackages: ["@moonlight/core", "@moonlight/db", "@moonlight/types"],
 
-  // The Dockerfile ships only this traced server, not the whole workspace.
-  output: "standalone",
-
   // Next runs from apps/web; the files it traces live across the whole monorepo.
   outputFileTracingRoot: resolve(process.cwd(), "..", ".."),
 
