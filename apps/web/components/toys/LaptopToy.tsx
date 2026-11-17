@@ -1,15 +1,20 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useFrame, type ThreeEvent } from "@react-three/fiber";
+import { useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
 import * as THREE from "three";
 
+import { BOARD_ROWS, BOARD_UNITS, KEYS, LETTER_KEYS, keysFor, type BoardKey } from "./keyboard";
 import {
   candy,
   pageFont,
+  panel,
   roundedBox,
+  roundedRect,
+  slab,
   useCanvasTexture,
   useCaret,
+  useFontsReady,
   usePrefersStill,
   usePulse,
   wrapText,
@@ -19,123 +24,96 @@ import {
 } from "./studio";
 
 /**
- * "Portátil": a chunky toy laptop. Idle, it naps with the lid ajar and shows
- * the stickers on its back. Clicked, it turns around, springs the lid open and
- * types on its screen what the candidate writes, a key popping per keystroke.
+ * "Portátil": a toy laptop in glossy porcelain. Idle, it naps with the lid
+ * ajar and shows the stickers on its back. Clicked, it turns around, springs
+ * the lid open and types on its screen what the candidate writes, pressing
+ * the same keys they press.
  */
 
-/** Every colour the laptop wears, named for the part it paints. Values are hex, like "#7c00ff". */
-interface LaptopColors {
-  /** The shell: base and lid. */
-  body: string;
-  /** Every keycap without a colour of its own. */
-  keys: string;
-  /** The spacebar. */
-  spacebar: string;
-  /** Esc, top left. */
-  escKey: string;
-  /** Backspace, top right. */
-  backspaceKey: string;
-  /** Enter, at the end of the third row. */
-  enterKey: string;
-  /** Both Shifts, at the ends of the bottom row. */
-  shiftKeys: string;
-  /** A pressed key flashes one of these, picked at random: 3 to 5 colours. */
-  flash: readonly string[];
-  /** The trackpad. */
-  trackpad: string;
-  /** The two hinges. */
-  hinges: string;
-  /** The tiny status light on the front edge; it dims while the laptop naps. */
-  light: string;
-  /** The screen while lit; unlit, it is this at 45% brightness. */
-  screenOn: string;
-  /** The typed text, big. */
-  screenText: string;
-  /** The "hola@moonlight:~$" line. */
-  prompt: string;
-  /** The placeholder before anything is typed, drawn at 55% opacity. */
-  hint: string;
-  /** The blinking block caret. */
-  caret: string;
-  /** The three window dots, left to right. */
-  dots: readonly [string, string, string];
-  /** The name sticker on the lid. */
-  tagPaper: string;
-  /** The sticker's header band. */
-  tagBand: string;
-  /** "HOLA, SOY", on the band. */
-  tagBandText: string;
-  /** The candidate's name. */
-  tagName: string;
-  /** Their role, under the name. */
-  tagRole: string;
-  /** The completeness bar's track, drawn at 45% opacity over the paper. */
-  barTrack: string;
-  /** The completeness bar's fill. */
-  barFill: string;
-  /** The percentage beside the bar. */
-  barText: string;
-  /** The heart sticker. */
-  heartSticker: string;
-  /** The star sticker. */
-  starSticker: string;
-  /** The round sticker with a smiley. */
-  dotSticker: string;
-  /** The smiley's eyes and mouth. */
-  smileyInk: string;
-}
-
-/** A warm porcelain shell; brand purple and mint only where something happens. */
-const COLORS: LaptopColors = {
-  body: "#f4f0e9",
-  keys: "#84827e",
-  spacebar: "#6700d0",
-  escKey: "#6700d0",
-  backspaceKey: "#73706b",
-  enterKey: "#41885f",
-  shiftKeys: "#73706b",
-  flash: ["#6700d0", "#41885f", "#c59500"],
-  trackpad: "#8f8c87",
-  hinges: "#8f8c87",
+/**
+ * Every colour the laptop wears, named for the part it paints: a warm
+ * porcelain shell, with brand purple and mint only where something happens.
+ */
+const COLORS = {
+  /** The shell: base, lid, the screen's bezel and the hinge's long barrel. */
+  body: "#ece4d8",
+  /** The hinge's two end knuckles. */
+  knuckles: "#cfc6b9",
+  /** Every keycap without a colour of its own, and what the caps say. */
+  keys: "#cfc6b9",
+  legend: "#1d2733",
+  /** The spacebar, and the crescent moon on it. */
+  spacebar: "#7c00ff",
+  spaceLegend: "#ffffff",
+  /** Enter, and the word on it. */
+  enterKey: "#9ee4b8",
+  enterLegend: "#1a324c",
+  /** A pressed key flashes one of these, picked at random. */
+  flash: ["#9748ff", "#9ee4b8", "#f1c873"],
+  trackpad: "#d8cfc2",
+  /** Anything that is a hole: the ports and the camera. */
+  holes: "#2b313b",
+  /** The status light on the front edge; it dims while the laptop naps. */
   light: "#9748ff",
-  screenOn: "#10233a",
+  /** The screen's glass: a gradient from its top left corner to its bottom right, and a glow at the top right. */
+  screenTop: "#16283f",
+  screenBottom: "#1e1a44",
+  screenGlow: "#7c00ff",
+  /** On the screen: the typed text, the prompt line, the placeholder (at 55% opacity), the caret, the window dots. */
   screenText: "#ffffff",
   prompt: "#9ee4b8",
   hint: "#d1d5de",
   caret: "#9748ff",
-  dots: ["#9748ff", "#c89341", "#9ee4b8"],
-  tagPaper: "#f3eaff",
+  dots: ["#9748ff", "#f1c873", "#9ee4b8"],
+  /** The name sticker: paper, header band, "HOLA, SOY", the name and the role under it. */
+  tagPaper: "#fdfbff",
   tagBand: "#7c00ff",
   tagBandText: "#ffffff",
   tagName: "#1a324c",
-  tagRole: "#47535f",
+  tagRole: "#2f3a46",
+  /** Its completeness bar: the track (at 45% opacity), the fill and the percentage. */
   barTrack: "#c0a5f4",
   barFill: "#7c00ff",
-  barText: "#7c00ff",
-  heartSticker: "#6700d0",
-  starSticker: "#c59500",
-  dotSticker: "#41885f",
-  smileyInk: "#001b38",
-};
+  barText: "#1a324c",
+  /** The puffy stickers, and the smiley's eyes and mouth. */
+  heartSticker: "#7c00ff",
+  starSticker: "#f3c44f",
+  dotSticker: "#9ee4b8",
+  smileyInk: "#1a324c",
+} as const;
+type LaptopColors = typeof COLORS;
 
 const W = 2.7; // base and lid share this footprint
 const D = 1.7;
-const BASE_T = 0.3;
-const LID_T = 0.16;
-const HINGE_Y = BASE_T / 2 + 0.06; // the closed lid clears the keys
-const COLS = 11;
-const ROWS = 4;
-const PITCH = 0.19;
-const ROW0 = -0.52;
-const SPACE = COLS * ROWS; // the spacebar's index, after the 44 keys
-const KEY_Y = BASE_T / 2 + 0.01;
-const PRESS = 0.045;
-const SCREEN_W = 2.34;
-const SCREEN_H = 1.36;
-const SCREEN_Z = 0.89; // from the hinge, along the lid
-const TAG_W = 1.7;
-const TAG_H = 0.8;
+const CORNER = 0.22; // the footprint's corners
+const BASE_T = 0.2;
+const DECK = BASE_T / 2; // the top of the base, where the keys sit
+const LID_T = 0.12;
+const HINGE_R = 0.065;
+const HINGE_Y = DECK + 0.01; // the hinge's axis, which the lid turns on, at the back edge
+const HINGE_Z = -D / 2 + 0.02;
+const BARREL = 1.9; // the hinge's long middle barrel, end to end
+const LID_GAP = 0.07; // from the axis to the closed lid's underside: it clears the keys
+const LID_START = 0.075; // the lid starts past the barrel, so the barrel shows
+const LID_D = 1.6;
+const LID_Z = LID_START + LID_D / 2; // the lid's centre, from the axis along the lid
+const U = 2.34 / BOARD_UNITS; // one key unit
+const CAP_GAP = 0.024;
+const CAP_H = 0.08;
+const KEY_Y = DECK + 0.025; // a cap's centre: it stands 0.065 proud of the deck
+const BOARD_Z = -D / 2 + 0.17; // the keyboard's back edge
+const PRESS = 0.035;
+const PAD_W = 1.1;
+const PAD_D = 0.42;
+const PAD_Z = BOARD_Z + BOARD_ROWS * U + 0.075 + PAD_D / 2;
+const SCREEN_W = 2.4;
+const SCREEN_H = 1.3;
+const SCREEN_Z = LID_START + 0.16 + SCREEN_H / 2; // a deeper bezel below the screen than above it
+const TAG_W = 1.6;
+const TAG_H = TAG_W * (320 / 680); // the tag's canvas proportions
+const TAG_LIFT = 0.016; // the tag's face, above the lid
+const ATLAS_COLS = 8; // the legend atlas is this many cells across and down
+const CELL = 128;
 const MONO = "ui-monospace, SFMono-Regular, Menlo, monospace";
 const PROMPT = "hola@moonlight:~$";
 const HINT = "Escribe tu nombre";
@@ -148,52 +126,51 @@ interface Pose {
   y: number;
   scale: number;
 }
-// Idle it shows its back; writing, it faces the camera with the lid at 105°.
+// Idle it shows its back; writing, it faces the camera from a little above, lid at 114°.
 // Sized so that even mid-turn it fits a stage narrower than it is tall.
-const IDLE: Pose = { turn: Math.PI - 0.62, tilt: 0.5, open: 0.26, y: -0.4, scale: 0.86 };
+const IDLE: Pose = { turn: Math.PI - 0.62, tilt: 0.5, open: 0.26, y: -0.18, scale: 1.06 };
 const WRITE: Pose = {
-  turn: 0,
-  tilt: 0.38,
-  open: THREE.MathUtils.degToRad(105),
-  y: -0.9,
-  scale: 1.08,
+  turn: -0.16, // a three-quarter view: the right side shows
+  tilt: 0.62,
+  open: THREE.MathUtils.degToRad(114),
+  y: -0.69,
+  scale: 1,
 };
 const FACING = 0.6; // how close to facing the camera, in radians, before the lid opens
 
-/** Puffy stickers on the lid, placed as seen from behind: u to the right, v up. */
+/** Puffy stickers on the lid, placed as seen from behind: u to the right, v up, from the lid's centre. */
 const STICKERS = [
-  { shape: "heart", u: 0.86, v: 0.42, angle: -0.25 },
-  { shape: "star", u: -0.95, v: 0.5, angle: 0.2 },
-  { shape: "dot", u: 0.92, v: -0.45, angle: 0 },
+  { shape: "heart", u: -1.03, v: 0.3, angle: 0.18 },
+  { shape: "star", u: 0.98, v: 0.48, angle: -0.15 },
+  { shape: "dot", u: 1.02, v: -0.28, angle: 0.25 },
 ] as const;
+const TAG_AT = { u: -0.05, v: -0.08, angle: 0.04 };
+
+/** Where each key sits on the deck, and the size of its cap. */
+const BOARD = KEYS.map((key) => ({
+  key,
+  x: (key.x - BOARD_UNITS / 2) * U,
+  z: BOARD_Z + key.z * U,
+  w: key.w * U - CAP_GAP,
+  d: key.d * U - CAP_GAP,
+}));
+
+const capColor = (colors: LaptopColors, key: BoardKey): string =>
+  key.accent === "enter" ? colors.enterKey : key.accent === "space" ? colors.spacebar : colors.keys;
 
 /** The palette as three.js colours: what the keys, the screen and the light animate between. */
 function tintsOf(colors: LaptopColors) {
-  const shift = new THREE.Color(colors.shiftKeys);
-  const screenOn = new THREE.Color(colors.screenOn);
+  const screenOn = new THREE.Color("#ffffff");
   return {
-    keys: new THREE.Color(colors.keys),
-    // Keycaps with a colour of their own, by index: Esc, Backspace, Enter, both Shifts, spacebar.
-    accents: new Map<number, THREE.Color>([
-      [0, new THREE.Color(colors.escKey)],
-      [COLS - 1, new THREE.Color(colors.backspaceKey)],
-      [3 * COLS - 1, new THREE.Color(colors.enterKey)],
-      [3 * COLS, shift],
-      [SPACE - 1, shift],
-      [SPACE, new THREE.Color(colors.spacebar)],
-    ]),
+    rest: KEYS.map((key) => new THREE.Color(capColor(colors, key))),
     flash: colors.flash.map((color) => new THREE.Color(color)),
     light: new THREE.Color(colors.light),
     screenOn,
-    screenOff: screenOn.clone().multiplyScalar(0.45),
+    screenOff: screenOn.clone().multiplyScalar(0.18),
   };
 }
 
 const TINTS = tintsOf(COLORS);
-type Tints = ReturnType<typeof tintsOf>;
-
-/** The colour key `i` rests at; the spacebar is the last index. */
-const restOf = (tints: Tints, i: number): THREE.Color => tints.accents.get(i) ?? tints.keys;
 
 interface Spring {
   x: number;
@@ -235,27 +212,9 @@ const createMotion = () => ({
   scale: { x: IDLE.scale, v: 0 },
   pop: { x: 1, v: 0 }, // the screen text, per key
   light: 0,
-  keys: Array.from({ length: SPACE + 1 }, (): Key => ({ x: 0, v: 0, tint: null, glow: 0 })),
-  lastKey: -1,
+  lean: { x: 0, y: 0 }, // towards the pointer while it is over the stage
+  keys: KEYS.map((): Key => ({ x: 0, v: 0, tint: null, glow: 0 })),
 });
-
-const keyX = (i: number): number => ((i % COLS) - (COLS - 1) / 2) * PITCH;
-const keyZ = (i: number): number => ROW0 + Math.floor(i / COLS) * PITCH;
-
-function roundedRect(w: number, h: number, r: number): THREE.Shape {
-  const x = -w / 2;
-  const y = -h / 2;
-  return new THREE.Shape()
-    .moveTo(x + r, y)
-    .lineTo(x + w - r, y)
-    .quadraticCurveTo(x + w, y, x + w, y + r)
-    .lineTo(x + w, y + h - r)
-    .quadraticCurveTo(x + w, y + h, x + w - r, y + h)
-    .lineTo(x + r, y + h)
-    .quadraticCurveTo(x, y + h, x, y + h - r)
-    .lineTo(x, y + r)
-    .quadraticCurveTo(x, y, x + r, y);
-}
 
 function heart(s: number): THREE.Shape {
   return new THREE.Shape()
@@ -283,15 +242,168 @@ function star(outer: number, inner: number): THREE.Shape {
   return shape;
 }
 
+/** A puffy sticker: the shape extruded thin, its edges rounded into a soft dome. */
+const STICKER_T = 0.04;
 const puffy = (shape: THREE.Shape): THREE.ExtrudeGeometry =>
   new THREE.ExtrudeGeometry(shape, {
     depth: 0.01,
     bevelEnabled: true,
-    bevelThickness: 0.025,
-    bevelSize: 0.022,
-    bevelSegments: 6,
+    bevelThickness: STICKER_T,
+    bevelSize: STICKER_T * 0.9,
+    bevelSegments: 8,
     curveSegments: 32,
   });
+
+// The smiley on the mint dot, in the sticker's own units: its flat top has a
+// radius of 0.17. Seen from above, the lid squashes it, so the eyes are tall
+// and sit well clear of the mouth, an arc centred at the bottom.
+const EYE = { x: 0.06, y: 0.07, r: 0.026 };
+const SMILE = { r: 0.08, tube: 0.017, arc: 0.7 * Math.PI, y: -0.005 };
+/** Where the arc ends, either side: a bead there rounds off the cut tube. */
+const SMILE_END = {
+  x: SMILE.r * Math.sin(SMILE.arc / 2),
+  y: SMILE.y - SMILE.r * Math.cos(SMILE.arc / 2),
+};
+
+/** The raised porcelain lip around the screen: a rounded ring. */
+function bezel(lip: number): THREE.ExtrudeGeometry {
+  const ring = roundedRect(SCREEN_W + 2 * lip, SCREEN_H + 2 * lip, 0.1 + lip);
+  ring.holes.push(roundedRect(SCREEN_W, SCREEN_H, 0.1));
+  return new THREE.ExtrudeGeometry(ring, {
+    depth: 0.006,
+    bevelEnabled: true,
+    bevelThickness: 0.008,
+    bevelSize: 0.008,
+    bevelSegments: 4,
+    curveSegments: 24,
+  });
+}
+
+const LABELS = [...new Set(KEYS.map((key) => key.label))];
+const ARROWS: Readonly<Record<string, number>> = {
+  up: 0,
+  right: Math.PI / 2,
+  down: Math.PI,
+  left: -Math.PI / 2,
+};
+
+/** A key's legend, centred on the origin, in the colour already set. */
+function drawLegend(ctx: CanvasRenderingContext2D, label: string, font: string): void {
+  const turn = ARROWS[label];
+  if (turn !== undefined) {
+    ctx.rotate(turn);
+    ctx.beginPath();
+    ctx.moveTo(0, -18);
+    ctx.lineTo(18, 13);
+    ctx.lineTo(-18, 13);
+    ctx.closePath();
+    ctx.fill();
+    return;
+  }
+  if (label === "backspace") {
+    ctx.lineWidth = 9;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.beginPath();
+    ctx.moveTo(30, 0);
+    ctx.lineTo(-28, 0);
+    ctx.moveTo(-10, -18);
+    ctx.lineTo(-28, 0);
+    ctx.lineTo(-10, 18);
+    ctx.stroke();
+    return;
+  }
+  if (label === "space") {
+    // A crescent moon: a disc with a smaller one taken out of its top right.
+    ctx.beginPath();
+    ctx.arc(0, 0, 30, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.beginPath();
+    ctx.arc(13, -9, 25, 0, Math.PI * 2);
+    ctx.fill();
+    return;
+  }
+  // Words are squeezed to their cell rather than spill into the next legend.
+  ctx.font = `900 ${label.length === 1 ? 86 : 46}px ${font}`;
+  ctx.fillText(label, 0, 4, CELL - 14);
+}
+
+/** Every legend once, one per cell: the keys cut their own out of it. */
+function drawLegends(ctx: CanvasRenderingContext2D, colors: LaptopColors): void {
+  const font = pageFont();
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  LABELS.forEach((label, i) => {
+    ctx.save();
+    ctx.translate(((i % ATLAS_COLS) + 0.5) * CELL, (Math.floor(i / ATLAS_COLS) + 0.5) * CELL);
+    const ink =
+      label === "enter"
+        ? colors.enterLegend
+        : label === "space"
+          ? colors.spaceLegend
+          : colors.legend;
+    ctx.fillStyle = ink;
+    ctx.strokeStyle = ink;
+    drawLegend(ctx, label, font);
+    ctx.restore();
+  });
+}
+
+/** A square decal `size` across showing `label`, cut from the legend atlas. */
+function legendDecal(label: string, size: number): THREE.PlaneGeometry {
+  const cell = LABELS.indexOf(label);
+  const col = cell % ATLAS_COLS;
+  const row = Math.floor(cell / ATLAS_COLS);
+  const geometry = new THREE.PlaneGeometry(size, size);
+  const uv = geometry.getAttribute("uv");
+  for (let i = 0; i < uv.count; i++) {
+    uv.setXY(i, (col + uv.getX(i)) / ATLAS_COLS, 1 - (row + 1 - uv.getY(i)) / ATLAS_COLS);
+  }
+  return geometry;
+}
+
+/** The screen's glass: a navy gradient with a purple glow, the window dots and a glare. */
+function drawGlass(
+  ctx: CanvasRenderingContext2D,
+  w: number,
+  h: number,
+  colors: LaptopColors,
+): void {
+  const fill = ctx.createLinearGradient(0, 0, w * 0.35, h);
+  fill.addColorStop(0, colors.screenTop);
+  fill.addColorStop(1, colors.screenBottom);
+  ctx.fillStyle = fill;
+  ctx.fillRect(0, 0, w, h);
+
+  const glow = ctx.createRadialGradient(w * 0.85, h * 0.1, 0, w * 0.85, h * 0.1, w * 0.55);
+  glow.addColorStop(0, colors.screenGlow);
+  glow.addColorStop(1, "rgba(124, 0, 255, 0)");
+  ctx.globalAlpha = 0.22;
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, w, h);
+
+  // A soft diagonal band across the top right, like light caught on glass.
+  ctx.save();
+  ctx.translate(w * 0.8, 0);
+  ctx.rotate(0.55);
+  const glare = ctx.createLinearGradient(-70, 0, 70, 0);
+  glare.addColorStop(0, "rgba(255, 255, 255, 0)");
+  glare.addColorStop(0.5, "rgba(255, 255, 255, 1)");
+  glare.addColorStop(1, "rgba(255, 255, 255, 0)");
+  ctx.globalAlpha = 0.06;
+  ctx.fillStyle = glare;
+  ctx.fillRect(-70, -h, 140, h * 3);
+  ctx.restore();
+  ctx.globalAlpha = 1;
+
+  colors.dots.forEach((color, i) => {
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(76 + i * 44, 60, 14, 0, Math.PI * 2);
+    ctx.fill();
+  });
+}
 
 /** A block caret for a line `size` px tall whose top is at `y`. */
 function caretBlock(
@@ -347,8 +459,8 @@ function fitText(ctx: CanvasRenderingContext2D, text: string, width: number, hei
   return { size: 44, lines: [text] };
 }
 
-/** The lit screen: the prompt and any `command`, then the typed text as big as it fits. */
-function drawScreen(
+/** The words on the lit screen: the prompt and any `command`, then the typed text as big as it fits. */
+function drawWords(
   ctx: CanvasRenderingContext2D,
   w: number,
   h: number,
@@ -360,13 +472,6 @@ function drawScreen(
   const pad = 64;
   const font = pageFont();
   const maxWidth = w - pad * 2;
-  colors.dots.forEach((color, i) => {
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.arc(pad + 12 + i * 44, 60, 14, 0, Math.PI * 2);
-    ctx.fill();
-  });
-
   const typed = text.trim();
   const hint = command ? HINT_AFTER_PROMPT : HINT;
   const { size, lines } = typed
@@ -425,15 +530,10 @@ function drawTag(
 ): void {
   const font = pageFont();
   const band = 76;
-  ctx.save();
-  ctx.beginPath();
-  ctx.roundRect(0, 0, w, h, 44);
-  ctx.clip();
   ctx.fillStyle = colors.tagPaper;
   ctx.fillRect(0, 0, w, h);
   ctx.fillStyle = colors.tagBand;
   ctx.fillRect(0, 0, w, band);
-  ctx.restore();
 
   ctx.textAlign = "center";
   ctx.fillStyle = colors.tagBandText;
@@ -452,8 +552,8 @@ function drawTag(
 
   const role = profile.role.trim() || profile.skills.slice(0, 3).join(" · ");
   ctx.fillStyle = colors.tagRole;
-  ctx.font = `700 36px ${font}`;
-  ctx.fillText(role, w / 2, band + 140, w - 80);
+  ctx.font = `900 38px ${font}`;
+  ctx.fillText(role, w / 2, band + 142, w - 80);
 
   // Completeness, as a little bar with its percentage.
   const pct = Math.max(0, Math.min(100, Math.round(profile.completeness)));
@@ -484,92 +584,146 @@ function LaptopToy({ text, writing, keystrokes, profile, onActivate, prompt }: L
   const still = usePrefersStill();
   const caret = useCaret(writing);
   const pulse = usePulse(keystrokes);
+  const fonts = useFontsReady();
   const [motion] = useState(createMotion);
   const command = prompt?.trim() ?? "";
+  const screenPx = [1024, Math.round((1024 * SCREEN_H) / SCREEN_W)] as const;
 
-  const screenTexture = useCanvasTexture(
-    1024,
-    596,
-    (ctx, w, h) => drawScreen(ctx, w, h, COLORS, text, caret, command),
-    [text, caret, command],
+  const glassTexture = useCanvasTexture(
+    ...screenPx,
+    (ctx, w, h) => drawGlass(ctx, w, h, COLORS),
+    [],
+  );
+  const wordsTexture = useCanvasTexture(
+    ...screenPx,
+    (ctx, w, h) => drawWords(ctx, w, h, COLORS, text, caret, command),
+    [text, caret, command, fonts],
+  );
+  const legendTexture = useCanvasTexture(
+    ATLAS_COLS * CELL,
+    ATLAS_COLS * CELL,
+    (ctx) => drawLegends(ctx, COLORS),
+    [fonts],
   );
   const tagTexture = useCanvasTexture(
     680,
     320,
     (ctx, w, h) => drawTag(ctx, w, h, COLORS, profile),
-    [profile.fullName, profile.role, profile.completeness, profile.skills.join()],
+    [profile.fullName, profile.role, profile.completeness, profile.skills.join(), fonts],
   );
 
-  const geometry = useMemo(
-    () => ({
-      base: roundedBox(W, BASE_T, D, 0.12, 8),
-      lid: roundedBox(W, LID_T, D, 0.07, 8),
-      key: roundedBox(0.16, 0.08, 0.16, 0.035, 6),
-      spacebar: roundedBox(0.92, 0.08, 0.16, 0.035, 6),
-      hinge: new THREE.CylinderGeometry(0.08, 0.08, 0.5, 32),
-      trackpad: puffy(roundedRect(0.8, 0.3, 0.1)),
-      light: new THREE.SphereGeometry(0.045, 24, 16),
-      screen: new THREE.ShapeGeometry(roundedRect(SCREEN_W, SCREEN_H, 0.14), 12),
-      words: new THREE.PlaneGeometry(SCREEN_W, SCREEN_H),
-      tag: new THREE.PlaneGeometry(TAG_W, TAG_H),
+  const geometry = useMemo(() => {
+    // Keys of one size share a cap, and keys with one legend at one size share a decal.
+    const shared = new Map<string, THREE.BufferGeometry>();
+    const once = (id: string, make: () => THREE.BufferGeometry): THREE.BufferGeometry => {
+      const made = shared.get(id) ?? make();
+      shared.set(id, made);
+      return made;
+    };
+    const keys = BOARD.map(({ key, w, d }) => ({
+      cap: once(`cap ${w} ${d}`, () => roundedBox(w, CAP_H, d, 0.03, 4)),
+      decal: once(`${key.label} ${Math.min(w, d)}`, () => legendDecal(key.label, Math.min(w, d))),
+    }));
+    const tag = new THREE.ExtrudeGeometry(roundedRect(TAG_W, TAG_H, 0.1), {
+      depth: 0.004,
+      bevelEnabled: true,
+      bevelThickness: 0.012,
+      bevelSize: 0.012,
+      bevelSegments: 5,
+      curveSegments: 24,
+    });
+    const parts = {
+      base: slab(W, BASE_T, D, CORNER, 0.07),
+      lid: slab(W, LID_T, LID_D, CORNER, 0.05),
+      barrel: new THREE.CapsuleGeometry(HINGE_R, BARREL - 2 * HINGE_R, 8, 32).rotateZ(Math.PI / 2),
+      knuckle: new THREE.CapsuleGeometry(HINGE_R * 0.97, 0.074, 8, 32).rotateZ(Math.PI / 2),
+      bezel: bezel(0.06),
+      screen: panel(SCREEN_W, SCREEN_H, 0.1),
+      camera: new THREE.SphereGeometry(0.022, 20, 12),
+      trackpad: slab(PAD_W, 0.012, PAD_D, 0.07, 0.005),
+      led: new THREE.CapsuleGeometry(0.016, 0.07, 6, 16).rotateZ(Math.PI / 2),
+      port: new THREE.CapsuleGeometry(0.012, 0.045, 6, 12).rotateX(Math.PI / 2),
+      jack: new THREE.CylinderGeometry(0.017, 0.017, 0.02, 20).rotateZ(Math.PI / 2),
+      tag,
+      tagFace: panel(TAG_W, TAG_H, 0.1),
       heart: puffy(heart(0.24)),
       star: puffy(star(0.27, 0.13)),
       dot: puffy(new THREE.Shape().absarc(0, 0, 0.17, 0, Math.PI * 2, false)),
-      eye: new THREE.SphereGeometry(0.024, 16, 12),
-      smile: new THREE.TorusGeometry(0.055, 0.013, 8, 24, Math.PI),
-    }),
-    [],
-  );
+      eye: new THREE.SphereGeometry(EYE.r, 20, 14),
+      smile: new THREE.TorusGeometry(SMILE.r, SMILE.tube, 10, 40, SMILE.arc),
+      smileEnd: new THREE.SphereGeometry(SMILE.tube, 16, 12),
+    };
+    return { keys, parts, all: [...shared.values(), ...Object.values(parts)] };
+  }, []);
   useEffect(
     () => () => {
-      for (const shape of Object.values(geometry)) shape.dispose();
+      for (const shape of geometry.all) shape.dispose();
     },
     [geometry],
   );
 
   // Painted from the palette once, and disposed with the laptop.
   const kit = useMemo(() => {
+    const gloss = { roughness: 0.3, clearcoat: 1, clearcoatRoughness: 0.12, sheen: 0 };
     const material = {
-      body: candy(COLORS.body),
-      key: candy("#ffffff"), // white, so each keycap shows its own instance colour
-      spacebar: candy(COLORS.spacebar),
-      trackpad: candy(COLORS.trackpad),
-      hinges: candy(COLORS.hinges),
+      body: candy(COLORS.body, gloss),
+      knuckles: candy(COLORS.knuckles, gloss),
+      trackpad: candy(COLORS.trackpad, {
+        roughness: 0.35,
+        clearcoat: 0.6,
+        clearcoatRoughness: 0.3,
+      }),
+      holes: candy(COLORS.holes, { roughness: 0.35, sheen: 0 }),
+      legend: new THREE.MeshStandardMaterial({
+        map: legendTexture,
+        transparent: true,
+        depthWrite: false,
+        roughness: 0.55,
+        polygonOffset: true,
+        polygonOffsetFactor: -1,
+        polygonOffsetUnits: -4,
+      }),
+      tagPaper: candy(COLORS.tagPaper, gloss),
+      tagFace: candy("#ffffff", {
+        map: tagTexture,
+        roughness: 0.38,
+        clearcoat: 0.8,
+        clearcoatRoughness: 0.2,
+        sheen: 0,
+      }),
       heart: candy(COLORS.heartSticker),
       star: candy(COLORS.starSticker),
       dot: candy(COLORS.dotSticker),
       smiley: candy(COLORS.smileyInk),
       light: new THREE.MeshBasicMaterial({ color: TINTS.light, toneMapped: false }),
-      screen: new THREE.MeshBasicMaterial({ color: TINTS.screenOff, toneMapped: false }),
+      screen: new THREE.MeshBasicMaterial({
+        map: glassTexture,
+        color: TINTS.screenOff,
+        toneMapped: false,
+      }),
       words: new THREE.MeshBasicMaterial({
-        map: screenTexture,
+        map: wordsTexture,
         transparent: true,
         opacity: 0,
         depthWrite: false,
         toneMapped: false,
       }),
-      tag: new THREE.MeshBasicMaterial({
-        map: tagTexture,
-        transparent: true,
-        depthWrite: false,
-        toneMapped: false,
-      }),
     };
-    const keys = new THREE.InstancedMesh(geometry.key, material.key, SPACE);
-    const dummy = new THREE.Object3D();
-    for (let i = 0; i < SPACE; i++) {
-      dummy.position.set(keyX(i), KEY_Y, keyZ(i));
-      dummy.updateMatrix();
-      keys.setMatrixAt(i, dummy.matrix);
-      keys.setColorAt(i, restOf(TINTS, i));
-    }
-    return { material, keys, dummy, tint: new THREE.Color() };
-  }, [geometry, screenTexture, tagTexture]);
+    // Each cap has its own material, so a pressed key can flash on its own.
+    const caps = KEYS.map((key) =>
+      candy(capColor(COLORS, key), {
+        roughness: 0.48,
+        clearcoat: 0.55,
+        clearcoatRoughness: 0.28,
+        sheen: 0,
+      }),
+    );
+    return { material, caps };
+  }, [glassTexture, wordsTexture, legendTexture, tagTexture]);
 
   useEffect(
     () => () => {
-      for (const material of Object.values(kit.material)) material.dispose();
-      kit.keys.dispose();
+      for (const material of [...Object.values(kit.material), ...kit.caps]) material.dispose();
     },
     [kit],
   );
@@ -586,21 +740,44 @@ function LaptopToy({ text, writing, keystrokes, profile, onActivate, prompt }: L
     [],
   );
 
-  // Every keystroke presses a key: the spacebar for a space, any other key otherwise.
-  const seenKeystrokes = useRef(keystrokes);
+  // While the pointer is over the stage, the laptop leans a little towards it.
+  const { gl } = useThree();
+  const pointerIn = useRef(false);
   useEffect(() => {
-    if (keystrokes === seenKeystrokes.current) return;
-    seenKeystrokes.current = keystrokes;
-    let i = text.endsWith(" ") ? SPACE : Math.floor(Math.random() * SPACE);
-    if (i === motion.lastKey && i !== SPACE) i = (i + 1 + Math.floor(Math.random() * 10)) % SPACE;
-    motion.lastKey = i;
-    const key = motion.keys[i];
-    if (!key) return;
-    key.x = 1;
-    key.v = 0;
-    key.glow = 1.6; // above 1 so the colour holds for a beat before it fades
-    key.tint = TINTS.flash[Math.floor(Math.random() * TINTS.flash.length)] ?? null;
-  }, [keystrokes, text, motion]);
+    const stage = gl.domElement;
+    const enter = (): void => {
+      pointerIn.current = true;
+    };
+    const leave = (): void => {
+      pointerIn.current = false;
+    };
+    stage.addEventListener("pointerenter", enter);
+    stage.addEventListener("pointerleave", leave);
+    return () => {
+      stage.removeEventListener("pointerenter", enter);
+      stage.removeEventListener("pointerleave", leave);
+    };
+  }, [gl]);
+
+  // Every keystroke presses the keys that type it; anything the board cannot type presses a letter.
+  const seen = useRef({ text, keystrokes });
+  useEffect(() => {
+    const before = seen.current;
+    seen.current = { text, keystrokes };
+    if (keystrokes === before.keystrokes) return; // another field took focus: nothing was typed
+    const typed = keysFor(before.text, text);
+    const pressed =
+      typed.length > 0 ? typed : [LETTER_KEYS[Math.floor(Math.random() * LETTER_KEYS.length)] ?? 0];
+    const tint = TINTS.flash[Math.floor(Math.random() * TINTS.flash.length)] ?? null;
+    for (const i of pressed) {
+      const key = motion.keys[i];
+      if (!key) continue;
+      key.x = 1;
+      key.v = 0;
+      key.glow = 1.6; // above 1 so the colour holds for a beat before it fades
+      key.tint = tint;
+    }
+  }, [text, keystrokes, motion]);
 
   // A happy little hop whenever it turns, either way.
   const seenWriting = useRef(writing);
@@ -615,16 +792,18 @@ function LaptopToy({ text, writing, keystrokes, profile, onActivate, prompt }: L
   const turn = useRef<THREE.Group>(null);
   const lid = useRef<THREE.Group>(null);
   const words = useRef<THREE.Mesh>(null);
-  const spacebar = useRef<THREE.Mesh>(null);
+  const keyNodes = useRef<(THREE.Group | null)[]>([]);
 
   useFrame((state, delta) => {
-    if (!root.current || !tilt.current || !turn.current || !lid.current) return;
-    if (!words.current || !spacebar.current) return;
+    if (!root.current || !tilt.current || !turn.current || !lid.current || !words.current) return;
     const pose = writing ? WRITE : IDLE;
     const breath = still || writing ? 0 : Math.sin(state.clock.elapsedTime * 1.6);
+    const leaning = pointerIn.current && !still;
+    motion.lean.x = THREE.MathUtils.damp(motion.lean.x, leaning ? state.pointer.x : 0, 4, delta);
+    motion.lean.y = THREE.MathUtils.damp(motion.lean.y, leaning ? state.pointer.y : 0, 4, delta);
 
-    step(motion.turn, pose.turn + breath * 0.04, delta, 50, 9.5, still);
-    step(motion.tilt, pose.tilt, delta, 50, 9.5, still);
+    step(motion.turn, pose.turn + breath * 0.04 + motion.lean.x * 0.2, delta, 50, 9.5, still);
+    step(motion.tilt, pose.tilt - motion.lean.y * 0.08, delta, 50, 9.5, still);
     step(motion.y, pose.y + breath * 0.03, delta, 70, 8, still);
     step(motion.scale, pose.scale, delta, 70, 10, still);
     // It turns to face you first, then the lid springs open: an open lid swinging round leaves the frame.
@@ -639,7 +818,7 @@ function LaptopToy({ text, writing, keystrokes, profile, onActivate, prompt }: L
     motion.light = still ? lit : THREE.MathUtils.damp(motion.light, lit, 6, delta);
 
     const pop = still ? 0 : pulse.current;
-    step(motion.pop, 1 + 0.1 * pop, delta, 320, 14, still);
+    step(motion.pop, 1 + 0.06 * pop, delta, 320, 14, still);
     const s = motion.scale.x;
     root.current.position.y = motion.y.x;
     root.current.scale.set(s * (1 + 0.015 * pop), s * (1 - 0.025 * pop), s * (1 + 0.015 * pop));
@@ -653,39 +832,29 @@ function LaptopToy({ text, writing, keystrokes, profile, onActivate, prompt }: L
     material.words.opacity = motion.light;
     material.light.color.copy(TINTS.light).multiplyScalar(writing ? 1 : 0.6 + 0.25 * breath);
 
-    let dirty = false;
-    for (let i = 0; i <= SPACE; i++) {
+    for (let i = 0; i < KEYS.length; i++) {
       const key = motion.keys[i];
-      if (!key || (key.x === 0 && key.v === 0 && key.glow === 0)) continue;
-      step(key, 0, delta, 200, 11, still);
+      const node = keyNodes.current[i];
+      const cap = kit.caps[i];
+      const rest = TINTS.rest[i];
+      if (!key || !node || !cap || !rest) continue;
+      if (key.x === 0 && key.v === 0 && key.glow === 0) continue;
+      step(key, 0, delta, 260, 13, still);
       key.glow = THREE.MathUtils.damp(key.glow, 0, 4, delta);
       if (Math.abs(key.x) < 1e-3 && Math.abs(key.v) < 1e-2) {
         key.x = 0;
         key.v = 0;
       }
       if (key.glow < 0.01) key.glow = 0;
-      kit.tint.copy(restOf(TINTS, i));
-      if (key.tint) kit.tint.lerp(key.tint, Math.min(1, key.glow));
-      const y = KEY_Y - key.x * PRESS;
-      if (i === SPACE) {
-        spacebar.current.position.y = y;
-        material.spacebar.color.copy(kit.tint);
-        continue;
-      }
-      kit.dummy.position.set(keyX(i), y, keyZ(i));
-      kit.dummy.updateMatrix();
-      kit.keys.setMatrixAt(i, kit.dummy.matrix);
-      kit.keys.setColorAt(i, kit.tint);
-      dirty = true;
-    }
-    if (dirty) {
-      kit.keys.instanceMatrix.needsUpdate = true;
-      if (kit.keys.instanceColor) kit.keys.instanceColor.needsUpdate = true;
+      node.position.y = KEY_Y - key.x * PRESS;
+      cap.color.copy(rest);
+      if (key.tint) cap.color.lerp(key.tint, Math.min(1, key.glow));
     }
   });
 
   const { material: m } = kit;
-  const g = geometry;
+  const g = geometry.parts;
+  const lidBack = LID_GAP + LID_T; // the lid's outside, where the stickers go
   return (
     <group
       ref={root}
@@ -698,70 +867,133 @@ function LaptopToy({ text, writing, keystrokes, profile, onActivate, prompt }: L
     >
       <group ref={tilt}>
         <group ref={turn}>
-          <mesh geometry={g.base} material={m.body} />
-          <primitive object={kit.keys} />
-          <mesh
-            ref={spacebar}
-            geometry={g.spacebar}
-            material={m.spacebar}
-            position={[0, KEY_Y, keyZ(SPACE)]}
-          />
+          <mesh geometry={g.base} material={m.body} castShadow receiveShadow />
+          {BOARD.map(({ x, z }, i) => {
+            const parts = geometry.keys[i];
+            const cap = kit.caps[i];
+            if (!parts || !cap) return null;
+            return (
+              <group
+                key={i}
+                ref={(node) => {
+                  keyNodes.current[i] = node;
+                }}
+                position={[x, KEY_Y, z]}
+              >
+                <mesh geometry={parts.cap} material={cap} castShadow receiveShadow />
+                <mesh
+                  geometry={parts.decal}
+                  material={m.legend}
+                  position={[0, CAP_H / 2 + 0.001, 0]}
+                  rotation={[-Math.PI / 2, 0, 0]}
+                />
+              </group>
+            );
+          })}
           <mesh
             geometry={g.trackpad}
             material={m.trackpad}
-            position={[0, BASE_T / 2, 0.56]}
-            rotation={[-Math.PI / 2, 0, 0]}
+            position={[0, DECK + 0.002, PAD_Z]}
+            receiveShadow
           />
-          <mesh geometry={g.light} material={m.light} position={[0.95, 0, D / 2 - 0.01]} />
-          {[-0.85, 0.85].map((x) => (
+          <mesh geometry={g.led} material={m.light} position={[0, -0.01, D / 2 - 0.008]} />
+          {[-0.38, -0.2].map((z) => (
             <mesh
-              key={x}
-              geometry={g.hinge}
-              material={m.hinges}
-              position={[x, HINGE_Y, -D / 2]}
-              rotation={[0, 0, Math.PI / 2]}
+              key={z}
+              geometry={g.port}
+              material={m.holes}
+              position={[-W / 2 + 0.004, -0.005, z]}
             />
           ))}
-          <group ref={lid} position={[0, HINGE_Y, -D / 2]}>
-            <mesh geometry={g.lid} material={m.body} position={[0, LID_T / 2, D / 2]} />
+          <mesh geometry={g.jack} material={m.holes} position={[W / 2 - 0.004, -0.005, -0.3]} />
+          <mesh geometry={g.barrel} material={m.body} position={[0, HINGE_Y, HINGE_Z]} castShadow />
+          {[-1, 1].map((side) => (
+            <mesh
+              key={side}
+              geometry={g.knuckle}
+              material={m.knuckles}
+              position={[side * (BARREL / 2 + 0.115), HINGE_Y, HINGE_Z]}
+              castShadow
+            />
+          ))}
+          <group ref={lid} position={[0, HINGE_Y, HINGE_Z]}>
+            <mesh
+              geometry={g.lid}
+              material={m.body}
+              position={[0, LID_GAP + LID_T / 2, LID_Z]}
+              castShadow
+              receiveShadow
+            />
+            {/* The screen faces down, -y, until the lid opens towards the camera. */}
+            <mesh
+              geometry={g.bezel}
+              material={m.body}
+              position={[0, LID_GAP + 0.002, SCREEN_Z]}
+              rotation={[Math.PI / 2, 0, 0]}
+              receiveShadow
+            />
             <mesh
               geometry={g.screen}
               material={m.screen}
-              position={[0, -0.004, SCREEN_Z]}
+              position={[0, LID_GAP - 0.003, SCREEN_Z]}
               rotation={[Math.PI / 2, 0, 0]}
             />
             <mesh
               ref={words}
-              geometry={g.words}
+              geometry={g.screen}
               material={m.words}
-              position={[0, -0.008, SCREEN_Z]}
+              position={[0, LID_GAP - 0.005, SCREEN_Z]}
               rotation={[Math.PI / 2, 0, 0]}
             />
-            {/* The back of the lid faces +y; stickers read upright from behind the laptop. */}
             <mesh
-              geometry={g.tag}
-              material={m.tag}
-              position={[0.18, LID_T + 0.004, D / 2 - 0.12]}
-              rotation={[-Math.PI / 2, 0, Math.PI + 0.05]}
+              geometry={g.camera}
+              material={m.holes}
+              position={[0, LID_GAP - 0.002, SCREEN_Z + SCREEN_H / 2 + 0.08]}
+              scale={[1, 0.4, 1]}
             />
+            {/* The back of the lid faces +y; stickers read upright from behind the laptop. */}
+            <group
+              position={[-TAG_AT.u, lidBack, LID_Z + TAG_AT.v]}
+              rotation={[-Math.PI / 2, 0, Math.PI + TAG_AT.angle]}
+            >
+              <mesh geometry={g.tag} material={m.tagPaper} castShadow />
+              <mesh
+                geometry={g.tagFace}
+                material={m.tagFace}
+                position={[0, 0, TAG_LIFT + 0.0008]}
+              />
+            </group>
             {STICKERS.map((sticker) => (
               <group
                 key={sticker.shape}
-                position={[-sticker.u, LID_T + 0.01, D / 2 + sticker.v]}
+                position={[-sticker.u, lidBack + STICKER_T - 0.012, LID_Z + sticker.v]}
                 rotation={[-Math.PI / 2, 0, Math.PI + sticker.angle]}
               >
-                <mesh geometry={g[sticker.shape]} material={m[sticker.shape]} />
+                <mesh geometry={g[sticker.shape]} material={m[sticker.shape]} castShadow />
                 {sticker.shape === "dot" && (
-                  <>
-                    <mesh geometry={g.eye} material={m.smiley} position={[-0.055, 0.035, 0.04]} />
-                    <mesh geometry={g.eye} material={m.smiley} position={[0.055, 0.035, 0.04]} />
+                  <group position={[0, 0, STICKER_T + 0.016]}>
+                    {[-1, 1].flatMap((side) => [
+                      <mesh
+                        key={`eye ${side}`}
+                        geometry={g.eye}
+                        material={m.smiley}
+                        position={[side * EYE.x, EYE.y, 0]}
+                        scale={[1, 1.4, 0.8]}
+                      />,
+                      <mesh
+                        key={`end ${side}`}
+                        geometry={g.smileEnd}
+                        material={m.smiley}
+                        position={[side * SMILE_END.x, SMILE_END.y, 0.002]}
+                      />,
+                    ])}
                     <mesh
                       geometry={g.smile}
                       material={m.smiley}
-                      position={[0, 0.005, 0.042]}
-                      rotation={[0, 0, Math.PI]}
+                      position={[0, SMILE.y, 0.002]}
+                      rotation={[0, 0, -(Math.PI + SMILE.arc) / 2]}
                     />
-                  </>
+                  </group>
                 )}
               </group>
             ))}
