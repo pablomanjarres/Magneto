@@ -52,11 +52,18 @@ La demostración y la sustentación son de ambos.
 
 ## Sección 2. Evaluación del Sprint anterior
 
-**Técnica de la retrospectiva:** {PENDIENTE}
+Técnica de Retrospectiva utilizada: Se aplicó la dinámica de las 4Ls (Liked, Learned, Lacked, Longed for) para evaluar tanto los resultados técnicos internos como la retroalimentación recibida durante la reunión de revisión (Sprint Review) con el Product Owner.   
 
-**Acciones de mejora:** {PENDIENTE: lista de acciones frente a los problemas del Sprint 2}
+Resultados del análisis:Liked (Lo que gustó): La estabilidad alcanzada en la arquitectura base con Docker y PostgreSQL, además de las 78 pruebas de dominio exitosas que respaldaron la entrega.Learned (Lo que se aprendió): A partir de los consejos recibidos por el Product Owner, comprendimos la importancia de que la identidad visual del producto refleje fielmente la marca del cliente. A nivel técnico, confirmamos que asegurar primero el flujo central del MVP facilita hacer ajustes visuales y funcionales posteriores sin romper la lógica del sistema.
 
-**Evidencia de la retrospectiva:** {PENDIENTE: images/2-retrospectiva.png}
+Lacked (Lo que faltó): Una alineación estética más temprana con la paleta de colores corporativa de la marca, ya que en el sprint anterior se priorizó la estructura funcional sobre la identidad gráfica.
+
+Longed for (Lo que se deseó): Haber validado los lineamientos visuales de la marca desde el diseño inicial de los prototipos para evitar retrabajos en los estilos de la interfaz.
+
+Acciones de mejora aplicadas en el Sprint 3:  
+Rediseño de identidad visual (UI): Ajustar la interfaz gráfica en Next.js para incorporar la paleta de colores oficial de la marca, siguiendo directamente las recomendaciones del Product Owner.
+Refinamiento de funcionalidades críticas: Abordar desde el inicio del sprint las historias de mayor complejidad técnica (completitud total del perfil y sistema de recomendaciones) con criterios de aceptación claros.
+Pruebas integrales: Ejecutar validaciones de punta a punta entre la interfaz renovada, la API en Express y la base de datos PostgreSQL antes de cerrar cada historia.
 
 **Reuniones con el Líder Técnico y el PO:** {PENDIENTE: images/2-reunion.png}
 
