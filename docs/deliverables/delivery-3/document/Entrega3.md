@@ -402,8 +402,22 @@ return Response.json({ application });
   vacante, inserta con `POST /api/applications`. Cada acción queda en "Actividad reciente".
 - El inicio de sesión no se evalúa en esta entrega: la aplicación abre directo en el perfil.
 
-**Capturas:** {PENDIENTE: images/7-panel.png, 7-vacantes.png, 7-detalle.png, 7-postulaciones.png,
-7-asistente.png}
+**Capturas:**
+
+![Panel](images/7-panel.png)
+_`/dashboard`: completitud del perfil con el siguiente campo por llenar, el portátil 3D, las mejores coincidencias y lo que pide el mercado._
+
+![Vacantes](images/7-vacantes.png)
+_`/jobs`: las 50 vacantes ordenadas por match, con búsqueda, filtros por ciudad, modalidad y empresa, y el orden a elección._
+
+![Detalle de una vacante](images/7-detalle.png)
+_`/jobs/[id]`: el puntaje explicado requisito por requisito y cuánto sube si se aprende lo que falta._
+
+![Postulaciones](images/7-postulaciones.png)
+_`/applications`: tablero de cuatro estados; cada tarjeta cambia de estado, anota su próximo paso o se retira._
+
+![Luna](images/7-asistente.png)
+_Luna, la asistente de cada página, responde qué le falta al perfil y ofrece completarlo desde el chat._
 
 ---
 
