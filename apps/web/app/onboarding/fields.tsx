@@ -34,7 +34,7 @@ export function LaptopPanel({
   onActivate: () => void;
 }) {
   return (
-    <div className="h-64 animate-rise overflow-hidden rounded-3xl bg-navy [animation-delay:120ms] sm:h-72">
+    <div className="h-64 animate-rise overflow-hidden rounded-3xl bg-navy [animation-delay:120ms] sm:h-96 lg:h-72">
       <Laptop
         profile={profile}
         completeness={completeness}
