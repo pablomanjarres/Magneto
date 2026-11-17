@@ -38,6 +38,14 @@ export function placeMeta(v: Pick<Vacancy, "city" | "workMode">): string {
 /** "Bancolombia · Medellín · Híbrido" without the empties. */
 export const vacancyMeta = (v: Vacancy): string => `${v.company} · ${placeMeta(v)}`;
 
+/** What to call a profile on screen: its name, or "Perfil nuevo" while it has none. */
+export const profileName = (fullName: string): string => fullName.trim() || "Perfil nuevo";
+
+/** What a saved résumé PDF is named after: whose it is, when the profile has a name. */
+export const cvTitle = (fullName: string, ...rest: string[]): string =>
+  [fullName.trim(), "Hoja de vida", ...rest].filter(Boolean).join(" · ");
+
+/** Empty for a profile with no name yet: show a person icon there instead. */
 export const initials = (fullName: string): string =>
   fullName
     .split(/\s+/)
