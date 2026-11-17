@@ -114,10 +114,6 @@ const TAG_H = TAG_W * (320 / 680); // the tag's canvas proportions
 const TAG_LIFT = 0.016; // the tag's face, above the lid
 const ATLAS_COLS = 8; // the legend atlas is this many cells across and down
 const CELL = 128;
-const SCREEN_H = 1.36;
-const SCREEN_Z = 0.89; // from the hinge, along the lid
-const TAG_W = 1.7;
-const TAG_H = 0.8;
 const MONO = "ui-monospace, SFMono-Regular, Menlo, monospace";
 const PROMPT = "hola@moonlight:~$";
 const HINT = "Escribe tu nombre";
@@ -130,52 +126,51 @@ interface Pose {
   y: number;
   scale: number;
 }
-// Idle it shows its back; writing, it faces the camera with the lid at 105°.
+// Idle it shows its back; writing, it faces the camera from a little above, lid at 114°.
 // Sized so that even mid-turn it fits a stage narrower than it is tall.
-const IDLE: Pose = { turn: Math.PI - 0.62, tilt: 0.5, open: 0.26, y: -0.4, scale: 0.86 };
+const IDLE: Pose = { turn: Math.PI - 0.62, tilt: 0.5, open: 0.26, y: -0.18, scale: 1.06 };
 const WRITE: Pose = {
-  turn: 0,
-  tilt: 0.38,
-  open: THREE.MathUtils.degToRad(105),
-  y: -0.9,
-  scale: 1.08,
+  turn: -0.16, // a three-quarter view: the right side shows
+  tilt: 0.62,
+  open: THREE.MathUtils.degToRad(114),
+  y: -0.69,
+  scale: 1,
 };
 const FACING = 0.6; // how close to facing the camera, in radians, before the lid opens
 
-/** Puffy stickers on the lid, placed as seen from behind: u to the right, v up. */
+/** Puffy stickers on the lid, placed as seen from behind: u to the right, v up, from the lid's centre. */
 const STICKERS = [
-  { shape: "heart", u: 0.86, v: 0.42, angle: -0.25 },
-  { shape: "star", u: -0.95, v: 0.5, angle: 0.2 },
-  { shape: "dot", u: 0.92, v: -0.45, angle: 0 },
+  { shape: "heart", u: -1.03, v: 0.3, angle: 0.18 },
+  { shape: "star", u: 0.98, v: 0.48, angle: -0.15 },
+  { shape: "dot", u: 1.02, v: -0.28, angle: 0.25 },
 ] as const;
+const TAG_AT = { u: -0.05, v: -0.08, angle: 0.04 };
+
+/** Where each key sits on the deck, and the size of its cap. */
+const BOARD = KEYS.map((key) => ({
+  key,
+  x: (key.x - BOARD_UNITS / 2) * U,
+  z: BOARD_Z + key.z * U,
+  w: key.w * U - CAP_GAP,
+  d: key.d * U - CAP_GAP,
+}));
+
+const capColor = (colors: LaptopColors, key: BoardKey): string =>
+  key.accent === "enter" ? colors.enterKey : key.accent === "space" ? colors.spacebar : colors.keys;
 
 /** The palette as three.js colours: what the keys, the screen and the light animate between. */
 function tintsOf(colors: LaptopColors) {
-  const shift = new THREE.Color(colors.shiftKeys);
-  const screenOn = new THREE.Color(colors.screenOn);
+  const screenOn = new THREE.Color("#ffffff");
   return {
-    keys: new THREE.Color(colors.keys),
-    // Keycaps with a colour of their own, by index: Esc, Backspace, Enter, both Shifts, spacebar.
-    accents: new Map<number, THREE.Color>([
-      [0, new THREE.Color(colors.escKey)],
-      [COLS - 1, new THREE.Color(colors.backspaceKey)],
-      [3 * COLS - 1, new THREE.Color(colors.enterKey)],
-      [3 * COLS, shift],
-      [SPACE - 1, shift],
-      [SPACE, new THREE.Color(colors.spacebar)],
-    ]),
+    rest: KEYS.map((key) => new THREE.Color(capColor(colors, key))),
     flash: colors.flash.map((color) => new THREE.Color(color)),
     light: new THREE.Color(colors.light),
     screenOn,
-    screenOff: screenOn.clone().multiplyScalar(0.45),
+    screenOff: screenOn.clone().multiplyScalar(0.18),
   };
 }
 
 const TINTS = tintsOf(COLORS);
-type Tints = ReturnType<typeof tintsOf>;
-
-/** The colour key `i` rests at; the spacebar is the last index. */
-const restOf = (tints: Tints, i: number): THREE.Color => tints.accents.get(i) ?? tints.keys;
 
 interface Spring {
   x: number;
@@ -217,27 +212,9 @@ const createMotion = () => ({
   scale: { x: IDLE.scale, v: 0 },
   pop: { x: 1, v: 0 }, // the screen text, per key
   light: 0,
-  keys: Array.from({ length: SPACE + 1 }, (): Key => ({ x: 0, v: 0, tint: null, glow: 0 })),
-  lastKey: -1,
+  lean: { x: 0, y: 0 }, // towards the pointer while it is over the stage
+  keys: KEYS.map((): Key => ({ x: 0, v: 0, tint: null, glow: 0 })),
 });
-
-const keyX = (i: number): number => ((i % COLS) - (COLS - 1) / 2) * PITCH;
-const keyZ = (i: number): number => ROW0 + Math.floor(i / COLS) * PITCH;
-
-function roundedRect(w: number, h: number, r: number): THREE.Shape {
-  const x = -w / 2;
-  const y = -h / 2;
-  return new THREE.Shape()
-    .moveTo(x + r, y)
-    .lineTo(x + w - r, y)
-    .quadraticCurveTo(x + w, y, x + w, y + r)
-    .lineTo(x + w, y + h - r)
-    .quadraticCurveTo(x + w, y + h, x + w - r, y + h)
-    .lineTo(x + r, y + h)
-    .quadraticCurveTo(x, y + h, x, y + h - r)
-    .lineTo(x, y + r)
-    .quadraticCurveTo(x, y, x + r, y);
-}
 
 function heart(s: number): THREE.Shape {
   return new THREE.Shape()
@@ -265,15 +242,108 @@ function star(outer: number, inner: number): THREE.Shape {
   return shape;
 }
 
+/** A puffy sticker: the shape extruded thin, its edges rounded into a soft dome. */
+const STICKER_T = 0.04;
 const puffy = (shape: THREE.Shape): THREE.ExtrudeGeometry =>
   new THREE.ExtrudeGeometry(shape, {
     depth: 0.01,
     bevelEnabled: true,
-    bevelThickness: 0.025,
-    bevelSize: 0.022,
-    bevelSegments: 6,
+    bevelThickness: STICKER_T,
+    bevelSize: STICKER_T * 0.9,
+    bevelSegments: 8,
     curveSegments: 32,
   });
+
+// The smiley on the mint dot, in the sticker's own units: its flat top has a
+// radius of 0.17. Seen from above, the lid squashes it, so the eyes are tall
+// and sit well clear of the mouth, an arc centred at the bottom.
+const EYE = { x: 0.06, y: 0.07, r: 0.026 };
+const SMILE = { r: 0.08, tube: 0.017, arc: 0.7 * Math.PI, y: -0.005 };
+/** Where the arc ends, either side: a bead there rounds off the cut tube. */
+const SMILE_END = {
+  x: SMILE.r * Math.sin(SMILE.arc / 2),
+  y: SMILE.y - SMILE.r * Math.cos(SMILE.arc / 2),
+};
+
+/** The raised porcelain lip around the screen: a rounded ring. */
+function bezel(lip: number): THREE.ExtrudeGeometry {
+  const ring = roundedRect(SCREEN_W + 2 * lip, SCREEN_H + 2 * lip, 0.1 + lip);
+  ring.holes.push(roundedRect(SCREEN_W, SCREEN_H, 0.1));
+  return new THREE.ExtrudeGeometry(ring, {
+    depth: 0.006,
+    bevelEnabled: true,
+    bevelThickness: 0.008,
+    bevelSize: 0.008,
+    bevelSegments: 4,
+    curveSegments: 24,
+  });
+}
+
+const LABELS = [...new Set(KEYS.map((key) => key.label))];
+const ARROWS: Readonly<Record<string, number>> = {
+  up: 0,
+  right: Math.PI / 2,
+  down: Math.PI,
+  left: -Math.PI / 2,
+};
+
+/** A key's legend, centred on the origin, in the colour already set. */
+function drawLegend(ctx: CanvasRenderingContext2D, label: string, font: string): void {
+  const turn = ARROWS[label];
+  if (turn !== undefined) {
+    ctx.rotate(turn);
+    ctx.beginPath();
+    ctx.moveTo(0, -18);
+    ctx.lineTo(18, 13);
+    ctx.lineTo(-18, 13);
+    ctx.closePath();
+    ctx.fill();
+    return;
+  }
+  if (label === "backspace") {
+    ctx.lineWidth = 9;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.beginPath();
+    ctx.moveTo(30, 0);
+    ctx.lineTo(-28, 0);
+    ctx.moveTo(-10, -18);
+    ctx.lineTo(-28, 0);
+    ctx.lineTo(-10, 18);
+    ctx.stroke();
+    return;
+  }
+  if (label === "space") {
+    // A crescent moon: a disc with a smaller one taken out of its top right.
+    ctx.beginPath();
+    ctx.arc(0, 0, 30, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.beginPath();
+    ctx.arc(13, -9, 25, 0, Math.PI * 2);
+    ctx.fill();
+    return;
+  }
+  // Words are squeezed to their cell rather than spill into the next legend.
+  ctx.font = `900 ${label.length === 1 ? 86 : 46}px ${font}`;
+  ctx.fillText(label, 0, 4, CELL - 14);
+}
+
+/** Every legend once, one per cell: the keys cut their own out of it. */
+function drawLegends(ctx: CanvasRenderingContext2D, colors: LaptopColors): void {
+  const font = pageFont();
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  LABELS.forEach((label, i) => {
+    ctx.save();
+    ctx.translate(((i % ATLAS_COLS) + 0.5) * CELL, (Math.floor(i / ATLAS_COLS) + 0.5) * CELL);
+    const ink =
+      label === "enter"
+        ? colors.enterLegend
+        : label === "space"
+          ? colors.spaceLegend
+          : colors.legend;
+    ctx.fillStyle = ink;
 
 /** A block caret for a line `size` px tall whose top is at `y`. */
 function caretBlock(
