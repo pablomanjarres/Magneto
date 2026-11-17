@@ -11,9 +11,10 @@ import {
   PageHeader,
 } from "../../components/primitives";
 import { Icon } from "../../components/Icon";
+import { Initials } from "../../components/ProfileSwitcher";
 import { SourceChip } from "../../components/SourceChip";
 import { requireProfile } from "../../lib/queries";
-import { initials, salaryRange, shortDate, workModeLabel } from "../../lib/format";
+import { profileName, salaryRange, shortDate, workModeLabel } from "../../lib/format";
 import { Detail, type Entry, EntryList, ProfileSection } from "./ProfileSection";
 
 export const dynamic = "force-dynamic";
@@ -74,7 +75,7 @@ export default async function ProfilePage() {
     <AppShell>
       <PageHeader
         eyebrow="Mi perfil"
-        title={profile.fullName}
+        title={profileName(profile.fullName)}
         lead="Este es el perfil con el que se construyen tus postulaciones. Si cambias algo, cada vacante se vuelve a evaluar."
         actions={
           <>
@@ -93,11 +94,13 @@ export default async function ProfilePage() {
       <Card className="grid animate-rise gap-8 p-6 [animation-delay:80ms] sm:p-8 lg:grid-cols-[minmax(0,1fr)_380px]">
         <div className="flex items-center gap-5">
           <span className="flex size-20 shrink-0 items-center justify-center rounded-full bg-brand-wash text-2xl font-black text-brand">
-            {initials(profile.fullName)}
+            <Initials fullName={profile.fullName} size={30} />
           </span>
           <div className="min-w-0">
-            <p className="truncate text-2xl font-black text-slate">{profile.fullName}</p>
-            <p className="truncate text-sm text-muted">{profile.email}</p>
+            <p className="truncate text-2xl font-black text-slate">
+              {profileName(profile.fullName)}
+            </p>
+            <p className="truncate text-sm text-muted">{profile.email || "Correo sin definir"}</p>
             <ul className="mt-3 flex flex-wrap gap-2">
               {facts.map((fact) => (
                 <li

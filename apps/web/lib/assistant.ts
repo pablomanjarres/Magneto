@@ -288,8 +288,9 @@ const DEFINITIONS: Anthropic.Tool[] = Object.entries(TOOLS).map(([name, t]) => (
 
 function system(profile: Profile, path: string, tailored: boolean): string {
   const facts = {
-    nombre: profile.fullName,
-    correo: profile.email,
+    // A new profile has neither yet; null says so, as it does for the city.
+    nombre: profile.fullName || null,
+    correo: profile.email || null,
     ciudad: profile.city ?? null,
     habilidades: profile.skills.map((s) => s.name),
     ...numbered(profile),

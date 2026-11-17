@@ -22,7 +22,8 @@ export default async function DashboardPage() {
   const byId = new Map(vacancies.map((v) => [v.id, v]));
   const top = ranked.slice(0, 3);
   const topGap = gaps[0];
-  const firstName = profile.fullName.split(" ")[0];
+  // Empty for a profile with no name yet, which is greeted without one.
+  const firstName = profile.fullName.trim().split(/\s+/)[0];
   const complete = completeness.percentage === 100;
   const unscored = comparisonBlockers(profile).length > 0;
 
@@ -41,7 +42,7 @@ export default async function DashboardPage() {
 
         <div className="flex flex-col gap-6 p-7 sm:p-10">
           <div>
-            <Eyebrow tone="mint">Hola, {firstName}</Eyebrow>
+            <Eyebrow tone="mint">{firstName ? `Hola, ${firstName}` : "Hola"}</Eyebrow>
             <h1 className="mt-3 text-4xl font-black text-balance sm:text-5xl">
               Tu perfil está al <CountUp value={completeness.percentage} />%
             </h1>

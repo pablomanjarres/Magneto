@@ -3,16 +3,21 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 
 import type { ProfileChoice } from "../lib/queries";
-import { chooseProfile } from "../lib/client";
-import { initials } from "../lib/format";
+import { chooseBlankProfile, chooseProfile } from "../lib/client";
+import { initials, profileName } from "../lib/format";
 import { Icon } from "./Icon";
 import { Chip } from "./primitives";
 
 // The profiles, and "Crear perfil nuevo" after them.
 const ITEM = '[role^="menuitem"]';
 
-/** Asks who a new profile is for, then creates it empty and opens the wizard on it (see app/onboarding/page.tsx). */
-const NEW_PROFILE = "/onboarding?nuevo=1";
+/** What `busy` holds while "Crear perfil nuevo" is under way, where a switch holds a profile id. */
+const CREATING = "crear-perfil-nuevo";
+
+/** Inside a profile's avatar: its initials, or a person while it has no name yet. */
+export function Initials({ fullName, size = 16 }: { fullName: string; size?: number }) {
+  return initials(fullName) || <Icon name="user" size={size} strokeWidth={2.4} />;
+}
 
 /**
  * The avatar in the header, which also switches the profile the app acts as.
@@ -82,6 +87,20 @@ export function ProfileSwitcher({
     }
   }
 
+  async function startBlank(): Promise<void> {
+    if (busy) return;
+    setBusy(CREATING);
+    setError(null);
+    try {
+      await chooseBlankProfile();
+      // A fresh page on the wizard, as after a switch: nothing of the previous person carries over.
+      window.location.assign("/onboarding");
+    } catch {
+      setBusy(null);
+      setError("No pudimos crear el perfil. Intenta de nuevo.");
+    }
+  }
+
   function onMenuKeyDown(event: KeyboardEvent<HTMLDivElement>): void {
     if (event.key === "Tab") {
       event.preventDefault();
@@ -109,7 +128,7 @@ export function ProfileSwitcher({
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={open ? menuId : undefined}
-        aria-label={`Cambiar de perfil (actual: ${current.fullName})`}
+        aria-label={`Cambiar de perfil (actual: ${profileName(current.fullName)})`}
         onClick={() => (open ? close() : setOpen(true))}
         onKeyDown={(event) => {
           if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
@@ -118,7 +137,7 @@ export function ProfileSwitcher({
         }}
         className="relative flex size-9 items-center justify-center rounded-full bg-brand-wash text-sm font-black text-brand transition hover:ring-4 hover:ring-brand/15 aria-expanded:ring-4 aria-expanded:ring-brand/25"
       >
-        {initials(current.fullName)}
+        <Initials fullName={current.fullName} />
         <span className="absolute -right-1 -bottom-1 flex size-4 items-center justify-center rounded-full border-2 border-canvas bg-brand text-white">
           <Icon name="chevronDown" size={9} strokeWidth={3.5} />
         </span>
@@ -154,12 +173,12 @@ export function ProfileSwitcher({
                     aria-hidden="true"
                     className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-wash text-sm font-black text-brand"
                   >
-                    {initials(profile.fullName)}
+                    <Initials fullName={profile.fullName} />
                   </span>
                   <span className="flex min-w-0 flex-1 flex-col">
                     <span className="flex items-center gap-2">
                       <span className="truncate text-[15px] font-bold text-ink">
-                        {profile.fullName}
+                        {profileName(profile.fullName)}
                       </span>
                       {profile.test && <Chip tone="brand">Prueba</Chip>}
                     </span>
@@ -182,8 +201,7 @@ export function ProfileSwitcher({
               type="button"
               role="menuitem"
               tabIndex={-1}
-              // A fresh page, like a switch: nothing built from the current person carries over.
-              onClick={() => window.location.assign(NEW_PROFILE)}
+              onClick={() => void startBlank()}
               className="flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-left transition hover:bg-surface focus-visible:bg-surface"
             >
               <span
@@ -195,7 +213,7 @@ export function ProfileSwitcher({
               <span className="flex min-w-0 flex-1 flex-col">
                 <span className="text-[15px] font-bold text-ink">Crear perfil nuevo</span>
                 <span className="truncate text-sm text-muted">
-                  Empieza el onboarding desde cero
+                  {busy === CREATING ? "Creando perfil…" : "Empieza el onboarding desde cero"}
                 </span>
               </span>
             </button>

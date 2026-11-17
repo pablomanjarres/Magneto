@@ -130,6 +130,36 @@ function salary(v: unknown, field: string, errors: string[]): number | undefined
 }
 
 /**
+ * An address the profile accepts. Deliberately loose: one @ with something
+ * either side. A stricter pattern rejects addresses that work, and the delivery
+ * does not send mail anyway.
+ */
+export const isEmail = (email: string): boolean => /^[^@\s]+@[^@\s]+$/.test(email);
+
+/** A profile with nothing in it yet: how "Crear perfil nuevo" starts one. */
+export const emptyProfile = (id: string): Profile => ({
+  id,
+  email: "",
+  fullName: "",
+  skills: [],
+  experience: [],
+  education: [],
+  expectations: { workModes: [], cities: [] },
+});
+
+/** True while nothing has been added to a profile since it was created empty. */
+export const isEmptyProfile = (profile: Profile): boolean =>
+  !profile.fullName &&
+  !profile.email &&
+  !profile.city &&
+  !profile.headline &&
+  !profile.summary &&
+  [profile.skills, profile.experience, profile.education].every((l) => l.length === 0) &&
+  Object.values(profile.expectations).every(
+    (value) => value === undefined || (Array.isArray(value) && value.length === 0),
+  );
+
+/**
  * Returns the cleaned profile, or every reason it was rejected. Never both, and
  * never a half-built profile.
  */
@@ -142,11 +172,8 @@ export function parseProfile(input: unknown): { profile: Profile } | { errors: s
   const fullName = str(input["fullName"]);
 
   if (!id) errors.push("id is required");
-  if (!email) errors.push("email is required");
-  // Deliberately loose: one @ with something either side. A stricter pattern
-  // rejects addresses that work, and the delivery does not send mail anyway.
-  else if (!/^[^@\s]+@[^@\s]+$/.test(email)) errors.push("email is not an address");
-  if (!fullName) errors.push("fullName is required");
+  // A new profile starts with no name or e-mail; only an address that is given has to be one.
+  if (email && !isEmail(email)) errors.push("email is not an address");
 
   const experience = experienceList(input["experience"], errors);
   const education = educationList(input["education"], errors);

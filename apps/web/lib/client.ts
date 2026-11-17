@@ -88,6 +88,10 @@ export const askAssistant = (
 export const chooseProfile = (profileId: string): Promise<unknown> =>
   send("/api/session", { method: "POST", body: JSON.stringify({ profileId }) });
 
+/** Acts as an empty profile from now on: one still untouched, or a new one. */
+export const chooseBlankProfile = (): Promise<unknown> =>
+  send("/api/session", { method: "POST", body: JSON.stringify({ blank: true }) });
+
 export const saveProfile = (profile: Profile): Promise<{ profile: Profile }> =>
   send("/api/profiles", { method: "POST", body: JSON.stringify(profile) });
 

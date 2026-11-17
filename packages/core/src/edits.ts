@@ -8,7 +8,7 @@ import type {
 } from "@moonlight/types";
 
 import { cleanSkillName, sameJob, sameSkill, sameStudy } from "./merge.js";
-import { SENIORITIES, TARGET_AREAS, parseProfile } from "./parse-profile.js";
+import { SENIORITIES, TARGET_AREAS, isEmail } from "./parse-profile.js";
 
 /** A job or degree to change, by its position in the list: only the fields given change, and null clears one. */
 export type EntryChange<T> = { index: number } & {
@@ -122,10 +122,6 @@ function editEntries<T extends { source?: ProfileSource | undefined }>(
     ],
   };
 }
-
-/** An address the profile accepts. parseProfile owns that rule, so it is asked rather than copied. */
-export const isEmail = (email: string): boolean =>
-  !("errors" in parseProfile({ id: "-", fullName: "-", email }));
 
 /**
  * The profile with the requested edits applied, and each change in Spanish so

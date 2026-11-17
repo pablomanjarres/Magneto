@@ -6,6 +6,7 @@ import { AppShell } from "../../components/AppShell";
 import { HarvardCv } from "../../components/cv/HarvardCv";
 import { Icon } from "../../components/Icon";
 import { ButtonLink, PageHeader } from "../../components/primitives";
+import { cvTitle } from "../../lib/format";
 import { requireProfile } from "../../lib/queries";
 import { AdaptedCv } from "./AdaptedCv";
 import { PrintButton } from "./PrintButton";
@@ -15,7 +16,7 @@ export const dynamic = "force-dynamic";
 /** The browser names the saved PDF after the page title. */
 export async function generateMetadata(): Promise<Metadata> {
   const profile = await requireProfile();
-  return { title: `${profile.fullName} · Hoja de vida` };
+  return { title: cvTitle(profile.fullName) };
 }
 
 /** "experiencia, educación ni habilidades": a Spanish list after a negative. */

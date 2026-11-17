@@ -4,7 +4,7 @@ import { pool } from "../pool.js";
 
 interface ProfileRow {
   id: string;
-  email: string;
+  email: string | null;
   full_name: string;
   city: string | null;
   skills: Profile["skills"];
@@ -26,7 +26,8 @@ export async function saveProfile(profile: Profile): Promise<Profile> {
        headline = EXCLUDED.headline, summary = EXCLUDED.summary`,
     [
       profile.id,
-      profile.email,
+      // No e-mail yet is NULL: UNIQUE allows many NULLs, but only one empty string.
+      profile.email || null,
       profile.fullName,
       profile.city ?? null,
       JSON.stringify(profile.skills),
@@ -46,7 +47,7 @@ export async function getProfile(id: string): Promise<Profile | null> {
   if (!r) return null;
   return {
     id: r.id,
-    email: r.email,
+    email: r.email ?? "",
     fullName: r.full_name,
     city: r.city ?? undefined,
     skills: r.skills,
