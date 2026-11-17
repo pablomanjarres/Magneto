@@ -47,11 +47,11 @@ patrones 20% (exposición 10%, análisis 10%) · Funcionalidad y demostración 5
 
 ## 2. Evaluación del Sprint anterior
 
-- [ ] Name the technique the retrospective was run under (Valentina)
-- [ ] Improvement actions for what went wrong in sprint 2 (Valentina)
-- [ ] Evidence of the retrospective (Valentina)
+- [X] Name the technique the retrospective was run under (Valentina)
+- [X] Improvement actions for what went wrong in sprint 2 (Valentina)
+- [X] Evidence of the retrospective (Valentina)
 - [ ] Evidence of the meetings with the Tech Lead and the PO (Valentina)
-- [ ] Daily or weekly evidence (Valentina)
+- [X] Daily or weekly evidence (Valentina)
 
 ## 3. Planificación del Sprint actual
 
