@@ -17,7 +17,9 @@
 
 Our answer to the Profile Manager challenge from **Magneto**, for Ingeniería de Software (SI2005) at Universidad EAFIT, 2026-2.
 
-Candidates leave their profile half-filled and wait to be contacted, which wrecks match quality for everyone. Moon Light takes the candidate's profile and expectations, says exactly what is missing to reach 100%, and ranks jobs by a weighted score with its reasons attached. The MVP runs locally against our own dataset, since the challenge gives no access to real Magneto postings.
+**Live:** https://moonlight-lime.vercel.app
+
+Candidates leave their profile half-filled and wait to be contacted, which wrecks match quality for everyone. Moon Light takes the candidate's profile and expectations, says exactly what is missing to reach 100%, and ranks jobs by a weighted score with its reasons attached. The MVP runs against our own dataset, since the challenge gives no access to real Magneto postings.
 
 The candidate fills their own profile in a guided wizard. The LinkedIn and résumé import is
 release 2, and the wizard it will pre-fill is already the screen the candidate confirms by hand.
