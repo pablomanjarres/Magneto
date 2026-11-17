@@ -93,7 +93,14 @@ Pruebas integrales: Ejecutar validaciones de punta a punta entre la interfaz ren
 
 ### Historias priorizadas
 
-{PENDIENTE: historias del Sprint 3 con sus puntos de _planning poker_ y su impacto}
+Alcance y Historias de Usuario Priorizadas (Sprint 3):
+Para este sprint final se priorizaron las 13 historias de usuario pendientes del backlog inicial (correspondientes al 37% de mayor complejidad técnica), sumadas a los ajustes de interfaz solicitados por el Product Owner:
+
+Como usuario candidato, quiero gestionar y actualizar la totalidad de los campos de mi perfil profesional (100% de completitud) para habilitar el sistema de recomendaciones.
+
+Como usuario, quiero visualizar un listado de vacantes recomendadas filtradas según la información registrada en mi perfil.
+
+Como usuario, quiero registrar y actualizar el estado de mis postulaciones directamente desde la vista de vacantes.
 
 ### Ceremonias
 
