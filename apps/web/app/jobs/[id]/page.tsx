@@ -6,7 +6,8 @@ import { comparisonBlockers, scoreVacancy } from "@moonlight/core";
 
 import { AppShell } from "../../../components/AppShell";
 import { Icon } from "../../../components/Icon";
-import { ButtonLink, Card, Chip, Score } from "../../../components/primitives";
+import { MatchLocked } from "../../../components/MatchLocked";
+import { Card, Chip, Score } from "../../../components/primitives";
 import { placeMeta, salaryRange } from "../../../lib/format";
 import { loadRanked, requireProfile } from "../../../lib/queries";
 import { ApplyButton } from "./ApplyButton";
@@ -43,7 +44,7 @@ function ScoreRing({ score }: { score: number }) {
           r={RADIUS}
           fill="none"
           strokeWidth="10"
-          className="stroke-surface"
+          className="stroke-brand-wash"
         />
         <circle
           cx="60"
@@ -103,7 +104,8 @@ export default async function VacancyPage({ params }: { params: Promise<{ id: st
       >
         <div className="pointer-events-none absolute -top-24 -right-24 -z-10 size-72 rounded-full bg-brand-wash blur-3xl" />
         <div className="flex min-w-0 flex-1 flex-col gap-4">
-          {rank > 0 && (
+          {/* Without skills every score ties at 0, so a rank would only be the dataset's order. */}
+          {rank > 0 && blockers.length === 0 && (
             <Chip tone="brand">
               #{rank} de {ranked.length} para ti
             </Chip>
@@ -127,20 +129,7 @@ export default async function VacancyPage({ params }: { params: Promise<{ id: st
       </Card>
 
       {blockers.length > 0 ? (
-        <Card className="flex animate-rise flex-col items-center gap-3 p-8 text-center [animation-delay:150ms]">
-          <span className="grid size-12 place-items-center rounded-full bg-brand-wash text-brand">
-            <Icon name="user" size={22} />
-          </span>
-          <h2 className="text-xl font-black text-slate">Completa tu perfil primero</h2>
-          <p className="max-w-md text-sm text-pretty text-muted">
-            Para calcular tu match necesitamos saber qué sabes hacer. Te falta:{" "}
-            {blockers.join(", ").toLowerCase()}.
-          </p>
-          <ButtonLink href="/onboarding">
-            Completar mi perfil
-            <Icon name="arrowRight" size={16} strokeWidth={2.4} />
-          </ButtonLink>
-        </Card>
+        <MatchLocked vacancyCount={vacancies.length} />
       ) : (
         <>
           <div
