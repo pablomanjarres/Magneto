@@ -64,11 +64,11 @@ export function CompletenessRail({ completeness }: { completeness: CompletenessR
         </p>
       </div>
 
-      <CompletenessPanel completeness={completeness} />
+      <CompletenessPanel completeness={completeness} figure={false} />
 
       <p className="rounded-2xl bg-brand-wash p-4 text-sm text-ink">
-        Un perfil completo se evalúa contra cada vacante abierta. Cada campo vacío es una
-        coincidencia que no podemos calcular.
+        Tu match lee tus habilidades, tu ciudad y si te reubicas. Lo demás lo ve el reclutador
+        en tu hoja de vida.
       </p>
     </Card>
   );
