@@ -18,7 +18,7 @@ import {
 } from "@moonlight/core";
 import type { Profile } from "@moonlight/types";
 
-import { CLAUDE_MODEL, claude } from "./claude";
+import { CLAUDE_MODEL, budgeted, claude } from "./claude";
 import type { AssistantAction, ChatMessage } from "./client";
 import { UserFacingError } from "./errors";
 import { publish } from "./events";
@@ -351,13 +351,15 @@ export async function answer(
   const prompt = system(profile, path, tailored !== undefined);
 
   for (let round = 0; round <= MAX_ROUNDS; round++) {
-    const response = await claude().messages.create({
-      model: CLAUDE_MODEL,
-      max_tokens: 2000,
-      system: prompt,
-      tools: DEFINITIONS,
-      messages: conversation,
-    });
+    const response = await budgeted("assistant", () =>
+      claude().messages.create({
+        model: CLAUDE_MODEL,
+        max_tokens: 2000,
+        system: prompt,
+        tools: DEFINITIONS,
+        messages: conversation,
+      }),
+    );
 
     if (response.stop_reason !== "tool_use") {
       const reply = response.content

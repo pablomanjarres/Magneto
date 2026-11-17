@@ -5,3 +5,4 @@ export * from "./repositories/vacancies.js";
 export * from "./repositories/profiles.js";
 export * from "./repositories/applications.js";
 export * from "./repositories/events.js";
+export * from "./repositories/spend.js";

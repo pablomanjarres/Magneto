@@ -4,7 +4,7 @@ import { z } from "zod";
 import { checkTailored } from "@moonlight/core";
 import type { Profile, TailoredProfile, Vacancy } from "@moonlight/types";
 
-import { CLAUDE_MODEL, claude } from "./claude";
+import { CLAUDE_MODEL, budgeted, claude } from "./claude";
 import { UserFacingError } from "./errors";
 
 /** Claude could not adapt the profile without adding facts, even after one retry. */
@@ -89,12 +89,14 @@ async function rewrite(
   let problems: string[] = [];
 
   for (let attempt = 0; attempt < 2; attempt++) {
-    const response = await claude().messages.parse({
-      model: CLAUDE_MODEL,
-      max_tokens: 4000,
-      messages,
-      output_config: { format: zodOutputFormat(Output) },
-    });
+    const response = await budgeted("tailor", () =>
+      claude().messages.parse({
+        model: CLAUDE_MODEL,
+        max_tokens: 4000,
+        messages,
+        output_config: { format: zodOutputFormat(Output) },
+      }),
+    );
     const parsed = response.parsed_output;
     if (response.stop_reason === "refusal" || !parsed) {
       problems = ["La respuesta no tenía el formato esperado."];
