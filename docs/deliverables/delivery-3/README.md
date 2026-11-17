@@ -56,7 +56,7 @@ patrones 20% (exposición 10%, análisis 10%) · Funcionalidad y demostración 5
 
 - [x] Architecture described as a paragraph, with how the framework implements it (Pablo)
 - [x] Summary table: type, styles, language, technical aspects, frameworks (Pablo)
-- [X] Implementation class diagram, drawn by the team: classes, attributes, methods, relations
+- [ ] Implementation class diagram, drawn by the team: classes, attributes, methods, relations
       (Valentina)
 - [x] What that diagram has to show, listed from the code (Pablo)
 - [x] Deployment diagram, updated: no Express service, Apify and the Claude API as external
