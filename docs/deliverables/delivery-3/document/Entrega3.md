@@ -35,8 +35,9 @@
 
 ### Introducción
 
-{PENDIENTE: la problemática, la propuesta de solución, lo desarrollado en el curso y qué contiene
-este documento, escrito por el equipo}
+En el mercado laboral actual, los candidatos suelen enfrentarse a plataformas rígidas donde completar la información profesional es tedioso y las recomendaciones de empleo no reflejan con precisión su perfil real. Para responder a esta necesidad, se desarrolló Moonlight, una plataforma web diseñada para garantizar la completitud integral del perfil del usuario y ofrecer un motor base de recomendación de vacantes ajustado a sus competencias.
+
+El presente documento constituye la tercera y última entrega del curso, enfocada en la consolidación del producto funcional. A lo largo de estas secciones se presenta la evaluación retrospectiva del Sprint 2, la planificación y ejecución del Sprint 3 (donde se integraron las funcionalidades de mayor complejidad técnica), y la especificación detallada de la arquitectura de la solución. Además, se documentan las vistas estructurales, el modelo de persistencia, la aplicación de principios y patrones de diseño, y las evidencias de funcionamiento real del sistema de cara a la validación con el Product Owner.
 
 ### Aporte de cada integrante
 
