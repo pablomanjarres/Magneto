@@ -8,12 +8,16 @@ import { initials } from "../lib/format";
 import { Icon } from "./Icon";
 import { Chip } from "./primitives";
 
-const ITEM = '[role="menuitemradio"]';
+// The profiles, and "Crear perfil nuevo" after them.
+const ITEM = '[role^="menuitem"]';
+
+/** The wizard, empty, for a profile that exists once it is saved (see app/onboarding/page.tsx). */
+const NEW_PROFILE = "/onboarding?nuevo=1";
 
 /**
  * The avatar in the header, which also switches the profile the app acts as.
  * There is no sign-in: picking someone only sets a cookie (POST /api/session).
- * In the menu the arrows, Home and End move between profiles; Escape and Tab
+ * In the menu the arrows, Home and End move between the items; Escape and Tab
  * close it and give focus back to the avatar.
  */
 export function ProfileSwitcher({
@@ -173,6 +177,28 @@ export function ProfileSwitcher({
                 </button>
               );
             })}
+            <div role="separator" className="mx-3 my-1 h-px bg-line" />
+            <button
+              type="button"
+              role="menuitem"
+              tabIndex={-1}
+              // A fresh page, like a switch: nothing built from the current person carries over.
+              onClick={() => window.location.assign(NEW_PROFILE)}
+              className="flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-left transition hover:bg-surface focus-visible:bg-surface"
+            >
+              <span
+                aria-hidden="true"
+                className="flex size-9 shrink-0 items-center justify-center rounded-full border-2 border-dashed border-brand/40 text-brand"
+              >
+                <Icon name="plus" size={16} strokeWidth={2.6} />
+              </span>
+              <span className="flex min-w-0 flex-1 flex-col">
+                <span className="text-[15px] font-bold text-ink">Crear perfil nuevo</span>
+                <span className="truncate text-sm text-muted">
+                  Empieza el onboarding desde cero
+                </span>
+              </span>
+            </button>
           </div>
           {error && (
             <p role="alert" className="px-3 py-2 text-sm font-bold text-danger">

@@ -16,7 +16,7 @@ import { normalizeSkill, profileCompleteness } from "@moonlight/core";
 import { Icon } from "../../components/Icon";
 import { Card, Eyebrow, ProgressBar, buttonClass } from "../../components/primitives";
 import { useSlidingPill } from "../../components/sliding-pill";
-import { saveProfile } from "../../lib/client";
+import { chooseProfile, saveProfile } from "../../lib/client";
 import { BLANK_EDUCATION, BLANK_EXPERIENCE, EducationStep, ExperienceStep } from "./entry-steps";
 import { CompletenessRail, LaptopPanel } from "./fields";
 import { BasicsStep, ExpectationsStep, SkillsStep } from "./steps";
@@ -66,9 +66,12 @@ const LAST_STEP = STEPS.length - 1;
 export function OnboardingWizard({
   initial,
   vacancies,
+  fresh = false,
 }: {
   initial: Profile;
   vacancies: Vacancy[];
+  /** A new profile: saving creates it and makes it the one the app acts as. */
+  fresh?: boolean | undefined;
 }) {
   const router = useRouter();
   const [profile, setProfile] = useState<Profile>(initial);
@@ -138,6 +141,12 @@ export function OnboardingWizard({
     setSaving(true);
     try {
       await saveProfile({ ...profile, fullName, email });
+      if (fresh) {
+        // On a fresh page, so the header, Luna and every screen act as the new person.
+        await chooseProfile(profile.id);
+        window.location.assign("/dashboard");
+        return;
+      }
       router.push("/dashboard");
       router.refresh();
     } catch (cause) {
@@ -177,7 +186,8 @@ export function OnboardingWizard({
           </div>
 
           <div key={step} ref={area} className="flex animate-rise flex-col gap-5" {...fieldEvents}>
-            {step === 0 && <ImportPrompt />}
+            {/* An import fills the profile the app acts as, which a new one is not until it is saved. */}
+            {step === 0 && !fresh && <ImportPrompt />}
             {step === 0 && <BasicsStep profile={profile} onPatch={patch} />}
 
             {step === 1 && (
