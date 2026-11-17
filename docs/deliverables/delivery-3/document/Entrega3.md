@@ -236,7 +236,7 @@ las llaves foráneas cuidan esas reglas en la base de datos. Los sub-objetos del
 | **Clasificación**         | Comportamiento                                                                                                                                                                                                               |
 | **Intención**             | Que el registro de actividades reaccione a cada cambio de una postulación sin que las rutas sepan que existe                                                                                                                 |
 | **Aplicabilidad**         | Un cambio debe disparar efectos secundarios que pueden crecer (historial hoy, notificaciones mañana)                                                                                                                         |
-| **Estructura**            | {PENDIENTE: images/6-observer.png}                                                                                                                                                                                           |
+| **Estructura**            | ![Estructura de Observer](images/6-observer.png)                                                                                                                                                                                           |
 | **Participantes**         | Sujeto: `ApplicationEvents`. Oyente: la función que llama `recordEvent`. Evento: `ApplicationEvent`                                                                                                                          |
 | **Colaboraciones**        | La ruta cambia la postulación y llama `publish`; el sujeto avisa a cada oyente; el oyente guarda la fila en `application_events`                                                                                             |
 | **Consecuencias**         | (+) agregar un efecto es suscribir un oyente; un oyente que falla no tumba la petición. (−) el flujo es menos evidente al leer la ruta                                                                                       |
@@ -253,7 +253,7 @@ las llaves foráneas cuidan esas reglas en la base de datos. Los sub-objetos del
 | **Clasificación**         | Comportamiento                                                                                                                     |
 | **Intención**             | Cambiar el orden de la lista de vacantes sin tocar el código que filtra y pagina                                                   |
 | **Aplicabilidad**         | Varias formas de resolver lo mismo (ordenar) elegidas por el usuario en tiempo de ejecución                                        |
-| **Estructura**            | {PENDIENTE: images/6-strategy.png}                                                                                                 |
+| **Estructura**            | ![Estructura de Strategy](images/6-strategy.png)                                                                                                 |
 | **Participantes**         | Contexto: la lista en `VacancyFilters`. Estrategias: los comparadores `match`, `salary` y `company` de `SORTS`                     |
 | **Colaboraciones**        | El selector "Ordenar por" guarda una llave; la lista llama `sort(SORTS[llave])`                                                    |
 | **Consecuencias**         | (+) un orden nuevo es una línea. (−) cada estrategia debe respetar el mismo contrato de comparación                                |
@@ -270,7 +270,7 @@ las llaves foráneas cuidan esas reglas en la base de datos. Los sub-objetos del
 | **Clasificación**         | Estructura (patrón de arquitectura de acceso a datos)                                                                    |
 | **Intención**             | Que el resto de la aplicación pida perfiles, vacantes y postulaciones sin escribir SQL                                   |
 | **Aplicabilidad**         | Una capa de dominio que no debe conocer la base de datos                                                                 |
-| **Estructura**            | {PENDIENTE: images/6-repository.png}                                                                                     |
+| **Estructura**            | ![Estructura de Repository](images/6-repository.png)                                                                                     |
 | **Participantes**         | Repositorios de `packages/db/src/repositories/`; entidades de `packages/types`; el _pool_ de conexiones                  |
 | **Colaboraciones**        | La ruta llama `getProfile` o `listVacancies`; el repositorio consulta y convierte las filas en objetos del dominio       |
 | **Consecuencias**         | (+) todo el SQL en un paquete; cambiar el motor no toca el dominio. (−) una capa más entre la ruta y la tabla            |
@@ -287,7 +287,7 @@ las llaves foráneas cuidan esas reglas en la base de datos. Los sub-objetos del
 | **Clasificación**         | Estructura                                                                                                                         |
 | **Intención**             | Dar a las páginas una sola puerta para leer datos y a la interfaz una sola puerta para escribir                                    |
 | **Aplicabilidad**         | Varias páginas necesitan la misma combinación de repositorios y reglas del dominio                                                 |
-| **Estructura**            | {PENDIENTE: images/6-facade.png}                                                                                                   |
+| **Estructura**            | ![Estructura de Facade](images/6-facade.png)                                                                                                   |
 | **Participantes**         | Fachadas: `apps/web/lib/queries.ts` (lectura) y `apps/web/lib/client.ts` (escritura). Subsistemas: repositorios, dominio y API     |
 | **Colaboraciones**        | El panel llama `loadRanked(profile)`, que trae las vacantes, las puntúa y calcula las brechas en una sola llamada                  |
 | **Consecuencias**         | (+) las páginas solo componen; la consulta no se copia por ruta. (−) la fachada crece si se le agregan casos que no comparten nada |
@@ -304,7 +304,7 @@ las llaves foráneas cuidan esas reglas en la base de datos. Los sub-objetos del
 | **Clasificación**         | Comportamiento                                                                                                                             |
 | **Intención**             | Que una postulación solo pueda moverse a los estados permitidos desde el estado en que está                                                |
 | **Aplicabilidad**         | Un objeto con pocos estados y transiciones fijas                                                                                           |
-| **Estructura**            | {PENDIENTE: images/6-state.png}                                                                                                            |
+| **Estructura**            | ![Estructura de State](images/6-state.png)                                                                                                            |
 | **Participantes**         | Estados: `applied`, `in-review`, `interview`, `rejected`. Tabla de transiciones: `ALLOWED_MOVES`. Guardia: `canMove`                       |
 | **Colaboraciones**        | El tablero muestra solo los movimientos de `ALLOWED_MOVES`; la ruta `PATCH` vuelve a validar con `canMove` y responde 409 si no se permite |
 | **Consecuencias**         | (+) la tabla se lee y se prueba de un vistazo. (−) estados con comportamiento propio pedirían clases por estado                            |
@@ -321,8 +321,8 @@ las llaves foráneas cuidan esas reglas en la base de datos. Los sub-objetos del
 | **Clasificación**         | Estructura                                                                                                                                    |
 | **Intención**             | Que un registro de LinkedIn y una hoja de vida en PDF lleguen al perfil con la misma forma, `ImportedProfile`                                 |
 | **Aplicabilidad**         | Dos fuentes con formatos que no controlamos y que el resto de la aplicación no debe conocer                                                   |
-| **Estructura**            | {PENDIENTE: images/6-adapter.png}                                                                                                             |
-| **Participantes**         | Adaptados: el registro del actor de Apify y la salida de Claude. Adaptadores: `mapLinkedInProfile` y `readResume`. Destino: `ImportedProfile` |
+| **Estructura**            | ![Estructura de Adapter](images/6-adapter.png)                                                                                                             |
+| **Participantes**         | Adaptados: el registro del actor de Apify y la salida de Claude. Adaptadores: `mapLinkedInProfile` y `mapResume`. Destino: `ImportedProfile` |
 | **Colaboraciones**        | La ruta de importación llama al servicio, pasa su respuesta por el adaptador y entrega `ImportedProfile` a la pantalla de revisión            |
 | **Consecuencias**         | (+) si el scraper cambia su formato, solo cambia `mapLinkedInProfile`. (−) un campo nuevo de la fuente no aparece hasta mapearlo              |
 | **Implementación**        | Funciones puras que leen el registro campo por campo, descartan lo desconocido y normalizan fechas con `toYearMonth`                          |
