@@ -153,7 +153,7 @@ Lo que el diagrama debe mostrar, tal como está en el código:
 
 ### Vista Física — Diagrama de Despliegue
 
-{PENDIENTE: images/4-despliegue.png, dibujado por el equipo}
+![Despliegue](images/despliegue.jpeg)
 
 | Nodo / Proceso                  | Contenido                                                                       | Comunicación                                               |
 | ------------------------------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------- |
