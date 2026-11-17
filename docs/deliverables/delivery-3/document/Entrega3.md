@@ -179,7 +179,7 @@ las llaves foráneas cuidan esas reglas en la base de datos. Los sub-objetos del
 | `applications`         | PK `id`; FK a `profiles` y `vacancies`; único (`profile_id`, `vacancy_id`); `status` en los cuatro estados |
 | `application_events`   | PK `id`; FK a `profiles` y `vacancies`; `application_id` sin FK para que el historial sobreviva al retiro  |
 
-![Entidad-relacion](images/4-entidad-relacion.png)
+![entidad-relacion](images/entidad-relacion.png)
 
 ---
 
