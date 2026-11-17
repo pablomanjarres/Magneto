@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { type MatchBand, matchBand } from "@moonlight/core";
 
 import { CountUp } from "./CountUp";
 import { Icon } from "./Icon";
@@ -125,20 +126,26 @@ export function PageHeader({
   );
 }
 
-/** `label` names the bar: a progressbar without one is announced as a bare number. */
+/**
+ * `label` names the bar: a progressbar without one is announced as a bare number.
+ * The track is a pale step of the fill's own colour, so the empty part still
+ * reads as part of the same bar: purple on white cards, mint on the navy hero.
+ */
 export function ProgressBar({
   percentage,
   label,
   thin = false,
+  dark = false,
 }: {
   percentage: number;
   label?: string;
   thin?: boolean;
+  dark?: boolean;
 }) {
   const clamped = Math.max(0, Math.min(100, percentage));
   return (
     <div
-      className={`w-full overflow-hidden rounded-full bg-surface-strong ${thin ? "h-1.5" : "h-2.5"}`}
+      className={`w-full overflow-hidden rounded-full ${dark ? "bg-mint/20" : "bg-brand-wash"} ${thin ? "h-1.5" : "h-2.5"}`}
       role="progressbar"
       aria-label={label}
       aria-valuenow={clamped}
@@ -146,32 +153,61 @@ export function ProgressBar({
       aria-valuemax={100}
     >
       <div
-        className="h-full rounded-full bg-[linear-gradient(90deg,var(--color-brand),var(--color-brand-soft),var(--color-brand))] bg-[length:200%_100%] transition-[width] duration-1000 ease-out motion-safe:animate-shimmer"
+        className={`h-full rounded-full transition-[width] duration-1000 ease-out ${
+          dark
+            ? "bg-mint"
+            : "bg-[linear-gradient(90deg,var(--color-brand),var(--color-brand-soft),var(--color-brand))] bg-[length:200%_100%] motion-safe:animate-shimmer"
+        }`}
         style={{ width: `${clamped}%` }}
       />
     </div>
   );
 }
 
-/** The match score as a navy numeral with its unit. */
-export function Score({ score, large = false }: { score: number; large?: boolean }) {
+/** The band's word and colour, under the number: green for alto, purple for medio, grey for bajo. */
+const BAND_CAPTION: Record<MatchBand, string> = {
+  alto: "text-mint-deep",
+  medio: "text-brand",
+  bajo: "text-muted",
+};
+
+/**
+ * The match score as a navy numeral with its unit, and its band under it, so
+ * a list of scores is read at a glance. `null` while the profile has nothing
+ * to compare (no skills yet): a dash, not a 0% that blames the job.
+ */
+export function Score({ score, large = false }: { score: number | null; large?: boolean }) {
+  const band = score === null ? null : matchBand(score);
   return (
     <div className="flex flex-col items-center leading-none">
+      {score === null ? (
+        <span
+          className={`font-black text-faint ${large ? "text-4xl" : "text-3xl"}`}
+          aria-label="Match sin calcular"
+        >
+          —
+        </span>
+      ) : (
+        <span
+          className={`font-black text-navy ${large ? "text-4xl" : "text-3xl"}`}
+          aria-label={`${score}% de coincidencia, match ${band}`}
+        >
+          <CountUp value={score} />
+          <span className={large ? "text-xl" : "text-base"}>%</span>
+        </span>
+      )}
       <span
-        className={`font-black text-navy ${large ? "text-4xl" : "text-3xl"}`}
-        aria-label={`${score}% de coincidencia`}
+        className={`mt-1 text-[10px] font-bold tracking-[0.16em] uppercase ${band ? BAND_CAPTION[band] : "text-muted"}`}
+        aria-hidden="true"
       >
-        <CountUp value={score} />
-        <span className={large ? "text-xl" : "text-base"}>%</span>
-      </span>
-      <span className="mt-1 text-[10px] font-bold tracking-[0.16em] text-muted uppercase">
-        Match
+        {/* The slot in a list row only fits the word. */}
+        {band === null ? "Match" : large ? `Match ${band}` : band}
       </span>
     </div>
   );
 }
 
-export type ChipTone = "plain" | "dashed" | "met" | "missing" | "brand";
+export type ChipTone = "plain" | "dashed" | "met" | "missing" | "brand" | "next";
 
 const CHIP_TONES: Record<ChipTone, string> = {
   plain: "bg-surface text-ink",
@@ -179,6 +215,8 @@ const CHIP_TONES: Record<ChipTone, string> = {
   met: "bg-mint-wash text-mint-deep",
   missing: "bg-danger-wash text-danger",
   brand: "bg-brand-wash text-brand",
+  // The one thing to do next, among dashed chips.
+  next: "bg-brand text-white",
 };
 
 export function Chip({ children, tone = "plain" }: { children: ReactNode; tone?: ChipTone }) {
@@ -250,21 +288,41 @@ export function Field({
 }
 
 /** A big number with its label, for the strips of figures at the top of a screen. */
+/**
+ * One figure of a KPI row: the number with its unit attached, and what it
+ * counts under it. Put a row of them in a <dl>; the label is read first.
+ */
 export function Stat({
   value,
+  unit,
   label,
   accent = false,
+  dark = false,
+  className = "",
 }: {
-  value: string;
+  /** `null` prints a dash: there is no figure yet. */
+  value: number | null;
+  unit?: string | undefined;
   label: string;
-  accent?: boolean;
+  accent?: boolean | undefined;
+  /** On the navy hero instead of a white card. */
+  dark?: boolean | undefined;
+  className?: string | undefined;
 }) {
+  const figure = dark ? "text-white" : accent ? "text-brand" : "text-navy";
   return (
-    <div className="flex flex-col">
-      <span className={`text-3xl font-black tabular-nums ${accent ? "text-brand" : "text-navy"}`}>
-        {value}
-      </span>
-      <span className="text-xs font-bold text-muted">{label}</span>
+    <div className={`flex flex-col-reverse ${className}`}>
+      <dt className={`text-xs font-bold ${dark ? "text-white/65" : "text-muted"}`}>{label}</dt>
+      <dd className={`text-3xl font-black ${figure}`}>
+        {value === null ? (
+          "—"
+        ) : (
+          <>
+            <CountUp value={value} />
+            {unit && <span className="text-lg">{unit}</span>}
+          </>
+        )}
+      </dd>
     </div>
   );
 }
