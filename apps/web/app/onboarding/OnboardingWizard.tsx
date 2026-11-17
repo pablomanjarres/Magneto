@@ -16,7 +16,7 @@ import { isEmail, normalizeSkill, profileCompleteness } from "@moonlight/core";
 import { Icon } from "../../components/Icon";
 import { Card, Eyebrow, ProgressBar, buttonClass } from "../../components/primitives";
 import { useSlidingPill } from "../../components/sliding-pill";
-import { chooseProfile, saveProfile } from "../../lib/client";
+import { saveProfile } from "../../lib/client";
 import { BLANK_EDUCATION, BLANK_EXPERIENCE, EducationStep, ExperienceStep } from "./entry-steps";
 import { CompletenessRail, LaptopPanel } from "./fields";
 import { BasicsStep, ExpectationsStep, SkillsStep } from "./steps";
@@ -63,15 +63,7 @@ const STEPS = [
 
 const LAST_STEP = STEPS.length - 1;
 
-/** The one screen before a new profile exists: who it is for, and nothing else yet. */
-const NEW_PROFILE = {
-  eyebrow: "Primero",
-  title: "¿A nombre de quién?",
-  blurb:
-    "Con el nombre y el correo creamos el perfil vacío y la app pasa a usarlo. Después lo llenas paso a paso o lo importas de LinkedIn o de una hoja de vida en PDF.",
-} as const;
-
-/** Why the profile cannot be stored yet, in words for the candidate; null when it can. */
+/** Why the wizard cannot save the profile yet, in words for the candidate; null when it can. */
 function identityProblem(fullName: string, email: string): string | null {
   if (fullName.length === 0 || email.length === 0) {
     return "Sin tu nombre y tu correo no podemos guardar el perfil.";
@@ -82,12 +74,9 @@ function identityProblem(fullName: string, email: string): string | null {
 export function OnboardingWizard({
   initial,
   vacancies,
-  fresh = false,
 }: {
   initial: Profile;
   vacancies: Vacancy[];
-  /** A new profile: one screen asks who it is for, then creates it empty and acts as it. */
-  fresh?: boolean | undefined;
 }) {
   const router = useRouter();
   const [profile, setProfile] = useState<Profile>(initial);
@@ -96,9 +85,6 @@ export function OnboardingWizard({
   const [saving, setSaving] = useState(false);
 
   const current = STEPS[step] ?? STEPS[0];
-  const heading = fresh
-    ? NEW_PROFILE
-    : { eyebrow: `Paso ${step + 1} de ${STEPS.length}`, title: current.title, blurb: current.blurb };
   const completeness = profileCompleteness(profile);
   const { typing, area, fieldEvents, focusFirstField } = useTyping();
 
@@ -169,37 +155,7 @@ export function OnboardingWizard({
     }
   }
 
-  /**
-   * Stores the new profile with nothing but who it is, and makes it the one the
-   * app acts as, so the import, the résumé and every screen show it from now on.
-   */
-  async function create(): Promise<void> {
-    const fullName = profile.fullName.trim();
-    const email = profile.email.trim();
-    const problem = identityProblem(fullName, email);
-    if (problem) {
-      setError(problem);
-      return;
-    }
-
-    setError(null);
-    setSaving(true);
-    try {
-      await saveProfile({ ...profile, fullName, email });
-      await chooseProfile(profile.id);
-      // A fresh page: the header and Luna are drawn again as the new person.
-      window.location.assign("/onboarding");
-    } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "No pudimos crear el perfil.");
-      setSaving(false);
-    }
-  }
-
   function goNext(): void {
-    if (fresh) {
-      void create();
-      return;
-    }
     if (step === LAST_STEP) {
       void finish();
       return;
@@ -210,29 +166,27 @@ export function OnboardingWizard({
 
   return (
     <div className="flex flex-col gap-6">
-      {/* A new profile gets the steps once it exists. */}
-      {!fresh && (
-        <div className="flex animate-rise flex-col gap-4">
-          <Stepper step={step} onGo={setStep} />
-          <ProgressBar
-            percentage={((step + 1) / STEPS.length) * 100}
-            label={`Paso ${step + 1} de ${STEPS.length}`}
-            thin
-          />
-        </div>
-      )}
+      <div className="flex animate-rise flex-col gap-4">
+        <Stepper step={step} onGo={setStep} />
+        <ProgressBar
+          percentage={((step + 1) / STEPS.length) * 100}
+          label={`Paso ${step + 1} de ${STEPS.length}`}
+          thin
+        />
+      </div>
 
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
         <Card className="flex animate-rise flex-col gap-6 p-6 [animation-delay:80ms] max-lg:order-2 sm:p-8">
           <div>
-            <Eyebrow>{heading.eyebrow}</Eyebrow>
-            <h2 className="mt-1 text-2xl font-black text-slate">{heading.title}</h2>
-            <p className="mt-2 max-w-[52ch] text-sm text-pretty text-muted">{heading.blurb}</p>
+            <Eyebrow>
+              Paso {step + 1} de {STEPS.length}
+            </Eyebrow>
+            <h2 className="mt-1 text-2xl font-black text-slate">{current.title}</h2>
+            <p className="mt-2 max-w-[52ch] text-sm text-pretty text-muted">{current.blurb}</p>
           </div>
 
           <div key={step} ref={area} className="flex animate-rise flex-col gap-5" {...fieldEvents}>
-            {/* An import fills the profile the app acts as: a new one first has to exist. */}
-            {step === 0 && !fresh && <ImportPrompt />}
+            {step === 0 && <ImportPrompt />}
             {step === 0 && <BasicsStep profile={profile} onPatch={patch} />}
 
             {step === 1 && (
@@ -304,11 +258,9 @@ export function OnboardingWizard({
 
             <div className="flex flex-wrap items-center justify-end gap-3">
               <span className="text-xs text-muted">
-                {fresh
-                  ? "Lo demás queda vacío hasta que lo llenes."
-                  : step === LAST_STEP
-                    ? "Esto es lo que guardamos."
-                    : "Nada se guarda hasta el último paso."}
+                {step === LAST_STEP
+                  ? "Esto es lo que guardamos."
+                  : "Nada se guarda hasta el último paso."}
               </span>
               <button
                 type="button"
@@ -317,13 +269,7 @@ export function OnboardingWizard({
                 disabled={saving}
                 aria-busy={saving}
               >
-                {saving
-                  ? "Guardando…"
-                  : fresh
-                    ? "Crear perfil"
-                    : step === LAST_STEP
-                      ? "Guardar perfil"
-                      : "Siguiente"}
+                {saving ? "Guardando…" : step === LAST_STEP ? "Guardar perfil" : "Siguiente"}
                 {!saving && <Icon name="arrowRight" size={16} strokeWidth={2.4} />}
               </button>
             </div>
