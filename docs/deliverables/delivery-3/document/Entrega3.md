@@ -128,7 +128,7 @@ Claude, que lee una hoja de vida en PDF y adapta el perfil a una vacante.
 | **Tipo Aplicación**        | Web                                                                                                                                                                                                                                               |
 | **Estilo Arquitectónico**  | **Layered** (dominio, acceso a datos, aplicación). **Component-Based** (cada capa es un paquete con frontera propia). **Client/Server, 3-Tiers** (navegador → servidor Next.js → PostgreSQL). Se descartan SOA y Message Bus: es un solo servicio |
 | **Lenguaje programación**  | TypeScript sobre Node.js 22                                                                                                                                                                                                                       |
-| **Aspectos técnicos**      | PostgreSQL 17 en Docker; migraciones _forward-only_; sub-objetos del perfil en `JSONB`; la aplicación no arranca sin `DATABASE_URL`; servicios externos Apify y API de Claude con sus llaves en `.env.local`; modelo 3D construido en código      |
+| **Aspectos técnicos**      | PostgreSQL 17 en Supabase (producción) y en Docker (desarrollo); migraciones _forward-only_; sub-objetos del perfil en `JSONB`; la aplicación no arranca sin `DATABASE_URL`; servicios externos Apify y API de Claude con sus llaves en variables de entorno (Vercel en producción, `.env.local` en desarrollo); modelo 3D construido en código |
 | **Frameworks**             | Next.js 15 y React 19; Tailwind CSS 4; three.js con react-three-fiber; SDK de Anthropic y zod; Turborepo y pnpm _workspaces_; Vitest                                                                                                              |
 
 ### Vista Lógica — Diagrama de Clases de Implementación
@@ -156,13 +156,18 @@ Lo que el diagrama debe mostrar, tal como está en el código:
 ![Despliegue](images/despliegue.jpeg)
 
 
-| Nodo / Proceso                  | Contenido                                                                       | Comunicación                                               |
-| ------------------------------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| Navegador del candidato         | Interfaz React; escena WebGL del portátil                                       | HTTP al mismo origen                                       |
-| Servidor de aplicación          | Proceso Next.js 15 en Node.js 22: páginas, _route handlers_ y archivos públicos | TCP/SQL contra PostgreSQL                                  |
-| Contenedor `moonlight-postgres` | PostgreSQL 17 con volumen persistente `moonlight-pgdata`                        | Puerto `5433` del anfitrión hacia el `5432` del contenedor |
-| Apify                           | Actor `atomus/linkedin-profile-scraper`                                         | HTTPS desde el servidor de aplicación                      |
-| API de Claude (Anthropic)       | Modelo `claude-opus-5-5`                                                        | HTTPS desde el servidor de aplicación                      |
+| Nodo / Proceso                   | Contenido                                                                                   | Comunicación                                           |
+| -------------------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| Navegador del candidato          | Interfaz React; escena WebGL del portátil                                                   | HTTPS hacia la red Edge de Vercel                      |
+| Red Edge de Vercel               | Archivos estáticos y JavaScript del cliente                                                 | HTTPS hacia las funciones, para páginas y `/api/*`     |
+| Vercel Functions (región `cle1`) | Next.js 15 en Node.js 22: páginas, _route handlers_ y archivos públicos                     | TCP con TLS verificado hacia el pooler de Supabase     |
+| Supabase (AWS `us-east-2`)       | Supavisor en modo transacción (puerto `6543`); PostgreSQL 17, esquema `moonlight` con su propio login | Recibe solo las conexiones de las funciones |
+| Apify                            | Actor `atomus/linkedin-profile-scraper`                                                     | HTTPS desde las funciones                              |
+| API de Claude (Anthropic)        | Modelo `claude-opus-5-5`                                                                    | HTTPS desde las funciones                              |
+
+La aplicación está publicada en https://moonlight-lime.vercel.app. En desarrollo corre el mismo
+servidor con `pnpm dev` y PostgreSQL 17 en el contenedor Docker `moonlight-postgres` (puerto `5433`
+del equipo hacia el `5432` del contenedor).
 
 ### Persistencia
 
