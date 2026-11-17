@@ -1,10 +1,12 @@
 import Link from "next/link";
+import { comparisonBlockers } from "@moonlight/core";
 
 import { AppShell } from "../../components/AppShell";
 import { CompletenessPanel } from "../../components/CompletenessPanel";
 import { CountUp } from "../../components/CountUp";
 import { MarketGaps } from "../../components/MarketGaps";
-import { ButtonLink, Card, EmptyState, Eyebrow } from "../../components/primitives";
+import { MatchLocked } from "../../components/MatchLocked";
+import { ButtonLink, Card, EmptyState, Eyebrow, Stat } from "../../components/primitives";
 import { Icon } from "../../components/Icon";
 import { Laptop } from "../../components/toys/Laptop";
 import { VacancyRow } from "../../components/VacancyRow";
@@ -22,11 +24,12 @@ export default async function DashboardPage() {
   const topGap = gaps[0];
   const firstName = profile.fullName.split(" ")[0];
   const complete = completeness.percentage === 100;
+  const unscored = comparisonBlockers(profile).length > 0;
 
   const figures = [
-    { value: ranked.length, label: "vacantes evaluadas" },
-    { value: ranked[0]?.score ?? 0, label: "% tu mejor match" },
-    { value: applied.size, label: "postulaciones" },
+    { value: ranked.length, label: "Vacantes evaluadas" },
+    { value: unscored ? null : (ranked[0]?.score ?? 0), unit: "%", label: "Tu mejor match" },
+    { value: applied.size, label: "Postulaciones" },
   ];
 
   return (
@@ -49,7 +52,7 @@ export default async function DashboardPage() {
             </p>
           </div>
 
-          <CompletenessPanel completeness={completeness} dark />
+          <CompletenessPanel completeness={completeness} dark figure={false} />
 
           <div className="flex flex-wrap gap-3">
             <ButtonLink href="/onboarding">
@@ -67,13 +70,7 @@ export default async function DashboardPage() {
 
           <dl className="mt-auto grid grid-cols-3 gap-4 border-t border-white/15 pt-6">
             {figures.map((f) => (
-              <div key={f.label}>
-                <dt className="sr-only">{f.label}</dt>
-                <dd className="text-3xl font-black">
-                  <CountUp value={f.value} />
-                </dd>
-                <p className="text-xs text-white/65">{f.label}</p>
-              </div>
+              <Stat key={f.label} {...f} dark />
             ))}
           </dl>
         </div>
@@ -105,6 +102,9 @@ export default async function DashboardPage() {
             <EmptyState title="Aún no hay vacantes evaluadas">
               Carga el dataset con <code>pnpm db:seed</code>.
             </EmptyState>
+          ) : unscored ? (
+            // Every score would tie at 0, so these would be "best" only by id.
+            <MatchLocked vacancyCount={ranked.length} />
           ) : (
             top.map((result, index) => {
               const vacancy = byId.get(result.vacancyId);
@@ -133,7 +133,7 @@ export default async function DashboardPage() {
             </p>
           </div>
 
-          <MarketGaps gaps={gaps} limit={5} />
+          <MarketGaps gaps={gaps} total={vacancies.length} limit={5} />
 
           {topGap && (
             <p className="mt-auto flex gap-3 rounded-2xl bg-brand-wash p-4 text-sm text-ink">
