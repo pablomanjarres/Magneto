@@ -5,7 +5,7 @@ import type { ImportedProfile } from "@moonlight/types";
 import { z } from "zod";
 
 import { UserFacingError } from "./errors";
-import { CLAUDE_MODEL, claude } from "./claude";
+import { CLAUDE_MODEL, budgeted, claude } from "./claude";
 
 // Every field is a string so "not in the document" is always the same thing: "".
 const Resume = z.object({
@@ -52,27 +52,29 @@ type Resume = z.infer<typeof Resume>;
 export async function readResume(pdf: Uint8Array): Promise<Resume> {
   let response;
   try {
-    response = await claude().messages.parse({
-      model: CLAUDE_MODEL,
-      max_tokens: 4096,
-      messages: [
-        {
-          role: "user",
-          content: [
-            {
-              type: "document",
-              source: {
-                type: "base64",
-                media_type: "application/pdf",
-                data: Buffer.from(pdf).toString("base64"),
+    response = await budgeted("resume", () =>
+      claude().messages.parse({
+        model: CLAUDE_MODEL,
+        max_tokens: 4096,
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "document",
+                source: {
+                  type: "base64",
+                  media_type: "application/pdf",
+                  data: Buffer.from(pdf).toString("base64"),
+                },
               },
-            },
-            { type: "text", text: PROMPT },
-          ],
-        },
-      ],
-      output_config: { format: zodOutputFormat(Resume) },
-    });
+              { type: "text", text: PROMPT },
+            ],
+          },
+        ],
+        output_config: { format: zodOutputFormat(Resume) },
+      }),
+    );
   } catch (cause) {
     if (cause instanceof Anthropic.RateLimitError) {
       throw new UserFacingError("Hay muchas hojas de vida en fila. Intenta de nuevo en un minuto.");
