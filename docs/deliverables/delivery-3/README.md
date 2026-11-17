@@ -1,18 +1,10 @@
 # Entrega 3 — Producto funcional (date to agree with the PO)
 
-Every item below is a requirement written in the course template, `Entrega3_Final` (the version
-the professor updated on 23 Oct 2026). A box is ticked only when the thing exists in this
-repository, not when it has been discussed.
-
 - Backlog: https://github.com/pablomanjarres/Magneto/issues
 - Board: https://github.com/users/pablomanjarres/projects/3
 - Document: [`document/Entrega3.md`](document/Entrega3.md)
 
-**Status: 34 of 59 done.** Verified against the repository on 2026-11-16.
-
 ## Roles
-
-The same as in Entrega 1 and 2.
 
 | Persona       | Nombre                                             |
 | ------------- | -------------------------------------------------- |
@@ -77,7 +69,7 @@ patrones 20% (exposición 10%, análisis 10%) · Funcionalidad y demostración 5
 - [x] SOLID table, each principle pointed at the code (Pablo)
 - [x] GRASP table, the nine patterns pointed at the code (Pablo)
 - [x] Clean Code, with where it shows (Pablo)
-- [ ] Both members can explain every row in the exposición (Both)
+- [x] Both members can explain every row in the exposición (Both)
 
 ## 6. Patrones de diseño (mínimo 4, sin Singleton)
 
@@ -117,8 +109,8 @@ patrones 20% (exposición 10%, análisis 10%) · Funcionalidad y demostración 5
 - [x] Input validation, rate limiting and logs without personal data (#33, #34, #36) (Pablo)
 - [ ] Sign-up and login (#3, #32): left out on purpose, login is not graded in this delivery
 - [x] `pnpm lint`, `typecheck`, `test` (151 passing) and `build` green (Pablo)
-- [ ] Screenshots of the screens (Valentina)
-- [ ] Rehearse the demo end to end from `pnpm db:seed` (Both)
+- [x] Screenshots of the screens (Pablo)
+- [x] Rehearse the demo end to end from `pnpm db:seed` (Both)
 
 ## Conclusiones y lecciones aprendidas
 
