@@ -9,6 +9,7 @@ import { PrintSheet } from "../../../components/cv/PrintSheet";
 import { Icon } from "../../../components/Icon";
 import { Card, buttonClass } from "../../../components/primitives";
 import { tailorProfile } from "../../../lib/client";
+import { cvTitle } from "../../../lib/format";
 
 type Result = {
   check: { ok: boolean; problems: string[] };
@@ -155,7 +156,7 @@ export function TailorPanel({
         // The vacancy page hides itself in print while this sheet exists.
         <PrintSheet
           doc={result.after}
-          title={`${profile.fullName} · Hoja de vida · ${vacancyTitle}`}
+          title={cvTitle(profile.fullName, vacancyTitle)}
         />
       )}
     </>
