@@ -890,64 +890,110 @@ function LaptopToy({ text, writing, keystrokes, profile, onActivate, prompt }: L
               </group>
             );
           })}
-            position={[0, KEY_Y, keyZ(SPACE)]}
-          />
           <mesh
             geometry={g.trackpad}
             material={m.trackpad}
-            position={[0, BASE_T / 2, 0.56]}
-            rotation={[-Math.PI / 2, 0, 0]}
+            position={[0, DECK + 0.002, PAD_Z]}
+            receiveShadow
           />
-          <mesh geometry={g.light} material={m.light} position={[0.95, 0, D / 2 - 0.01]} />
-          {[-0.85, 0.85].map((x) => (
+          <mesh geometry={g.led} material={m.light} position={[0, -0.01, D / 2 - 0.008]} />
+          {[-0.38, -0.2].map((z) => (
             <mesh
-              key={x}
-              geometry={g.hinge}
-              material={m.hinges}
-              position={[x, HINGE_Y, -D / 2]}
-              rotation={[0, 0, Math.PI / 2]}
+              key={z}
+              geometry={g.port}
+              material={m.holes}
+              position={[-W / 2 + 0.004, -0.005, z]}
             />
           ))}
-          <group ref={lid} position={[0, HINGE_Y, -D / 2]}>
-            <mesh geometry={g.lid} material={m.body} position={[0, LID_T / 2, D / 2]} />
+          <mesh geometry={g.jack} material={m.holes} position={[W / 2 - 0.004, -0.005, -0.3]} />
+          <mesh geometry={g.barrel} material={m.body} position={[0, HINGE_Y, HINGE_Z]} castShadow />
+          {[-1, 1].map((side) => (
+            <mesh
+              key={side}
+              geometry={g.knuckle}
+              material={m.knuckles}
+              position={[side * (BARREL / 2 + 0.115), HINGE_Y, HINGE_Z]}
+              castShadow
+            />
+          ))}
+          <group ref={lid} position={[0, HINGE_Y, HINGE_Z]}>
+            <mesh
+              geometry={g.lid}
+              material={m.body}
+              position={[0, LID_GAP + LID_T / 2, LID_Z]}
+              castShadow
+              receiveShadow
+            />
+            {/* The screen faces down, -y, until the lid opens towards the camera. */}
+            <mesh
+              geometry={g.bezel}
+              material={m.body}
+              position={[0, LID_GAP + 0.002, SCREEN_Z]}
+              rotation={[Math.PI / 2, 0, 0]}
+              receiveShadow
+            />
             <mesh
               geometry={g.screen}
               material={m.screen}
-              position={[0, -0.004, SCREEN_Z]}
+              position={[0, LID_GAP - 0.003, SCREEN_Z]}
               rotation={[Math.PI / 2, 0, 0]}
             />
             <mesh
               ref={words}
-              geometry={g.words}
+              geometry={g.screen}
               material={m.words}
-              position={[0, -0.008, SCREEN_Z]}
+              position={[0, LID_GAP - 0.005, SCREEN_Z]}
               rotation={[Math.PI / 2, 0, 0]}
             />
-            {/* The back of the lid faces +y; stickers read upright from behind the laptop. */}
             <mesh
-              geometry={g.tag}
-              material={m.tag}
-              position={[0.18, LID_T + 0.004, D / 2 - 0.12]}
-              rotation={[-Math.PI / 2, 0, Math.PI + 0.05]}
+              geometry={g.camera}
+              material={m.holes}
+              position={[0, LID_GAP - 0.002, SCREEN_Z + SCREEN_H / 2 + 0.08]}
+              scale={[1, 0.4, 1]}
             />
+            {/* The back of the lid faces +y; stickers read upright from behind the laptop. */}
+            <group
+              position={[-TAG_AT.u, lidBack, LID_Z + TAG_AT.v]}
+              rotation={[-Math.PI / 2, 0, Math.PI + TAG_AT.angle]}
+            >
+              <mesh geometry={g.tag} material={m.tagPaper} castShadow />
+              <mesh
+                geometry={g.tagFace}
+                material={m.tagFace}
+                position={[0, 0, TAG_LIFT + 0.0008]}
+              />
+            </group>
             {STICKERS.map((sticker) => (
               <group
                 key={sticker.shape}
-                position={[-sticker.u, LID_T + 0.01, D / 2 + sticker.v]}
+                position={[-sticker.u, lidBack + STICKER_T - 0.012, LID_Z + sticker.v]}
                 rotation={[-Math.PI / 2, 0, Math.PI + sticker.angle]}
               >
-                <mesh geometry={g[sticker.shape]} material={m[sticker.shape]} />
+                <mesh geometry={g[sticker.shape]} material={m[sticker.shape]} castShadow />
                 {sticker.shape === "dot" && (
-                  <>
-                    <mesh geometry={g.eye} material={m.smiley} position={[-0.055, 0.035, 0.04]} />
-                    <mesh geometry={g.eye} material={m.smiley} position={[0.055, 0.035, 0.04]} />
+                  <group position={[0, 0, STICKER_T + 0.016]}>
+                    {[-1, 1].flatMap((side) => [
+                      <mesh
+                        key={`eye ${side}`}
+                        geometry={g.eye}
+                        material={m.smiley}
+                        position={[side * EYE.x, EYE.y, 0]}
+                        scale={[1, 1.4, 0.8]}
+                      />,
+                      <mesh
+                        key={`end ${side}`}
+                        geometry={g.smileEnd}
+                        material={m.smiley}
+                        position={[side * SMILE_END.x, SMILE_END.y, 0.002]}
+                      />,
+                    ])}
                     <mesh
                       geometry={g.smile}
                       material={m.smiley}
-                      position={[0, 0.005, 0.042]}
-                      rotation={[0, 0, Math.PI]}
+                      position={[0, SMILE.y, 0.002]}
+                      rotation={[0, 0, -(Math.PI + SMILE.arc) / 2]}
                     />
-                  </>
+                  </group>
                 )}
               </group>
             ))}
