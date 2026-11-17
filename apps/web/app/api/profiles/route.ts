@@ -34,7 +34,8 @@ export const POST = withRequestLog(
     } catch (cause) {
       if ((cause as { code?: string }).code === "23505") {
         return Response.json(
-          { error: "that email already belongs to another profile" },
+          // The wizard shows this to the candidate as it is.
+          { error: "Ese correo ya pertenece a otro perfil." },
           { status: 409 },
         );
       }
