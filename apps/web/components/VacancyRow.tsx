@@ -14,10 +14,13 @@ export function VacancyRow({
   vacancy,
   result,
   applied = false,
+  unscored = false,
 }: {
   vacancy: Vacancy;
   result: ScoreResult;
   applied?: boolean;
+  /** The profile has no skills yet, so every score would be 0: none is shown. */
+  unscored?: boolean;
 }) {
   // A summary, not the detail: the top three gaps here, the rest on /jobs/[id].
   const gaps = topGaps(result);
@@ -29,7 +32,7 @@ export function VacancyRow({
       className={`group flex gap-5 rounded-3xl border border-line bg-canvas p-5 ${liftCard}`}
     >
       <div className="flex w-16 shrink-0 items-center justify-center border-r border-line pr-5">
-        <Score score={result.score} />
+        <Score score={unscored ? null : result.score} />
       </div>
 
       <div className="flex min-w-0 flex-1 flex-col gap-1.5">
@@ -53,8 +56,10 @@ export function VacancyRow({
             {salaryRange(vacancy)}
           </span>
         </div>
-        <p className="text-sm text-slate">{result.reason}</p>
-        {gaps.length > 0 && (
+        <p className="text-sm text-slate">
+          {unscored ? "Agrega tus habilidades para ver cuánto encajas." : result.reason}
+        </p>
+        {!unscored && gaps.length > 0 && (
           <div className="flex flex-wrap items-center gap-1.5 pt-1">
             {gaps.map((m) => (
               <Chip key={m.skill} tone="missing">
