@@ -349,4 +349,5 @@ export * from "./merge.js";
 export * from "./edits.js";
 export * from "./tailor.js";
 export { takeToken } from "./rate-limit.js";
+export * from "./spend.js";
 export { diffCv, diffWords, differs, toHarvardCv, touched } from "./cv.js";
