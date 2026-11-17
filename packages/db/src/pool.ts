@@ -4,7 +4,11 @@ import { Pool } from "pg";
 const connectionString = process.env["DATABASE_URL"];
 if (!connectionString) throw new Error("DATABASE_URL is not set. Copy .env.example to .env.local.");
 
-export const pool = new Pool({ connectionString });
+// A hosted database (Supabase) signs its certificate with its own root CA, which
+// Node does not trust. With that root in DATABASE_CA_CERT the connection uses TLS
+// and checks the server; without it (local Docker) it stays as the URL says.
+const ca = process.env["DATABASE_CA_CERT"];
+export const pool = new Pool({ connectionString, ...(ca ? { ssl: { ca } } : {}) });
 
 // An idle client dying (a Postgres restart, a killed backend) emits 'error' on
 // the pool; with no listener EventEmitter rethrows and takes the process down.
