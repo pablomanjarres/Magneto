@@ -334,7 +334,15 @@ export function pageOf<T>(
   return { items: items.slice(0, end), hasMore: items.length > end };
 }
 
-export { DEFAULT_CURRENCY, SENIORITIES, TARGET_AREAS, parseProfile } from "./parse-profile.js";
+export {
+  DEFAULT_CURRENCY,
+  SENIORITIES,
+  TARGET_AREAS,
+  emptyProfile,
+  isEmail,
+  isEmptyProfile,
+  parseProfile,
+} from "./parse-profile.js";
 export { ApplicationEvents, describeEvent } from "./activity.js";
 export * from "./import.js";
 export * from "./merge.js";
