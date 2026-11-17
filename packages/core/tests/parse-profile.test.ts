@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { parseProfile } from "../src/index.js";
+import { emptyProfile, isEmail, isEmptyProfile, parseProfile } from "../src/index.js";
 
 const valid = {
   id: "p1",
@@ -37,8 +37,9 @@ describe("parseProfile", () => {
     expect(ok(valid)).toEqual(valid);
   });
 
-  it("names every missing identity field at once", () => {
-    expect(errors({})).toEqual(["id is required", "email is required", "fullName is required"]);
+  it("requires only an id: a new profile has no name or e-mail yet", () => {
+    expect(errors({})).toEqual(["id is required"]);
+    expect(ok({ id: "p1", fullName: "", email: "" })).toMatchObject({ fullName: "", email: "" });
   });
 
   it("rejects a body that is not an object", () => {
@@ -301,5 +302,33 @@ describe("parseProfile", () => {
     expect(profile.skills).toEqual([{ name: "SQL" }]);
     expect(profile.experience[0]).not.toHaveProperty("source");
     expect(profile.education[0]).not.toHaveProperty("source");
+  });
+});
+
+describe("isEmail", () => {
+  it("takes one @ with something either side, and nothing empty", () => {
+    expect(isEmail("ana@example.com")).toBe(true);
+    expect(isEmail("ana.example.com")).toBe(false);
+    expect(isEmail("")).toBe(false);
+  });
+});
+
+describe("emptyProfile", () => {
+  it("is a valid profile that counts as empty", () => {
+    const blank = emptyProfile("p9");
+    expect(ok(blank)).toEqual(blank);
+    expect(isEmptyProfile(blank)).toBe(true);
+  });
+
+  it("stops counting as empty once anything is added", () => {
+    const blank = emptyProfile("p9");
+    const expecting = (changes: object) => ({
+      ...blank,
+      expectations: { ...blank.expectations, ...changes },
+    });
+    expect(isEmptyProfile({ ...blank, city: "Medellín" })).toBe(false);
+    expect(isEmptyProfile({ ...blank, skills: [{ name: "SQL" }] })).toBe(false);
+    expect(isEmptyProfile(expecting({ targetRole: "Analista de datos" }))).toBe(false);
+    expect(isEmptyProfile(expecting({ willRelocate: false }))).toBe(false);
   });
 });
