@@ -42,7 +42,7 @@ patrones 20% (exposición 10%, análisis 10%) · Funcionalidad y demostración 5
 
 ## 1. Aspectos generales
 
-- [ ] Introducción: the problem, the solution, what was built and what the document contains
+- [X] Introducción: the problem, the solution, what was built and what the document contains
       (Valentina)
 
 ## 2. Evaluación del Sprint anterior
