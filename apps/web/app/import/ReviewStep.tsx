@@ -20,7 +20,6 @@ import {
   Card,
   Eyebrow,
   Field,
-  ProgressBar,
   TogglePill,
   buttonClass,
   inputClass,
@@ -87,8 +86,10 @@ export function ReviewStep({
     email: identity.email.trim(),
     city: identity.city.trim() || undefined,
   };
-  const before = profileCompleteness(profile).percentage;
-  const after = profileCompleteness(next).percentage;
+  const was = profileCompleteness(profile);
+  const will = profileCompleteness(next);
+  const before = was.percentage;
+  const after = will.percentage;
   // An address the profile would refuse is caught here, in Spanish, not by the server.
   const noIdentity = !next.fullName || !isEmail(next.email);
   const blocked = isBlocked(review) || noIdentity;
@@ -187,8 +188,12 @@ export function ReviewStep({
 
         <div className="flex flex-col gap-3 lg:border-l lg:border-line lg:pl-8">
           <Eyebrow>Completitud del perfil</Eyebrow>
-          <Completeness label="Ahora" value={before} />
-          <Completeness label="Con lo importado" value={after} accent />
+          <CompletenessDelta
+            before={before}
+            after={after}
+            gained={was.missing.filter((label) => !will.missing.includes(label))}
+            lost={will.missing.filter((label) => !was.missing.includes(label))}
+          />
         </div>
       </Card>
 
@@ -393,24 +398,69 @@ export function outcome({ mode, added, joined }: Saved): string {
   return sentence ? `${sentence[0]?.toUpperCase()}${sentence.slice(1)}.` : "No hay nada nuevo.";
 }
 
-function Completeness({
-  label,
-  value,
-  accent = false,
+/**
+ * Before and after on one bar: what the profile already has in navy, then what
+ * the import adds in purple, or, when replacing would empty fields, that span
+ * striped in red. The change is in points, so it never reads as "45% more",
+ * and the fields behind it are named under the bar.
+ */
+function CompletenessDelta({
+  before,
+  after,
+  gained,
+  lost,
 }: {
-  label: string;
-  value: number;
-  accent?: boolean;
+  before: number;
+  after: number;
+  gained: string[];
+  lost: string[];
 }) {
+  const delta = after - before;
   return (
-    <div className="flex flex-col gap-1.5">
-      <div className="flex items-baseline justify-between text-sm">
-        <span className="font-bold text-ink">{label}</span>
-        <span className={`text-xl font-black tabular-nums ${accent ? "text-brand" : "text-navy"}`}>
-          <CountUp value={value} duration={900} />%
+    <div className="flex flex-col gap-2.5">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+        <span className="text-2xl font-black text-navy">
+          {before}% <span className="text-faint">→</span>{" "}
+          <CountUp value={after} duration={900} />%
         </span>
+        {delta !== 0 && (
+          <span
+            className={`rounded-full px-2.5 py-0.5 text-xs font-black ${
+              delta > 0 ? "bg-mint-wash text-mint-deep" : "bg-danger-wash text-danger"
+            }`}
+          >
+            {delta > 0 ? "+" : "−"}
+            {Math.abs(delta)} puntos
+          </span>
+        )}
       </div>
-      <ProgressBar percentage={value} label={`Completitud ${label.toLowerCase()}`} thin />
+      <div
+        className="flex h-2.5 w-full gap-[2px] overflow-hidden rounded-full bg-brand-wash"
+        role="img"
+        aria-label={`Completitud del perfil: de ${before}% a ${after}%`}
+      >
+        <div className="h-full rounded-full bg-navy" style={{ width: `${Math.min(before, after)}%` }} />
+        {delta !== 0 && (
+          <div
+            className={`h-full rounded-full ${
+              delta > 0
+                ? "bg-brand"
+                : "bg-[repeating-linear-gradient(135deg,var(--color-danger)_0_3px,transparent_3px_6px)]"
+            }`}
+            style={{ width: `${Math.abs(delta)}%` }}
+          />
+        )}
+      </div>
+      {gained.length > 0 && (
+        <p className="text-sm text-muted">
+          Se llenan: <span className="font-bold text-ink">{gained.join(" · ")}</span>
+        </p>
+      )}
+      {lost.length > 0 && (
+        <p className="text-sm text-danger">
+          Se vacían: <span className="font-bold">{lost.join(" · ")}</span>
+        </p>
+      )}
     </div>
   );
 }
