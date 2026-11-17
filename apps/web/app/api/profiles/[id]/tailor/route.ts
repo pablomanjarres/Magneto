@@ -1,6 +1,7 @@
 import { getProfile, getVacancy } from "@moonlight/db";
 import { checkTailored, comparisonBlockers } from "@moonlight/core";
 
+import { UserFacingError } from "../../../../../lib/errors";
 import { withRequestLog } from "../../../../../lib/log";
 import { rateLimit } from "../../../../../lib/rate-limit";
 import { TailorError, tailorProfile } from "../../../../../lib/tailor";
@@ -39,6 +40,9 @@ export const POST = withRequestLog(
     } catch (cause) {
       if (cause instanceof TailorError) {
         return Response.json({ error: cause.message, problems: cause.problems }, { status: 422 });
+      }
+      if (cause instanceof UserFacingError) {
+        return Response.json({ error: cause.message }, { status: 422 });
       }
       throw cause;
     }
