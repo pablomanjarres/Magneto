@@ -135,6 +135,20 @@ export function rankVacancies(profile: Profile, vacancies: Vacancy[]): ScoreResu
     );
 }
 
+/** How a match reads at a glance, so a list of scores is scannable without reading each number. */
+export type MatchBand = "alto" | "medio" | "bajo";
+
+/**
+ * Where each band starts. Most vacancies ask for three must-haves and two
+ * nice-to-haves: meeting every must-have scores 82%, missing one caps it at 73%.
+ */
+export const MATCH_BANDS = { alto: 75, medio: 50 } as const;
+
+export function matchBand(score: number): MatchBand {
+  if (score >= MATCH_BANDS.alto) return "alto";
+  return score >= MATCH_BANDS.medio ? "medio" : "bajo";
+}
+
 /** Every field that counts toward 100%, with the label the candidate is shown. */
 export const COMPLETENESS_FIELDS: ReadonlyArray<{
   label: string;
@@ -159,12 +173,18 @@ export const COMPLETENESS_FIELDS: ReadonlyArray<{
   },
 ];
 
+/**
+ * The percentage with `filled` of the fields done, rounded the one way every
+ * screen prints it: what "llegas a 22%" is worked out with.
+ */
+export const completenessAt = (filled: number): number =>
+  Math.round((filled / COMPLETENESS_FIELDS.length) * 100);
+
 /** What percentage of the profile is filled, and exactly what is not. */
 export function profileCompleteness(profile: Profile): CompletenessResult {
   const missing = COMPLETENESS_FIELDS.filter((f) => !f.filled(profile)).map((f) => f.label);
-  const filled = COMPLETENESS_FIELDS.length - missing.length;
   return {
-    percentage: Math.round((filled / COMPLETENESS_FIELDS.length) * 100),
+    percentage: completenessAt(COMPLETENESS_FIELDS.length - missing.length),
     missing,
   };
 }
