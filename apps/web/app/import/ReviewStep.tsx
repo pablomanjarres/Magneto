@@ -7,6 +7,7 @@ import {
   type ImportMode,
   applyImport,
   importMode,
+  isEmail,
   profileCompleteness,
   sameJob,
   sameSkill,
@@ -88,8 +89,9 @@ export function ReviewStep({
   };
   const before = profileCompleteness(profile).percentage;
   const after = profileCompleteness(next).percentage;
-  const unnamed = !next.fullName || !next.email;
-  const blocked = isBlocked(review) || unnamed;
+  // An address the profile would refuse is caught here, in Spanish, not by the server.
+  const noIdentity = !next.fullName || !isEmail(next.email);
+  const blocked = isBlocked(review) || noIdentity;
   const nothing = total(result.added) + total(result.joined) === 0;
   const completing = mode === "complement";
   const someoneElse = importMode(profile, imported) === "replace";
@@ -338,9 +340,9 @@ export function ReviewStep({
             <span className="font-bold text-danger" role="alert">
               {error}
             </span>
-          ) : unnamed ? (
+          ) : noIdentity ? (
             <span className="font-bold text-danger">
-              Escribe tu nombre y tu correo para continuar.
+              Escribe tu nombre y un correo válido para continuar.
             </span>
           ) : blocked ? (
             <span className="font-bold text-danger">
