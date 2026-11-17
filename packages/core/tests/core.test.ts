@@ -4,7 +4,9 @@ import type { Profile, Vacancy } from "@moonlight/types";
 
 import {
   comparisonBlockers,
+  completenessAt,
   marketGaps,
+  matchBand,
   parseProfile,
   profileCompleteness,
   rankVacancies,
@@ -199,6 +201,31 @@ describe("scoreVacancy location", () => {
   it("never goes below 0", () => {
     const result = scoreVacancy(profile(["Go"]), bogota("onsite"));
     expect(result.score).toBe(0);
+  });
+});
+
+describe("matchBand", () => {
+  it("starts alto at 75 and medio at 50", () => {
+    expect([100, 75, 74, 50, 49, 0].map(matchBand)).toEqual([
+      "alto",
+      "alto",
+      "medio",
+      "medio",
+      "bajo",
+      "bajo",
+    ]);
+  });
+
+  it("puts every must-have met in alto and one missing below it", () => {
+    // Three must-haves (×3) and two nice-to-haves (×1): 9/11 and 8/11.
+    expect(matchBand(scoreFromWeights(9, 11))).toBe("alto");
+    expect(matchBand(scoreFromWeights(8, 11))).toBe("medio");
+  });
+});
+
+describe("completenessAt", () => {
+  it("rounds the way profileCompleteness does, so the next field can add 11 or 12", () => {
+    expect([0, 1, 4, 5, 8, 9].map(completenessAt)).toEqual([0, 11, 44, 56, 89, 100]);
   });
 });
 
