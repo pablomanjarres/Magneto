@@ -1,0 +1,11 @@
+# Secrets and local build output never enter the image.
+.env*
+!.env.example
+**/node_modules
+**/.next
+**/.turbo
+.git
+.claude
+.private
+tasks
+docs
