@@ -124,7 +124,7 @@ function editEntries<T extends { source?: ProfileSource | undefined }>(
 }
 
 /** An address the profile accepts. parseProfile owns that rule, so it is asked rather than copied. */
-const isEmail = (email: string): boolean =>
+export const isEmail = (email: string): boolean =>
   !("errors" in parseProfile({ id: "-", fullName: "-", email }));
 
 /**
