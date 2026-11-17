@@ -56,7 +56,7 @@ patrones 20% (exposición 10%, análisis 10%) · Funcionalidad y demostración 5
 ## 3. Planificación del Sprint actual
 
 - [x] What was built in sprint 3 and its impact on the architecture (Pablo)
-- [ ] The sprint 3 stories on the board, with planning poker points (Both)
+- [X] The sprint 3 stories on the board, with planning poker points (Both)
 - [ ] Planning poker evidence (Valentina)
 - [ ] Sprint backlog screenshot and link (Valentina)
 
@@ -64,13 +64,13 @@ patrones 20% (exposición 10%, análisis 10%) · Funcionalidad y demostración 5
 
 - [x] Architecture described as a paragraph, with how the framework implements it (Pablo)
 - [x] Summary table: type, styles, language, technical aspects, frameworks (Pablo)
-- [ ] Implementation class diagram, drawn by the team: classes, attributes, methods, relations
+- [X] Implementation class diagram, drawn by the team: classes, attributes, methods, relations
       (Valentina)
 - [x] What that diagram has to show, listed from the code (Pablo)
-- [ ] Deployment diagram, updated: no Express service, Apify and the Claude API as external
+- [] Deployment diagram, updated: no Express service, Apify and the Claude API as external
       nodes (Valentina)
 - [x] Persistence: the engine and why, and the tables with their keys (Pablo)
-- [ ] Entity-relationship diagram updated with `application_events` (Valentina)
+- [X] Entity-relationship diagram updated with `application_events` (Valentina)
 
 ## 5. Principios de diseño (análisis en el proyecto, sin definiciones)
 
