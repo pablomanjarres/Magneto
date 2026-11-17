@@ -67,7 +67,7 @@ Pruebas integrales: Ejecutar validaciones de punta a punta entre la interfaz ren
 
 **Reuniones con el Líder Técnico y el PO:** {PENDIENTE: images/2-reunion.png}
 
-**Daily o weekly del equipo:** {PENDIENTE: images/2-semanal.png}
+![Reunión semanal](images/Semanal.png)
 
 ---
 
