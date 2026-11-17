@@ -11,7 +11,7 @@ import { Chip } from "./primitives";
 // The profiles, and "Crear perfil nuevo" after them.
 const ITEM = '[role^="menuitem"]';
 
-/** The wizard, empty, for a profile that exists once it is saved (see app/onboarding/page.tsx). */
+/** Asks who a new profile is for, then creates it empty and opens the wizard on it (see app/onboarding/page.tsx). */
 const NEW_PROFILE = "/onboarding?nuevo=1";
 
 /**
