@@ -344,6 +344,66 @@ function drawLegends(ctx: CanvasRenderingContext2D, colors: LaptopColors): void 
           ? colors.spaceLegend
           : colors.legend;
     ctx.fillStyle = ink;
+    ctx.strokeStyle = ink;
+    drawLegend(ctx, label, font);
+    ctx.restore();
+  });
+}
+
+/** A square decal `size` across showing `label`, cut from the legend atlas. */
+function legendDecal(label: string, size: number): THREE.PlaneGeometry {
+  const cell = LABELS.indexOf(label);
+  const col = cell % ATLAS_COLS;
+  const row = Math.floor(cell / ATLAS_COLS);
+  const geometry = new THREE.PlaneGeometry(size, size);
+  const uv = geometry.getAttribute("uv");
+  for (let i = 0; i < uv.count; i++) {
+    uv.setXY(i, (col + uv.getX(i)) / ATLAS_COLS, 1 - (row + 1 - uv.getY(i)) / ATLAS_COLS);
+  }
+  return geometry;
+}
+
+/** The screen's glass: a navy gradient with a purple glow, the window dots and a glare. */
+function drawGlass(
+  ctx: CanvasRenderingContext2D,
+  w: number,
+  h: number,
+  colors: LaptopColors,
+): void {
+  const fill = ctx.createLinearGradient(0, 0, w * 0.35, h);
+  fill.addColorStop(0, colors.screenTop);
+  fill.addColorStop(1, colors.screenBottom);
+  ctx.fillStyle = fill;
+  ctx.fillRect(0, 0, w, h);
+
+  const glow = ctx.createRadialGradient(w * 0.85, h * 0.1, 0, w * 0.85, h * 0.1, w * 0.55);
+  glow.addColorStop(0, colors.screenGlow);
+  glow.addColorStop(1, "rgba(124, 0, 255, 0)");
+  ctx.globalAlpha = 0.22;
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, w, h);
+
+  // A soft diagonal band across the top right, like light caught on glass.
+  ctx.save();
+  ctx.translate(w * 0.8, 0);
+  ctx.rotate(0.55);
+  const glare = ctx.createLinearGradient(-70, 0, 70, 0);
+  glare.addColorStop(0, "rgba(255, 255, 255, 0)");
+  glare.addColorStop(0.5, "rgba(255, 255, 255, 1)");
+  glare.addColorStop(1, "rgba(255, 255, 255, 0)");
+  ctx.globalAlpha = 0.06;
+  ctx.fillStyle = glare;
+  ctx.fillRect(-70, -h, 140, h * 3);
+  ctx.restore();
+  ctx.globalAlpha = 1;
+
+  colors.dots.forEach((color, i) => {
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(76 + i * 44, 60, 14, 0, Math.PI * 2);
+    ctx.fill();
+  });
+}
 
 /** A block caret for a line `size` px tall whose top is at `y`. */
 function caretBlock(
@@ -399,8 +459,8 @@ function fitText(ctx: CanvasRenderingContext2D, text: string, width: number, hei
   return { size: 44, lines: [text] };
 }
 
-/** The lit screen: the prompt and any `command`, then the typed text as big as it fits. */
-function drawScreen(
+/** The words on the lit screen: the prompt and any `command`, then the typed text as big as it fits. */
+function drawWords(
   ctx: CanvasRenderingContext2D,
   w: number,
   h: number,
@@ -412,13 +472,6 @@ function drawScreen(
   const pad = 64;
   const font = pageFont();
   const maxWidth = w - pad * 2;
-  colors.dots.forEach((color, i) => {
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.arc(pad + 12 + i * 44, 60, 14, 0, Math.PI * 2);
-    ctx.fill();
-  });
-
   const typed = text.trim();
   const hint = command ? HINT_AFTER_PROMPT : HINT;
   const { size, lines } = typed
@@ -477,15 +530,10 @@ function drawTag(
 ): void {
   const font = pageFont();
   const band = 76;
-  ctx.save();
-  ctx.beginPath();
-  ctx.roundRect(0, 0, w, h, 44);
-  ctx.clip();
   ctx.fillStyle = colors.tagPaper;
   ctx.fillRect(0, 0, w, h);
   ctx.fillStyle = colors.tagBand;
   ctx.fillRect(0, 0, w, band);
-  ctx.restore();
 
   ctx.textAlign = "center";
   ctx.fillStyle = colors.tagBandText;
@@ -504,8 +552,8 @@ function drawTag(
 
   const role = profile.role.trim() || profile.skills.slice(0, 3).join(" · ");
   ctx.fillStyle = colors.tagRole;
-  ctx.font = `700 36px ${font}`;
-  ctx.fillText(role, w / 2, band + 140, w - 80);
+  ctx.font = `900 38px ${font}`;
+  ctx.fillText(role, w / 2, band + 142, w - 80);
 
   // Completeness, as a little bar with its percentage.
   const pct = Math.max(0, Math.min(100, Math.round(profile.completeness)));
@@ -536,52 +584,104 @@ function LaptopToy({ text, writing, keystrokes, profile, onActivate, prompt }: L
   const still = usePrefersStill();
   const caret = useCaret(writing);
   const pulse = usePulse(keystrokes);
+  const fonts = useFontsReady();
   const [motion] = useState(createMotion);
   const command = prompt?.trim() ?? "";
+  const screenPx = [1024, Math.round((1024 * SCREEN_H) / SCREEN_W)] as const;
 
-  const screenTexture = useCanvasTexture(
-    1024,
-    596,
-    (ctx, w, h) => drawScreen(ctx, w, h, COLORS, text, caret, command),
-    [text, caret, command],
+  const glassTexture = useCanvasTexture(
+    ...screenPx,
+    (ctx, w, h) => drawGlass(ctx, w, h, COLORS),
+    [],
+  );
+  const wordsTexture = useCanvasTexture(
+    ...screenPx,
+    (ctx, w, h) => drawWords(ctx, w, h, COLORS, text, caret, command),
+    [text, caret, command, fonts],
+  );
+  const legendTexture = useCanvasTexture(
+    ATLAS_COLS * CELL,
+    ATLAS_COLS * CELL,
+    (ctx) => drawLegends(ctx, COLORS),
+    [fonts],
   );
   const tagTexture = useCanvasTexture(
     680,
     320,
     (ctx, w, h) => drawTag(ctx, w, h, COLORS, profile),
-    [profile.fullName, profile.role, profile.completeness, profile.skills.join()],
+    [profile.fullName, profile.role, profile.completeness, profile.skills.join(), fonts],
   );
 
-  const geometry = useMemo(
-    () => ({
-      base: roundedBox(W, BASE_T, D, 0.12, 8),
-      lid: roundedBox(W, LID_T, D, 0.07, 8),
-      key: roundedBox(0.16, 0.08, 0.16, 0.035, 6),
-      spacebar: roundedBox(0.92, 0.08, 0.16, 0.035, 6),
-      hinge: new THREE.CylinderGeometry(0.08, 0.08, 0.5, 32),
-      trackpad: puffy(roundedRect(0.8, 0.3, 0.1)),
-      light: new THREE.SphereGeometry(0.045, 24, 16),
-      screen: new THREE.ShapeGeometry(roundedRect(SCREEN_W, SCREEN_H, 0.14), 12),
-      words: new THREE.PlaneGeometry(SCREEN_W, SCREEN_H),
-      tag: new THREE.PlaneGeometry(TAG_W, TAG_H),
+  const geometry = useMemo(() => {
+    // Keys of one size share a cap, and keys with one legend at one size share a decal.
+    const shared = new Map<string, THREE.BufferGeometry>();
+    const once = (id: string, make: () => THREE.BufferGeometry): THREE.BufferGeometry => {
+      const made = shared.get(id) ?? make();
+      shared.set(id, made);
+      return made;
+    };
+    const keys = BOARD.map(({ key, w, d }) => ({
+      cap: once(`cap ${w} ${d}`, () => roundedBox(w, CAP_H, d, 0.03, 4)),
+      decal: once(`${key.label} ${Math.min(w, d)}`, () => legendDecal(key.label, Math.min(w, d))),
+    }));
+    const tag = new THREE.ExtrudeGeometry(roundedRect(TAG_W, TAG_H, 0.1), {
+      depth: 0.004,
+      bevelEnabled: true,
+      bevelThickness: 0.012,
+      bevelSize: 0.012,
+      bevelSegments: 5,
+      curveSegments: 24,
+    });
+    const parts = {
+      base: slab(W, BASE_T, D, CORNER, 0.07),
+      lid: slab(W, LID_T, LID_D, CORNER, 0.05),
+      barrel: new THREE.CapsuleGeometry(HINGE_R, BARREL - 2 * HINGE_R, 8, 32).rotateZ(Math.PI / 2),
+      knuckle: new THREE.CapsuleGeometry(HINGE_R * 0.97, 0.074, 8, 32).rotateZ(Math.PI / 2),
+      bezel: bezel(0.06),
+      screen: panel(SCREEN_W, SCREEN_H, 0.1),
+      camera: new THREE.SphereGeometry(0.022, 20, 12),
+      trackpad: slab(PAD_W, 0.012, PAD_D, 0.07, 0.005),
+      led: new THREE.CapsuleGeometry(0.016, 0.07, 6, 16).rotateZ(Math.PI / 2),
+      port: new THREE.CapsuleGeometry(0.012, 0.045, 6, 12).rotateX(Math.PI / 2),
+      jack: new THREE.CylinderGeometry(0.017, 0.017, 0.02, 20).rotateZ(Math.PI / 2),
+      tag,
+      tagFace: panel(TAG_W, TAG_H, 0.1),
       heart: puffy(heart(0.24)),
       star: puffy(star(0.27, 0.13)),
       dot: puffy(new THREE.Shape().absarc(0, 0, 0.17, 0, Math.PI * 2, false)),
-      eye: new THREE.SphereGeometry(0.024, 16, 12),
-      smile: new THREE.TorusGeometry(0.055, 0.013, 8, 24, Math.PI),
-    }),
-    [],
-  );
+      eye: new THREE.SphereGeometry(EYE.r, 20, 14),
+      smile: new THREE.TorusGeometry(SMILE.r, SMILE.tube, 10, 40, SMILE.arc),
+      smileEnd: new THREE.SphereGeometry(SMILE.tube, 16, 12),
+    };
+    return { keys, parts, all: [...shared.values(), ...Object.values(parts)] };
+  }, []);
   useEffect(
     () => () => {
-      for (const shape of Object.values(geometry)) shape.dispose();
+      for (const shape of geometry.all) shape.dispose();
     },
     [geometry],
   );
 
   // Painted from the palette once, and disposed with the laptop.
   const kit = useMemo(() => {
+    const gloss = { roughness: 0.3, clearcoat: 1, clearcoatRoughness: 0.12, sheen: 0 };
     const material = {
+      body: candy(COLORS.body, gloss),
+      knuckles: candy(COLORS.knuckles, gloss),
+      trackpad: candy(COLORS.trackpad, {
+        roughness: 0.35,
+        clearcoat: 0.6,
+        clearcoatRoughness: 0.3,
+      }),
+      holes: candy(COLORS.holes, { roughness: 0.35, sheen: 0 }),
+      legend: new THREE.MeshStandardMaterial({
+        map: legendTexture,
+        transparent: true,
+        depthWrite: false,
+        roughness: 0.55,
+        polygonOffset: true,
+        polygonOffsetFactor: -1,
+        polygonOffsetUnits: -4,
       body: candy(COLORS.body),
       key: candy("#ffffff"), // white, so each keycap shows its own instance colour
       spacebar: candy(COLORS.spacebar),
