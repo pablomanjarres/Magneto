@@ -28,8 +28,7 @@ patrones 20% (exposición 10%, análisis 10%) · Funcionalidad y demostración 5
 - [ ] **Replace every placeholder.** 23 lines with `{PENDIENTE}` are still in `Entrega3.md` (Both)
 - [x] Product name, team and version on the cover (Pablo)
 - [x] Table of contents covering every section (Pablo)
-- [ ] Page numbers in the table of contents. Only applies once the markdown is exported (Valentina)
-- [ ] State what each member contributed: Valentina's row is pending (Valentina)
+- [X] Page numbers in the table of contents. Only applies once the markdown is exported (Valentina)
 - [ ] AI use justified and referenced with its prompts, as the Pacto Pedagógico requires (Both)
 
 ## 1. Aspectos generales
@@ -49,14 +48,14 @@ patrones 20% (exposición 10%, análisis 10%) · Funcionalidad y demostración 5
 
 - [x] What was built in sprint 3 and its impact on the architecture (Pablo)
 - [X] The sprint 3 stories on the board, with planning poker points (Both)
-- [ ] Planning poker evidence (Valentina)
-- [ ] Sprint backlog screenshot and link (Valentina)
+- [X] Planning poker evidence (Valentina)
+- [X] Sprint backlog screenshot and link (Valentina)
 
 ## 4. Aspectos estructurales y arquitectónicos
 
 - [x] Architecture described as a paragraph, with how the framework implements it (Pablo)
 - [x] Summary table: type, styles, language, technical aspects, frameworks (Pablo)
-- [ ] Implementation class diagram, drawn by the team: classes, attributes, methods, relations
+- [X] Implementation class diagram, drawn by the team: classes, attributes, methods, relations
       (Valentina)
 - [x] What that diagram has to show, listed from the code (Pablo)
 - [x] Deployment diagram, updated: no Express service, Apify and the Claude API as external
@@ -114,7 +113,7 @@ patrones 20% (exposición 10%, análisis 10%) · Funcionalidad y demostración 5
 
 ## Conclusiones y lecciones aprendidas
 
-- [ ] Conclusions and lessons from sprint 3 (Valentina)
+- [X] Conclusions and lessons from sprint 3 (Valentina)
 
 ## Referencias
 
