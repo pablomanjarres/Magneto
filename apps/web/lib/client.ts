@@ -95,6 +95,9 @@ export const chooseBlankProfile = (): Promise<unknown> =>
 export const saveProfile = (profile: Profile): Promise<{ profile: Profile }> =>
   send("/api/profiles", { method: "POST", body: JSON.stringify(profile) });
 
+export const deleteProfile = (id: string): Promise<null> =>
+  send(`/api/profiles/${encodeURIComponent(id)}`, { method: "DELETE" });
+
 /**
  * Starts an import and hands every streamed step to `onEvent` as it arrives.
  * Rejected input (400) and rate limits (429) throw with the server's message;
