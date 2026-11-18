@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import type { ImportedProfile, Profile } from "@moonlight/types";
+import type { CompletenessResult, ImportedProfile, Profile } from "@moonlight/types";
 import {
   type ImportCounts,
   type ImportMode,
@@ -42,6 +42,8 @@ export interface Saved {
   mode: ImportMode;
   added: ImportCounts;
   joined: ImportCounts;
+  /** The completeness of the profile as saved. */
+  completeness: CompletenessResult;
 }
 
 interface Identity {
@@ -125,7 +127,7 @@ export function ReviewStep({
     setError(null);
     try {
       await saveProfile(next);
-      onSaved({ mode, added: result.added, joined: result.joined });
+      onSaved({ mode, added: result.added, joined: result.joined, completeness: will });
     } catch (e) {
       setError(e instanceof Error ? e.message : "No pudimos guardar tu perfil.");
       setSaving(false);
@@ -388,7 +390,7 @@ function summary(added: ImportCounts): string {
 }
 
 /** One sentence on what an import does to the profile. */
-export function outcome({ mode, added, joined }: Saved): string {
+export function outcome({ mode, added, joined }: Pick<Saved, "mode" | "added" | "joined">): string {
   if (mode === "replace") return `Tu perfil queda con ${summary(added)}.`;
   const parts = [
     total(added) > 0 && `se agregan ${summary(added)}`,

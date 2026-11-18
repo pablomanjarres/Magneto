@@ -7,26 +7,37 @@ import { Chip, ProgressBar } from "./primitives";
 const filledFields = (completeness: CompletenessResult): number =>
   COMPLETENESS_FIELDS.length - completeness.missing.length;
 
+/** The wizard step that fills a completeness field, by the field's label. */
+function stepHref(label: string): string | undefined {
+  const field = COMPLETENESS_FIELDS.find((f) => f.label === label);
+  return field && `/onboarding?step=${field.section}`;
+}
+
 /** "7 de 9 campos", spelled the same way everywhere it is printed. */
 export function filledFieldsLabel(completeness: CompletenessResult): string {
   return `${filledFields(completeness)} de ${COMPLETENESS_FIELDS.length} campos`;
 }
 
 /**
- * The bar and the fields still empty. Dashboard, profile and wizard share it.
+ * The bar and the fields still empty. Dashboard, profile, wizard and the
+ * import's last screen share it.
  * The first empty field is set apart with the percentage it takes the profile
  * to, so the panel says what to do next and not only what is missing.
  * Where the percentage is already printed large above it, `figure={false}`
  * leaves it out here, so one view never shows the same number twice.
+ * `linked` makes each empty field a link to the wizard step that fills it;
+ * the wizard itself leaves it off: it already shows the steps and moves between them in place.
  */
 export function CompletenessPanel({
   completeness,
   dark = false,
   figure = true,
+  linked = false,
 }: {
   completeness: CompletenessResult;
   dark?: boolean;
   figure?: boolean;
+  linked?: boolean;
 }) {
   const reach = completenessAt(filledFields(completeness) + 1);
   return (
@@ -41,44 +52,31 @@ export function CompletenessPanel({
           </span>
         )}
       </div>
-      <ProgressBar percentage={completeness.percentage} label="Completitud del perfil" dark={dark} />
+      <ProgressBar
+        percentage={completeness.percentage}
+        label="Completitud del perfil"
+        dark={dark}
+      />
       <div className="flex flex-wrap items-center gap-2">
         {completeness.missing.length === 0 ? (
           <Chip tone="met">Todos los campos completos</Chip>
         ) : (
           completeness.missing.map((label, index) => {
+            const href = linked ? stepHref(label) : undefined;
             if (index === 0) {
-              const next = (
-                <>
+              return (
+                <Chip key={label} tone={dark ? "nextDark" : "next"} href={href}>
                   <span className="sr-only">Siguiente: </span>
                   {label}
                   <Icon name="arrowRight" size={12} strokeWidth={2.6} />
                   <span className="sr-only">llegas a </span>
                   {reach}%
-                </>
-              );
-              return dark ? (
-                <span
-                  key={label}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-mint px-3 py-1 text-[13px] font-bold text-mint-ink"
-                >
-                  {next}
-                </span>
-              ) : (
-                <Chip key={label} tone="next">
-                  {next}
                 </Chip>
               );
             }
-            return dark ? (
-              <span
-                key={label}
-                className="rounded-full border border-dashed border-white/40 px-3 py-1 text-[13px] font-bold text-white/85"
-              >
-                {label}
-              </span>
-            ) : (
-              <Chip key={label} tone="dashed">
+            return (
+              <Chip key={label} tone={dark ? "dashedDark" : "dashed"} href={href}>
+                {href !== undefined && <span className="sr-only">Completar </span>}
                 {label}
               </Chip>
             );

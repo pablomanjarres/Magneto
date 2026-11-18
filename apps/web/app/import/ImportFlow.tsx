@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import type { ImportedProfile, Profile, ProfileSource } from "@moonlight/types";
 
+import { CompletenessPanel } from "../../components/CompletenessPanel";
 import { Icon } from "../../components/Icon";
 import { ButtonLink, Card, Eyebrow, buttonClass } from "../../components/primitives";
 import { startImport } from "../../lib/client";
@@ -96,26 +97,49 @@ export function ImportFlow({ profile }: { profile: Profile }) {
           }}
         />
       );
-    case "saved":
+    case "saved": {
+      const { saved } = stage;
+      // Imports rarely carry salary, relocation or work modes: lead to what is still empty.
+      const incomplete = saved.completeness.missing.length > 0;
       return (
         <Outcome
           tone="mint"
           eyebrow="Listo"
           title="Tu perfil quedó actualizado"
-          lead={`${outcome(stage.saved)} Cada vacante ya se evalúa con tu perfil nuevo.`}
+          lead={`${outcome(saved)} ${
+            incomplete
+              ? "Completa lo que falta para que cada vacante te evalúe con todo."
+              : "Cada vacante ya se evalúa con tu perfil nuevo."
+          }`}
+          detail={
+            incomplete && (
+              <div className="w-full max-w-md text-left">
+                <CompletenessPanel completeness={saved.completeness} linked />
+              </div>
+            )
+          }
         >
-          <ButtonLink href="/cv">
+          {incomplete && (
+            <ButtonLink href="/onboarding">
+              Completar lo que falta
+              <Icon name="arrowRight" size={16} strokeWidth={2.4} />
+            </ButtonLink>
+          )}
+          <ButtonLink href="/cv" variant={incomplete ? "quiet" : "primary"}>
             <Icon name="document" size={16} />
             Ver mi hoja de vida
           </ButtonLink>
           <ButtonLink href="/profile" variant="quiet">
             Ver mi perfil
           </ButtonLink>
-          <ButtonLink href="/dashboard" variant="quiet">
-            Ir al inicio
-          </ButtonLink>
+          {!incomplete && (
+            <ButtonLink href="/dashboard" variant="quiet">
+              Ir al inicio
+            </ButtonLink>
+          )}
         </Outcome>
       );
+    }
     case "error":
       return (
         <Outcome
@@ -142,12 +166,15 @@ function Outcome({
   eyebrow,
   title,
   lead,
+  detail,
   children,
 }: {
   tone: "mint" | "danger";
   eyebrow: string;
   title: string;
   lead: string;
+  /** Shown between the text and the buttons. */
+  detail?: ReactNode;
   children: ReactNode;
 }) {
   return (
@@ -164,6 +191,7 @@ function Outcome({
         <h2 className="mt-1 text-2xl font-black text-slate">{title}</h2>
         <p className="mt-2 text-pretty text-muted">{lead}</p>
       </div>
+      {detail}
       <div className="flex flex-wrap justify-center gap-2">{children}</div>
     </Card>
   );

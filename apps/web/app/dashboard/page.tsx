@@ -56,7 +56,7 @@ export default async function DashboardPage() {
             </p>
           </div>
 
-          <CompletenessPanel completeness={completeness} dark figure={false} />
+          <CompletenessPanel completeness={completeness} dark figure={false} linked />
 
           <div className="flex flex-wrap gap-3">
             <ButtonLink href="/onboarding">

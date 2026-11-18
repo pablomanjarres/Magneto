@@ -121,7 +121,7 @@ export default async function ProfilePage() {
           <div className="mb-3">
             <Eyebrow>Completitud del perfil</Eyebrow>
           </div>
-          <CompletenessPanel completeness={completeness} />
+          <CompletenessPanel completeness={completeness} linked />
         </div>
       </Card>
 
