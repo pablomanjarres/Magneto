@@ -13,8 +13,9 @@ import {
 import { Icon } from "../../components/Icon";
 import { Initials } from "../../components/ProfileSwitcher";
 import { SourceChip } from "../../components/SourceChip";
-import { requireProfile } from "../../lib/queries";
+import { isSampleProfile, requireProfile } from "../../lib/queries";
 import { profileName, salaryRange, shortDate, workModeLabel } from "../../lib/format";
+import { DeleteProfile } from "./DeleteProfile";
 import { Detail, type Entry, EntryList, ProfileSection } from "./ProfileSection";
 
 export const dynamic = "force-dynamic";
@@ -215,6 +216,11 @@ export default async function ProfilePage() {
               )}
             </dl>
           </ProfileSection>
+
+          {/* Left-aligned and narrow: Luna and its greeting float over the bottom right corner. */}
+          {!isSampleProfile(profile.id) && (
+            <DeleteProfile profileId={profile.id} name={profile.fullName.trim()} />
+          )}
         </div>
       </div>
     </AppShell>
