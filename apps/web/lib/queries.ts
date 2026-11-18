@@ -36,6 +36,10 @@ export const PROFILE_COOKIE = "moonlight-profile";
 /** The seeded test profiles (data/sample-profiles/test-*.json) share this id prefix. */
 const TEST_PREFIX = "test-";
 
+/** The seeded profiles the public demo opens on; they are never deleted. */
+export const isSampleProfile = (id: string): boolean =>
+  id === PROFILE_ID || id.startsWith(TEST_PREFIX);
+
 /**
  * The candidate picked in the header, or the seeded one when nothing was
  * picked or the pick no longer exists; a clear stop when the database was

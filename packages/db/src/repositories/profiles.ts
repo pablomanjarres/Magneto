@@ -59,6 +59,15 @@ export async function getProfile(id: string): Promise<Profile | null> {
   };
 }
 
+/**
+ * Deletes a profile; true when a row went. Its applications and their events
+ * go with it through ON DELETE CASCADE (migrations 002 and 003).
+ */
+export async function deleteProfile(id: string): Promise<boolean> {
+  const { rowCount } = await pool.query("DELETE FROM profiles WHERE id = $1", [id]);
+  return (rowCount ?? 0) > 0;
+}
+
 /** Who a profile is, in one line: enough to list it, nothing more. */
 export interface ProfileSummary {
   id: string;
