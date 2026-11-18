@@ -44,7 +44,7 @@ El presente documento constituye la tercera y última entrega del curso, enfocad
 | Integrante        | Aporte en la Entrega 3                                                                                                                                                                        |
 | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Pablo Manjarres   | Rediseño de la interfaz, importación desde LinkedIn y hoja de vida, perfil adaptado, hoja de vida en formato Harvard, portátil 3D, registro de actividades, secciones 4 a 6, código y pruebas |
-| Valentina Barbosa | {PENDIENTE: retrospectiva, planificación y sus evidencias, diagramas de clases de implementación y de despliegue, capturas, conclusiones, fuentes}                                            |
+| Valentina Barbosa |  retrospectiva, planificación y sus evidencias, diagramas de clases de implementación y de despliegue, capturas, conclusiones, fuentes                                           |
 
 La demostración y la sustentación son de ambos.
 
@@ -65,7 +65,7 @@ Rediseño de identidad visual (UI): Ajustar la interfaz gráfica en Next.js para
 Refinamiento de funcionalidades críticas: Abordar desde el inicio del sprint las historias de mayor complejidad técnica (completitud total del perfil y sistema de recomendaciones) con criterios de aceptación claros.
 Pruebas integrales: Ejecutar validaciones de punta a punta entre la interfaz renovada, la API en Express y la base de datos PostgreSQL antes de cerrar cada historia.
 
-**Reuniones con el Líder Técnico y el PO:** {PENDIENTE: images/2-reunion.png}
+**Reuniones con el Líder Técnico y el PO:** 
 
 ![Reunión semanal](images/Semanal.png)
 
@@ -443,9 +443,6 @@ _Luna, la asistente de cada página, responde qué le falta al perfil y ofrece c
 - Anthropic. _Claude API documentation_. <https://platform.claude.com/docs>
 - Decisión de arquitectura del equipo: [`docs/adr/0001-backend-choice.md`](../../../adr/0001-backend-choice.md)
 
-{PENDIENTE: otras fuentes consultadas durante el sprint}
-
-{PENDIENTE: herramientas de IA utilizadas y los _prompts_ con los que se usaron}
 
 ---
 
