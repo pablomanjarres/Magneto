@@ -24,15 +24,17 @@ export function salaryRange(
 }
 
 /**
- * "Medellín · Híbrido". Some vacancies in the dataset carry "Remote" as their
- * city, so the city is dropped when it only repeats the work mode rather than
- * printing "Remote · Remoto".
+ * The vacancy's city, or "" where the dataset only repeats the work mode there:
+ * some vacancies carry "Remote" as their city.
  */
-export function placeMeta(v: Pick<Vacancy, "city" | "workMode">): string {
-  const mode = workModeLabel(v.workMode);
+export function cityName(v: Pick<Vacancy, "city" | "workMode">): string {
   const raw = v.city.trim().toLowerCase();
-  const city = raw === v.workMode || raw === mode.toLowerCase() ? "" : v.city;
-  return [city, mode].filter(Boolean).join(" · ");
+  return raw === v.workMode || raw === workModeLabel(v.workMode).toLowerCase() ? "" : v.city;
+}
+
+/** "Medellín · Híbrido", never "Remote · Remoto". */
+export function placeMeta(v: Pick<Vacancy, "city" | "workMode">): string {
+  return [cityName(v), workModeLabel(v.workMode)].filter(Boolean).join(" · ");
 }
 
 /** "Bancolombia · Medellín · Híbrido" without the empties. */
