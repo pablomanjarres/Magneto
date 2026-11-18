@@ -263,6 +263,14 @@ describe("profileCompleteness", () => {
     expect(profileCompleteness(p).missing).not.toContain("Disponibilidad para reubicarse");
   });
 
+  it("counts a job or a degree only once saving would keep it", () => {
+    const blankEntries = profile(["TypeScript"], {
+      experience: [{ company: "", title: "", startDate: "" }],
+      education: [{ institution: "", degree: "", startYear: 2026 }],
+    });
+    expect(profileCompleteness(blankEntries).missing).toEqual(["Al menos un cargo", "Educación"]);
+  });
+
   it("rises when a missing field is filled", () => {
     const fresh = ok(parseProfile({ id: "p1", email: "a@b.co", fullName: "Ana" }));
     const withCity = ok(parseProfile({ id: "p1", email: "a@b.co", fullName: "Ana", city: "Cali" }));
