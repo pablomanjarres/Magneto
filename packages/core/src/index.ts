@@ -12,6 +12,8 @@ import type {
   Vacancy,
 } from "@moonlight/types";
 
+import { isCompleteEducation, isCompleteExperience } from "./parse-profile.js";
+
 /**
  * One spelling rule for skills. Separators carry no meaning here, so "Node.js",
  * "node js" and "NodeJS" all collapse to the same key.
@@ -161,8 +163,17 @@ export const COMPLETENESS_FIELDS: ReadonlyArray<{
   { label: "Nombre completo", section: "basics", filled: (p) => p.fullName.trim().length > 0 },
   { label: "Ciudad", section: "basics", filled: (p) => (p.city ?? "").trim().length > 0 },
   { label: "Al menos una habilidad", section: "skills", filled: (p) => p.skills.length > 0 },
-  { label: "Al menos un cargo", section: "experience", filled: (p) => p.experience.length > 0 },
-  { label: "Educación", section: "education", filled: (p) => p.education.length > 0 },
+  // A job or a degree counts once saving would keep it, not while it is still blank.
+  {
+    label: "Al menos un cargo",
+    section: "experience",
+    filled: (p) => p.experience.some(isCompleteExperience),
+  },
+  {
+    label: "Educación",
+    section: "education",
+    filled: (p) => p.education.some(isCompleteEducation),
+  },
   {
     label: "Cargo objetivo",
     section: "expectations",

@@ -119,6 +119,14 @@ function educationList(v: unknown, errors: string[]): Education[] {
   });
 }
 
+/** Whether saving would keep this job: it refuses a blank or half-filled one. */
+export const isCompleteExperience = (entry: Experience): boolean =>
+  experienceList([entry], []).length === 1;
+
+/** Whether saving would keep this degree: it refuses a blank or half-filled one. */
+export const isCompleteEducation = (entry: Education): boolean =>
+  educationList([entry], []).length === 1;
+
 /** A number that is not a salary is refused; anything unreadable stays absent. */
 function salary(v: unknown, field: string, errors: string[]): number | undefined {
   const n = optionalNumber(v);
