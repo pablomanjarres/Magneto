@@ -3,8 +3,10 @@ import { describe, expect, it } from "vitest";
 import type { Profile, Vacancy } from "@moonlight/types";
 
 import {
+  COMPLETENESS_FIELDS,
   comparisonBlockers,
   completenessAt,
+  emptyProfile,
   marketGaps,
   matchBand,
   parseProfile,
@@ -12,6 +14,7 @@ import {
   rankVacancies,
   scoreFromWeights,
   scoreVacancy,
+  sectionComplete,
   topGaps,
 } from "../src/index.js";
 
@@ -260,6 +263,14 @@ describe("profileCompleteness", () => {
     expect(profileCompleteness(p).missing).not.toContain("Disponibilidad para reubicarse");
   });
 
+  it("counts a job or a degree only once saving would keep it", () => {
+    const blankEntries = profile(["TypeScript"], {
+      experience: [{ company: "", title: "", startDate: "" }],
+      education: [{ institution: "", degree: "", startYear: 2026 }],
+    });
+    expect(profileCompleteness(blankEntries).missing).toEqual(["Al menos un cargo", "Educación"]);
+  });
+
   it("rises when a missing field is filled", () => {
     const fresh = ok(parseProfile({ id: "p1", email: "a@b.co", fullName: "Ana" }));
     const withCity = ok(parseProfile({ id: "p1", email: "a@b.co", fullName: "Ana", city: "Cali" }));
@@ -278,6 +289,51 @@ describe("profileCompleteness", () => {
     expect(profileCompleteness(ok(parseProfile(seed)))).toEqual({
       percentage: 67,
       missing: ["Educación", "Aspiración salarial", "Disponibilidad para reubicarse"],
+    });
+  });
+});
+
+describe("sectionComplete", () => {
+  const SECTIONS = ["basics", "skills", "experience", "education", "expectations"] as const;
+
+  it("leaves every section open on a new empty profile", () => {
+    const blank = emptyProfile("p1");
+    expect(SECTIONS.filter((s) => sectionComplete(blank, s))).toEqual([]);
+  });
+
+  it("closes a section only once every field in it is filled", () => {
+    const named = { ...emptyProfile("p1"), fullName: "Ana" };
+    expect(sectionComplete(named, "basics")).toBe(false);
+    expect(sectionComplete({ ...named, city: "Cali" }, "basics")).toBe(true);
+  });
+
+  it("closes every section on a full profile", () => {
+    const full = profile(["TypeScript"]);
+    expect(SECTIONS.filter((s) => !sectionComplete(full, s))).toEqual([]);
+  });
+
+  it("leaves open only the sections that still have an empty field", () => {
+    const partial = profile(["TypeScript"], {
+      education: [],
+      expectations: { workModes: ["remote"], cities: [] },
+    });
+    expect(SECTIONS.filter((s) => !sectionComplete(partial, s))).toEqual([
+      "education",
+      "expectations",
+    ]);
+  });
+
+  it("puts each field in the step that asks for it", () => {
+    expect(Object.fromEntries(COMPLETENESS_FIELDS.map((f) => [f.label, f.section]))).toEqual({
+      "Nombre completo": "basics",
+      Ciudad: "basics",
+      "Al menos una habilidad": "skills",
+      "Al menos un cargo": "experience",
+      Educación: "education",
+      "Cargo objetivo": "expectations",
+      "Aspiración salarial": "expectations",
+      "Modalidad de trabajo": "expectations",
+      "Disponibilidad para reubicarse": "expectations",
     });
   });
 });

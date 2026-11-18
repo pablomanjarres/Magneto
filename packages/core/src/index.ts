@@ -12,6 +12,8 @@ import type {
   Vacancy,
 } from "@moonlight/types";
 
+import { isCompleteEducation, isCompleteExperience } from "./parse-profile.js";
+
 /**
  * One spelling rule for skills. Separators carry no meaning here, so "Node.js",
  * "node js" and "NodeJS" all collapse to the same key.
@@ -149,24 +151,47 @@ export function matchBand(score: number): MatchBand {
   return score >= MATCH_BANDS.medio ? "medio" : "bajo";
 }
 
+/** The part of the profile a completeness field belongs to, one per onboarding step. */
+export type CompletenessSection = "basics" | "skills" | "experience" | "education" | "expectations";
+
 /** Every field that counts toward 100%, with the label the candidate is shown. */
 export const COMPLETENESS_FIELDS: ReadonlyArray<{
   label: string;
+  section: CompletenessSection;
   filled: (p: Profile) => boolean;
 }> = [
-  { label: "Nombre completo", filled: (p) => p.fullName.trim().length > 0 },
-  { label: "Ciudad", filled: (p) => (p.city ?? "").trim().length > 0 },
-  { label: "Al menos una habilidad", filled: (p) => p.skills.length > 0 },
-  { label: "Al menos un cargo", filled: (p) => p.experience.length > 0 },
-  { label: "Educación", filled: (p) => p.education.length > 0 },
-  { label: "Cargo objetivo", filled: (p) => (p.expectations.targetRole ?? "").trim().length > 0 },
+  { label: "Nombre completo", section: "basics", filled: (p) => p.fullName.trim().length > 0 },
+  { label: "Ciudad", section: "basics", filled: (p) => (p.city ?? "").trim().length > 0 },
+  { label: "Al menos una habilidad", section: "skills", filled: (p) => p.skills.length > 0 },
+  // A job or a degree counts once saving would keep it, not while it is still blank.
+  {
+    label: "Al menos un cargo",
+    section: "experience",
+    filled: (p) => p.experience.some(isCompleteExperience),
+  },
+  {
+    label: "Educación",
+    section: "education",
+    filled: (p) => p.education.some(isCompleteEducation),
+  },
+  {
+    label: "Cargo objetivo",
+    section: "expectations",
+    filled: (p) => (p.expectations.targetRole ?? "").trim().length > 0,
+  },
   {
     label: "Aspiración salarial",
+    section: "expectations",
     filled: (p) => p.expectations.salaryMin !== undefined && p.expectations.salaryMax !== undefined,
   },
-  { label: "Modalidad de trabajo", filled: (p) => p.expectations.workModes.length > 0 },
+  {
+    label: "Modalidad de trabajo",
+    section: "expectations",
+    filled: (p) => p.expectations.workModes.length > 0,
+  },
   {
     label: "Disponibilidad para reubicarse",
+    section: "expectations",
     filled: (p) =>
       p.expectations.willRelocate === false ||
       (p.expectations.willRelocate === true && p.expectations.cities.length > 0),
@@ -187,6 +212,11 @@ export function profileCompleteness(profile: Profile): CompletenessResult {
     percentage: completenessAt(COMPLETENESS_FIELDS.length - missing.length),
     missing,
   };
+}
+
+/** Whether every completeness field of one section is filled. */
+export function sectionComplete(profile: Profile, section: CompletenessSection): boolean {
+  return COMPLETENESS_FIELDS.every((f) => f.section !== section || f.filled(profile));
 }
 
 /**

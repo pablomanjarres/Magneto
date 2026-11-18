@@ -11,7 +11,7 @@ import type {
   Vacancy,
   WorkMode,
 } from "@moonlight/types";
-import { isEmail, normalizeSkill, profileCompleteness } from "@moonlight/core";
+import { isEmail, normalizeSkill, profileCompleteness, sectionComplete } from "@moonlight/core";
 
 import { Icon } from "../../components/Icon";
 import { Card, Eyebrow, ProgressBar, buttonClass } from "../../components/primitives";
@@ -32,29 +32,34 @@ import { useTyping } from "./typing";
 const STEPS = [
   {
     label: "Datos básicos",
+    section: "basics",
     title: "Quién eres",
     blurb:
       "Nombre y ciudad cuentan para la completitud. Tu ciudad decide qué vacantes presenciales e híbridas te llegan.",
   },
   {
     label: "Habilidades",
+    section: "skills",
     title: "Qué sabes hacer",
     blurb:
       "El puntaje se construye con tus habilidades. Un requisito obligatorio que cumples vale tres veces uno deseable.",
   },
   {
     label: "Experiencia",
+    section: "experience",
     title: "Dónde has trabajado",
     blurb:
       "Los cargos aún no cambian el puntaje, pero los reclutadores los leen. Deja el más reciente primero.",
   },
   {
     label: "Educación",
+    section: "education",
     title: "Qué estudiaste",
     blurb: "Con uno basta. Agrega el título que estás terminando aunque aún no lo tengas.",
   },
   {
     label: "Expectativas",
+    section: "expectations",
     title: "Qué estás buscando",
     blurb:
       "Los últimos campos. No filtramos nada, pero si no te reubicas, las vacantes fuera de tu ciudad puntúan menos.",
@@ -86,6 +91,12 @@ export function OnboardingWizard({
 
   const current = STEPS[step] ?? STEPS[0];
   const completeness = profileCompleteness(profile);
+  const done = STEPS.map(
+    (s) =>
+      sectionComplete(profile, s.section) &&
+      (s.section !== "basics" ||
+        identityProblem(profile.fullName.trim(), profile.email.trim()) === null),
+  );
   const { typing, area, fieldEvents, focusFirstField } = useTyping();
 
   function patch(changes: Partial<Profile>): void {
@@ -167,7 +178,7 @@ export function OnboardingWizard({
   return (
     <div className="flex flex-col gap-6">
       <div className="flex animate-rise flex-col gap-4">
-        <Stepper step={step} onGo={setStep} />
+        <Stepper step={step} done={done} onGo={setStep} />
         <ProgressBar
           percentage={((step + 1) / STEPS.length) * 100}
           label={`Paso ${step + 1} de ${STEPS.length}`}
@@ -295,15 +306,25 @@ export function OnboardingWizard({
   );
 }
 
-function Stepper({ step, onGo }: { step: number; onGo: (index: number) => void }) {
-  // Steps are drawn from where the pill is, so they change colour as it moves on.
-  const { pill, at, lit } = useSlidingPill(step);
+function Stepper({
+  step,
+  done,
+  onGo,
+}: {
+  step: number;
+  done: readonly boolean[];
+  onGo: (index: number) => void;
+}) {
+  // The navy follows the pill as it slides; the tick and the mint follow the profile, so a
+  // step reads as done only once its fields are filled, wherever the candidate is.
+  const { pill, lit } = useSlidingPill(step);
   return (
     <div className="relative">
       {pill}
       <ol className="flex flex-wrap gap-2">
         {STEPS.map((s, i) => {
           const tone = lit(i);
+          const complete = done[i] === true;
           return (
             <li key={s.label}>
               <button
@@ -312,7 +333,7 @@ function Stepper({ step, onGo }: { step: number; onGo: (index: number) => void }
                 aria-current={i === step ? "step" : undefined}
                 className={`inline-flex h-10 items-center gap-2 rounded-full pr-4 pl-1.5 text-sm font-bold transition ${
                   tone ??
-                  (i < at
+                  (complete
                     ? "bg-mint-wash text-mint-deep hover:bg-mint"
                     : "bg-surface text-muted hover:bg-surface-strong")
                 }`}
@@ -323,9 +344,12 @@ function Stepper({ step, onGo }: { step: number; onGo: (index: number) => void }
                     tone ? "bg-white/15" : "bg-canvas"
                   }`}
                 >
-                  {i < at ? <Icon name="check" size={13} strokeWidth={3} /> : i + 1}
+                  {complete ? <Icon name="check" size={13} strokeWidth={3} /> : i + 1}
                 </span>
-                <span className="relative">{s.label}</span>
+                <span className="relative">
+                  {s.label}
+                  {complete && <span className="sr-only">, completo</span>}
+                </span>
               </button>
             </li>
           );
