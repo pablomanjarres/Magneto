@@ -424,11 +424,11 @@ _Luna, la asistente de cada página, responde qué le falta al perfil y ofrece c
 
 ## Conclusiones y lecciones aprendidas
 
--La entrega del producto funcional de Moonlight demuestra la efectividad de haber abordado el proyecto de manera incremental: asegurar primero un MVP estable en los sprints iniciales permitió integrar las funcionalidades de recomendación y completitud del perfil en el Sprint 3 sin comprometer la estabilidad del sistema.   
+- La entrega del producto funcional de Moonlight demuestra la efectividad de haber abordado el proyecto de manera incremental: asegurar primero un MVP estable en los sprints iniciales permitió integrar las funcionalidades de recomendación y completitud del perfil en el Sprint 3 sin comprometer la estabilidad del sistema.   
 
--La separación clara entre el cliente en Next.js, la API en Express y la base de datos contenerizada en PostgreSQL facilitó el trabajo paralelo del equipo y simplificó la depuración de errores. 
+- La separación clara entre el cliente en Next.js, la API en Express y la base de datos contenerizada en PostgreSQL facilitó el trabajo paralelo del equipo y simplificó la depuración de errores. 
 
--Se destaca el valor de la documentación temprana de contratos de datos y la ejecución constante de pruebas automatizadas, prácticas que redujeron drásticamente los fallos de integración en la recta final del proyecto.   
+- Se destaca el valor de la documentación temprana de contratos de datos y la ejecución constante de pruebas automatizadas, prácticas que redujeron drásticamente los fallos de integración en la recta final del proyecto.   
 ---
 
 ## Referencias
