@@ -51,8 +51,8 @@ function sameBox(a: Box | null, b: Box | null): boolean {
  * The navy pill behind the current item, which slides to the next item instead
  * of jumping. Render `pill` first inside a `relative` container whose current
  * item carries `aria-current`; items, or their content, need `relative` to
- * paint over it. `at` is the item the pill is on, which is what the items
- * should be drawn from, and `lit(key)` gives that item's navy classes.
+ * paint over it. `lit(key)` gives the navy classes to the item the pill is on,
+ * which trails `current` while it slides.
  */
 export function useSlidingPill<K>(current: K, memory?: PillMemory<K>) {
   const ref = useRef<HTMLSpanElement>(null);
@@ -110,7 +110,6 @@ export function useSlidingPill<K>(current: K, memory?: PillMemory<K>) {
         }
       />
     ),
-    at,
     lit: (key: K): string | null => (key !== at ? null : box ? ON_PILL : SOLID),
   };
 }
