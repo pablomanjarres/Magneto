@@ -1,11 +1,12 @@
 "use client";
 
 import { useMemo, useState, type ReactNode } from "react";
-import { PAGE_SIZE, pageOf } from "@moonlight/core";
+import { MATCH_BANDS, PAGE_SIZE, pageOf } from "@moonlight/core";
 import type { WorkMode } from "@moonlight/types";
 
 import { Icon } from "../../components/Icon";
-import { EmptyState, TogglePill, buttonClass } from "../../components/primitives";
+import { TogglePill, buttonClass } from "../../components/primitives";
+import { VacancyListPanel } from "../../components/VacancyListPanel";
 import { WORK_MODES } from "../../components/work-modes";
 import { workModeLabel } from "../../lib/format";
 
@@ -86,10 +87,13 @@ const asOptions = (anyLabel: string, values: readonly string[], label = (v: stri
 ];
 
 export function VacancyFilters({
+  title,
   items,
   cities,
   companies,
 }: {
+  /** The page's heading, on the bar above the list. */
+  title: string;
   items: VacancyListItem[];
   cities: string[];
   companies: string[];
@@ -101,6 +105,7 @@ export function VacancyFilters({
   const [hideApplied, setHideApplied] = useState(false);
   const [sort, setSort] = useState<SortKey>("match");
   const [page, setPage] = useState(1);
+  const [explained, setExplained] = useState(false);
 
   // A new filter is a new list, so it starts again from its first page.
   const refilter =
@@ -126,8 +131,14 @@ export function VacancyFilters({
   }, [items, query, mode, city, company, hideApplied, sort]);
 
   const shown = pageOf(visible, page, PAGE_SIZE);
-  const filtering =
-    query.trim() !== "" || mode !== ANY || city !== ANY || company !== ANY || hideApplied;
+  const active = [
+    query.trim() !== "",
+    mode !== ANY,
+    city !== ANY,
+    company !== ANY,
+    hideApplied,
+  ].filter(Boolean).length;
+  const filtering = active > 0;
 
   const clear = (): void => {
     setQuery("");
@@ -142,7 +153,7 @@ export function VacancyFilters({
     <>
       <form
         role="search"
-        className="flex animate-rise flex-col gap-2 rounded-3xl border border-line bg-canvas p-2 sm:flex-row sm:items-center sm:rounded-full [animation-delay:120ms]"
+        className="flex animate-rise flex-col gap-2 rounded-3xl border border-line bg-canvas p-2 sm:flex-row sm:items-center sm:rounded-full"
         onSubmit={(event) => event.preventDefault()}
       >
         <label className="flex min-w-0 flex-1 items-center gap-3 px-4">
@@ -174,7 +185,8 @@ export function VacancyFilters({
         </button>
       </form>
 
-      <div className="flex animate-rise flex-wrap items-center gap-2 [animation-delay:180ms]">
+      <div className="flex animate-rise flex-wrap items-center gap-2 rounded-2xl bg-surface-strong p-2.5 [animation-delay:60ms]">
+        <span className="px-2 text-sm font-bold text-ink tabular-nums">Filtrar ({active})</span>
         <PillSelect
           label="Modalidad"
           value={mode}
@@ -197,56 +209,92 @@ export function VacancyFilters({
             Limpiar filtros
           </button>
         )}
-        <span className="ml-auto flex items-center gap-2 text-sm text-muted">
-          Ordenar por
-          <PillSelect
-            label="Ordenar por"
-            value={sort}
-            onChange={(value) => refilter(setSort)(value as SortKey)}
-            options={(Object.keys(SORTS) as SortKey[]).map((key) => ({
-              value: key,
-              label: SORT_LABELS[key],
-            }))}
-          />
-        </span>
       </div>
 
-      <p className="text-sm text-muted tabular-nums">
-        {visible.length} de {items.length} vacantes
-      </p>
-
-      {visible.length === 0 ? (
-        <EmptyState title="Ninguna vacante coincide con estos filtros">
-          Amplía la búsqueda y vuelve la lista completa.
-          <span className="mt-4 block">
-            <button type="button" className={buttonClass("quiet", "sm")} onClick={clear}>
-              Limpiar filtros
-            </button>
-          </span>
-        </EmptyState>
-      ) : (
-        <div className="flex flex-col gap-3">
-          {shown.items.map((item, index) => (
-            <div
-              key={item.id}
-              className="animate-rise"
-              style={{ animationDelay: `${(index % PAGE_SIZE) * 60}ms` }}
-            >
-              {item.row}
-            </div>
-          ))}
-          {shown.hasMore && (
+      <div className="animate-rise [animation-delay:120ms]">
+        <VacancyListPanel
+          heading="h1"
+          title={title}
+          count={
+            filtering ? `${visible.length} de ${items.length} vacantes` : `${items.length} vacantes`
+          }
+          extra={
             <button
               type="button"
-              className={`${buttonClass("quiet")} self-center`}
-              onClick={() => setPage(page + 1)}
+              aria-expanded={explained}
+              aria-controls="match-help"
+              aria-label="Cómo se calcula el match"
+              onClick={() => setExplained(!explained)}
+              className="grid size-6 place-items-center rounded-full bg-canvas text-xs font-black text-muted transition hover:text-brand"
             >
-              Ver más vacantes
-              <Icon name="chevronDown" size={16} strokeWidth={2.4} />
+              ?
             </button>
+          }
+          action={
+            <PillSelect
+              label="Ordenar por"
+              value={sort}
+              onChange={(value) => refilter(setSort)(value as SortKey)}
+              options={(Object.keys(SORTS) as SortKey[]).map((key) => ({
+                value: key,
+                label: SORT_LABELS[key],
+              }))}
+              className="h-9 cursor-pointer rounded-full bg-transparent px-2 text-sm font-bold text-ink outline-none transition hover:bg-canvas focus:ring-4 focus:ring-brand/20"
+            />
+          }
+        >
+          <p
+            id="match-help"
+            hidden={!explained}
+            className="border-b border-line px-5 py-3 text-sm text-pretty text-slate"
+          >
+            El número de cada vacante es la parte de sus requisitos que ya cumples; un obligatorio
+            vale tres veces un deseable. Desde {MATCH_BANDS.alto}% el match es alto y desde{" "}
+            {MATCH_BANDS.medio}%, medio. Las etiquetas rojas son lo que te falta.
+          </p>
+
+          {visible.length === 0 ? (
+            <div className="px-6 py-10 text-center">
+              <p className="font-bold text-slate">Ninguna vacante coincide con estos filtros</p>
+              <p className="mt-2 text-sm text-muted">
+                Amplía la búsqueda y vuelve la lista completa.
+              </p>
+              <button
+                type="button"
+                className={`${buttonClass("quiet", "sm")} mt-4`}
+                onClick={clear}
+              >
+                Limpiar filtros
+              </button>
+            </div>
+          ) : (
+            <ul className="flex flex-col pb-2">
+              {shown.items.map((item, index) => (
+                <li
+                  key={item.id}
+                  className="animate-rise"
+                  style={{ animationDelay: `${(index % PAGE_SIZE) * 40}ms` }}
+                >
+                  {item.row}
+                </li>
+              ))}
+            </ul>
           )}
-        </div>
-      )}
+
+          {shown.hasMore && (
+            <div className="border-t border-line p-4 text-center">
+              <button
+                type="button"
+                className={buttonClass("quiet")}
+                onClick={() => setPage(page + 1)}
+              >
+                Ver más vacantes
+                <Icon name="chevronDown" size={16} strokeWidth={2.4} />
+              </button>
+            </div>
+          )}
+        </VacancyListPanel>
+      </div>
     </>
   );
 }
