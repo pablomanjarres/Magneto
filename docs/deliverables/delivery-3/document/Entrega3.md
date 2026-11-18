@@ -104,8 +104,8 @@ Como usuario, quiero registrar y actualizar el estado de mis postulaciones direc
 
 ### Ceremonias
 
-- **Planning con _poker planning_:** {PENDIENTE: images/3-planning-poker.png}
-- **Sprint backlog en el tablero:** {PENDIENTE: images/3-sprint-backlog.png y el link de la vista}
+Backlog: https://github.com/pablomanjarres/Magneto/issues
+Board: https://github.com/users/pablomanjarres/projects/3
 
 ---
 
