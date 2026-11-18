@@ -9,6 +9,7 @@ import { MatchLocked } from "../../components/MatchLocked";
 import { ButtonLink, Card, EmptyState, Eyebrow, Stat } from "../../components/primitives";
 import { Icon } from "../../components/Icon";
 import { Laptop } from "../../components/toys/Laptop";
+import { VacancyListPanel } from "../../components/VacancyListPanel";
 import { VacancyRow } from "../../components/VacancyRow";
 import { loadAppliedIds, loadRanked, requireProfile } from "../../lib/queries";
 
@@ -91,40 +92,47 @@ export default async function DashboardPage() {
       </section>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
-        <section className="flex flex-col gap-4">
-          <div className="flex items-end justify-between">
-            <h2 className="text-2xl font-black text-slate">Tus mejores coincidencias</h2>
+        <VacancyListPanel
+          title="Tus mejores coincidencias"
+          count={unscored || top.length === 0 ? undefined : `${top.length} de ${ranked.length}`}
+          action={
             <Link href="/jobs" className="text-sm font-bold text-brand hover:underline">
               Ver las {ranked.length}
             </Link>
-          </div>
-
+          }
+        >
           {top.length === 0 ? (
-            <EmptyState title="Aún no hay vacantes evaluadas">
-              Carga el dataset con <code>pnpm db:seed</code>.
-            </EmptyState>
+            <div className="p-4">
+              <EmptyState title="Aún no hay vacantes evaluadas">
+                Carga el dataset con <code>pnpm db:seed</code>.
+              </EmptyState>
+            </div>
           ) : unscored ? (
             // Every score would tie at 0, so these would be "best" only by id.
-            <MatchLocked vacancyCount={ranked.length} />
+            <div className="p-4">
+              <MatchLocked vacancyCount={ranked.length} />
+            </div>
           ) : (
-            top.map((result, index) => {
-              const vacancy = byId.get(result.vacancyId);
-              return vacancy ? (
-                <div
-                  key={result.vacancyId}
-                  className="animate-rise"
-                  style={{ animationDelay: `${150 + index * 90}ms` }}
-                >
-                  <VacancyRow
-                    vacancy={vacancy}
-                    result={result}
-                    applied={applied.has(result.vacancyId)}
-                  />
-                </div>
-              ) : null;
-            })
+            <ul className="flex flex-col pb-2">
+              {top.map((result, index) => {
+                const vacancy = byId.get(result.vacancyId);
+                return vacancy ? (
+                  <li
+                    key={result.vacancyId}
+                    className="animate-rise"
+                    style={{ animationDelay: `${150 + index * 90}ms` }}
+                  >
+                    <VacancyRow
+                      vacancy={vacancy}
+                      result={result}
+                      applied={applied.has(result.vacancyId)}
+                    />
+                  </li>
+                ) : null;
+              })}
+            </ul>
           )}
-        </section>
+        </VacancyListPanel>
 
         <Card className="flex animate-rise flex-col gap-5 p-6 [animation-delay:250ms]">
           <div>
