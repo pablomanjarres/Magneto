@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type ReactNode } from "react";
+import { useMemo, useState, type MouseEvent, type ReactNode } from "react";
 import { MATCH_BANDS, PAGE_SIZE, pageOf } from "@moonlight/core";
 import type { WorkMode } from "@moonlight/types";
 
@@ -13,8 +13,8 @@ import { workModeLabel } from "../../lib/format";
 /**
  * The list is scored on the server and never re-fetched: filtering and sorting
  * are a view over the same ranked array, so no keystroke costs a round trip.
- * Each row arrives already rendered by the server, so this file never draws a
- * second vacancy row.
+ * Each row and each preview arrive already rendered by the server, so this file
+ * never draws a vacancy itself.
  */
 export interface VacancyListItem {
   id: string;
@@ -29,6 +29,8 @@ export interface VacancyListItem {
   /** Every requirement of this vacancy, joined, so the search can reach them. */
   skills: string;
   row: ReactNode;
+  /** The same vacancy opened beside the list on wide screens. */
+  preview: ReactNode;
 }
 
 type SortKey = "match" | "salary" | "company";
@@ -47,6 +49,9 @@ const SORT_LABELS: Record<SortKey, string> = {
 };
 
 const ANY = "any";
+
+/** Wide enough for the preview column; narrower screens follow the row to /jobs/[id]. */
+const WIDE = "(min-width: 1024px)";
 
 const pillSelect =
   "h-10 cursor-pointer rounded-full border border-line bg-canvas px-4 text-sm font-bold text-ink outline-none transition hover:border-brand/40 focus:border-brand focus:ring-4 focus:ring-brand-wash";
@@ -105,6 +110,7 @@ export function VacancyFilters({
   const [hideApplied, setHideApplied] = useState(false);
   const [sort, setSort] = useState<SortKey>("match");
   const [page, setPage] = useState(1);
+  const [picked, setPicked] = useState<string | null>(null);
   const [explained, setExplained] = useState(false);
 
   // A new filter is a new list, so it starts again from its first page.
@@ -139,6 +145,8 @@ export function VacancyFilters({
     hideApplied,
   ].filter(Boolean).length;
   const filtering = active > 0;
+  // The picked vacancy while the filters still show it, else the first one.
+  const current = visible.find((item) => item.id === picked) ?? visible[0];
 
   const clear = (): void => {
     setQuery("");
@@ -148,6 +156,16 @@ export function VacancyFilters({
     setHideApplied(false);
     setPage(1);
   };
+
+  /** On wide screens a row opens beside the list; new-tab clicks and phones follow its link. */
+  function pick(event: MouseEvent, id: string): void {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+      return;
+    }
+    if (!window.matchMedia(WIDE).matches) return;
+    event.preventDefault();
+    setPicked(id);
+  }
 
   return (
     <>
@@ -211,7 +229,7 @@ export function VacancyFilters({
         )}
       </div>
 
-      <div className="animate-rise [animation-delay:120ms]">
+      <div className="grid animate-rise items-start gap-6 [animation-delay:120ms] lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)]">
         <VacancyListPanel
           heading="h1"
           title={title}
@@ -272,7 +290,8 @@ export function VacancyFilters({
               {shown.items.map((item, index) => (
                 <li
                   key={item.id}
-                  className="animate-rise"
+                  onClickCapture={(event) => pick(event, item.id)}
+                  className={`animate-rise ${item.id === current?.id ? "lg:bg-surface-strong" : ""}`}
                   style={{ animationDelay: `${(index % PAGE_SIZE) * 40}ms` }}
                 >
                   {item.row}
@@ -294,6 +313,21 @@ export function VacancyFilters({
             </div>
           )}
         </VacancyListPanel>
+
+        {current && (
+          <aside
+            aria-label="Vacante seleccionada"
+            className="hidden overflow-y-auto rounded-3xl border border-line bg-canvas lg:sticky lg:top-24 lg:block lg:max-h-[calc(100vh-7rem)]"
+          >
+            <p className="sr-only" aria-live="polite">
+              {picked ? current.title : ""}
+            </p>
+            {/* Keyed so the apply button's state starts over for each vacancy. */}
+            <div key={current.id} className="animate-rise">
+              {current.preview}
+            </div>
+          </aside>
+        )}
       </div>
     </>
   );

@@ -4,8 +4,9 @@ import { AppShell } from "../../components/AppShell";
 import { MatchLocked } from "../../components/MatchLocked";
 import { EmptyState } from "../../components/primitives";
 import { VacancyRow } from "../../components/VacancyRow";
-import { loadAppliedIds, loadRanked, requireProfile } from "../../lib/queries";
+import { loadApplied, loadRanked, requireProfile } from "../../lib/queries";
 import { VacancyFilters, type VacancyListItem } from "./VacancyFilters";
+import { VacancyPreview } from "./VacancyPreview";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +14,7 @@ export default async function JobsPage() {
   const profile = await requireProfile();
 
   const { vacancies, ranked } = await loadRanked(profile);
-  const applied = await loadAppliedIds(profile.id);
+  const applied = await loadApplied(profile.id);
   const byId = new Map(vacancies.map((v) => [v.id, v]));
   const unscored = comparisonBlockers(profile).length > 0;
 
@@ -22,7 +23,7 @@ export default async function JobsPage() {
   const items: VacancyListItem[] = ranked.flatMap((result, rank) => {
     const vacancy = byId.get(result.vacancyId);
     if (!vacancy) return [];
-    const isApplied = applied.has(vacancy.id);
+    const application = applied.get(vacancy.id);
     return [
       {
         id: vacancy.id,
@@ -30,14 +31,28 @@ export default async function JobsPage() {
         company: vacancy.company,
         city: vacancy.city,
         workMode: vacancy.workMode,
-        applied: isApplied,
+        applied: application !== undefined,
         rank,
         salaryMax: vacancy.salaryMax ?? vacancy.salaryMin,
         // Searching requirements is what makes "React" find the vacancies that
         // ask for it rather than only the ones with it in the title.
         skills: vacancy.requirements.map((r) => r.skill).join(" "),
         row: (
-          <VacancyRow vacancy={vacancy} result={result} applied={isApplied} unscored={unscored} />
+          <VacancyRow
+            vacancy={vacancy}
+            result={result}
+            applied={application !== undefined}
+            unscored={unscored}
+          />
+        ),
+        preview: (
+          <VacancyPreview
+            vacancy={vacancy}
+            result={result}
+            profileId={profile.id}
+            application={application}
+            unscored={unscored}
+          />
         ),
       },
     ];

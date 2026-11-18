@@ -11,7 +11,7 @@ import { Icon } from "../../components/Icon";
 import { Laptop } from "../../components/toys/Laptop";
 import { VacancyListPanel } from "../../components/VacancyListPanel";
 import { VacancyRow } from "../../components/VacancyRow";
-import { loadAppliedIds, loadRanked, requireProfile } from "../../lib/queries";
+import { loadApplied, loadRanked, requireProfile } from "../../lib/queries";
 
 export const dynamic = "force-dynamic";
 
@@ -19,7 +19,7 @@ export default async function DashboardPage() {
   const profile = await requireProfile();
 
   const { vacancies, completeness, ranked, gaps } = await loadRanked(profile);
-  const applied = await loadAppliedIds(profile.id);
+  const applied = await loadApplied(profile.id);
   const byId = new Map(vacancies.map((v) => [v.id, v]));
   const top = ranked.slice(0, 3);
   const topGap = gaps[0];
