@@ -154,6 +154,7 @@ Lo que el diagrama debe mostrar, tal como está en el código:
 ### Vista Física — Diagrama de Despliegue
 
 ![Despliegue](images/despliegue.jpeg)
+![DespliegueD](images/desplieguem.jpeg)
 
 
 | Nodo / Proceso                   | Contenido                                                                                   | Comunicación                                           |
