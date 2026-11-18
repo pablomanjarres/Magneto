@@ -76,27 +76,43 @@ function identityProblem(fullName: string, email: string): string | null {
   return isEmail(email) ? null : "Ese correo no es válido: debe verse como nombre@dominio.com.";
 }
 
-export function OnboardingWizard({
-  initial,
-  vacancies,
-}: {
-  initial: Profile;
-  vacancies: Vacancy[];
-}) {
-  const router = useRouter();
-  const [profile, setProfile] = useState<Profile>(initial);
-  const [step, setStep] = useState(0);
-  const [error, setError] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
-
-  const current = STEPS[step] ?? STEPS[0];
-  const completeness = profileCompleteness(profile);
-  const done = STEPS.map(
+/** Which steps have every field filled. Datos básicos also needs a name and an email it can save. */
+function doneSteps(profile: Profile): boolean[] {
+  return STEPS.map(
     (s) =>
       sectionComplete(profile, s.section) &&
       (s.section !== "basics" ||
         identityProblem(profile.fullName.trim(), profile.email.trim()) === null),
   );
+}
+
+/** The step named by `startAt`, else the first one left to fill, else the first. */
+function firstStep(profile: Profile, startAt: string | undefined): number {
+  const named = STEPS.findIndex((s) => s.section === startAt);
+  if (named !== -1) return named;
+  const open = doneSteps(profile).indexOf(false);
+  return open === -1 ? 0 : open;
+}
+
+export function OnboardingWizard({
+  initial,
+  vacancies,
+  startAt,
+}: {
+  initial: Profile;
+  vacancies: Vacancy[];
+  /** The section to open on; without one the wizard opens on the first step left to fill. */
+  startAt?: string | undefined;
+}) {
+  const router = useRouter();
+  const [profile, setProfile] = useState<Profile>(initial);
+  const [step, setStep] = useState(() => firstStep(initial, startAt));
+  const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  const current = STEPS[step] ?? STEPS[0];
+  const completeness = profileCompleteness(profile);
+  const done = doneSteps(profile);
   const { typing, area, fieldEvents, focusFirstField } = useTyping();
 
   function patch(changes: Partial<Profile>): void {

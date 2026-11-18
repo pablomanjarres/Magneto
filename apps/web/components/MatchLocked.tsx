@@ -38,7 +38,7 @@ export function MatchLocked({ vacancyCount }: { vacancyCount: number }) {
         ))}
       </ul>
       <div className="flex flex-wrap justify-center gap-2">
-        <ButtonLink href="/onboarding">
+        <ButtonLink href="/onboarding?step=skills">
           Agregar mis habilidades
           <Icon name="arrowRight" size={16} strokeWidth={2.4} />
         </ButtonLink>
