@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import type { Profile, Vacancy } from "@moonlight/types";
+import type { Application, Profile, Vacancy } from "@moonlight/types";
 import {
   getProfile,
   listApplications,
@@ -90,10 +90,10 @@ export async function loadBoard(profile: Profile) {
   return applicationCards(profile, applications, vacancies);
 }
 
-/** Which vacancies the candidate already applied to, for the Apply button. */
-export async function loadAppliedIds(profileId: string): Promise<Set<string>> {
+/** The candidate's applications by vacancy: which rows to mark, and what each Apply button shows. */
+export async function loadApplied(profileId: string): Promise<Map<string, Application>> {
   const applications = await listApplications(profileId);
-  return new Set(applications.map((a) => a.vacancyId));
+  return new Map(applications.map((a) => [a.vacancyId, a]));
 }
 
 /** The last `limit` things the candidate did, already written as sentences. */
