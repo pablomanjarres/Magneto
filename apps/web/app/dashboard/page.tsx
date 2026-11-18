@@ -6,6 +6,7 @@ import { CompletenessPanel } from "../../components/CompletenessPanel";
 import { CountUp } from "../../components/CountUp";
 import { MarketGaps } from "../../components/MarketGaps";
 import { MatchLocked } from "../../components/MatchLocked";
+import { SiteQr } from "../../components/SiteQr";
 import { ButtonLink, Card, EmptyState, Eyebrow, Stat } from "../../components/primitives";
 import { Icon } from "../../components/Icon";
 import { Laptop } from "../../components/toys/Laptop";
@@ -36,6 +37,7 @@ export default async function DashboardPage() {
 
   return (
     <AppShell>
+      <SiteQr />
       <section className="relative isolate grid animate-pop overflow-hidden rounded-[32px] bg-navy text-white lg:grid-cols-[1.1fr_1fr]">
         {/* Aurora behind everything, in the two brand purples. */}
         <div className="pointer-events-none absolute -top-40 -left-24 -z-10 size-[520px] rounded-full bg-brand/45 blur-[110px] motion-safe:animate-aurora" />
