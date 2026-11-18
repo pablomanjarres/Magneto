@@ -207,7 +207,8 @@ export function Score({ score, large = false }: { score: number | null; large?: 
   );
 }
 
-export type ChipTone = "plain" | "dashed" | "met" | "missing" | "brand" | "next";
+export type ChipTone =
+  "plain" | "dashed" | "met" | "missing" | "brand" | "next" | "nextDark" | "dashedDark";
 
 const CHIP_TONES: Record<ChipTone, string> = {
   plain: "bg-surface text-ink",
@@ -217,18 +218,47 @@ const CHIP_TONES: Record<ChipTone, string> = {
   brand: "bg-brand-wash text-brand",
   // The one thing to do next, among dashed chips.
   next: "bg-brand text-white",
+  // The same pair on the navy hero.
+  nextDark: "bg-mint text-mint-ink",
+  dashedDark: "border border-dashed border-white/40 text-white/85",
 };
 
-export function Chip({ children, tone = "plain" }: { children: ReactNode; tone?: ChipTone }) {
-  return (
-    <span
-      className={`inline-flex w-fit items-center gap-1.5 rounded-full px-3 py-1 text-[13px] font-bold ${CHIP_TONES[tone]}`}
-    >
+/**
+ * What a chip adds when it is a link: a hover that keeps its text readable, and
+ * a focus ring that shows on navy. Only the completeness chips are ever linked.
+ */
+const CHIP_LINK_TONES: Partial<Record<ChipTone, string>> = {
+  dashed: "hover:border-brand hover:text-brand",
+  next: "hover:bg-navy",
+  nextDark: "hover:bg-mint-hover focus-visible:outline-mint",
+  dashedDark: "hover:border-white hover:bg-white/10 hover:text-white focus-visible:outline-mint",
+};
+
+/** A small pill. With `href` it is the same pill as a link. */
+export function Chip({
+  children,
+  tone = "plain",
+  href,
+}: {
+  children: ReactNode;
+  tone?: ChipTone;
+  href?: string | undefined;
+}) {
+  const className = `inline-flex w-fit items-center gap-1.5 rounded-full px-3 py-1 text-[13px] font-bold ${CHIP_TONES[tone]}`;
+  const body = (
+    <>
       {tone === "met" && <Icon name="check" size={12} strokeWidth={3} />}
       {tone === "missing" && <Icon name="close" size={12} strokeWidth={3} />}
       {tone === "dashed" && <span className="size-1.5 rounded-full bg-control" />}
       {children}
-    </span>
+    </>
+  );
+  return href === undefined ? (
+    <span className={className}>{body}</span>
+  ) : (
+    <Link href={href} className={`${className} transition ${CHIP_LINK_TONES[tone] ?? ""}`}>
+      {body}
+    </Link>
   );
 }
 
