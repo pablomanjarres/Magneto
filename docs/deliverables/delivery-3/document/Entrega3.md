@@ -54,11 +54,14 @@ La demostración y la sustentación son de ambos.
 
 Técnica de Retrospectiva utilizada: Se aplicó la dinámica de las 4Ls (Liked, Learned, Lacked, Longed for) para evaluar tanto los resultados técnicos internos como la retroalimentación recibida durante la reunión de revisión (Sprint Review) con el Product Owner.   
 
-Resultados del análisis:Liked (Lo que gustó): La estabilidad alcanzada en la arquitectura base con Docker y PostgreSQL, además de las 78 pruebas de dominio exitosas que respaldaron la entrega.Learned (Lo que se aprendió): A partir de los consejos recibidos por el Product Owner, comprendimos la importancia de que la identidad visual del producto refleje fielmente la marca del cliente. A nivel técnico, confirmamos que asegurar primero el flujo central del MVP facilita hacer ajustes visuales y funcionales posteriores sin romper la lógica del sistema.
+Resultados del análisis:
+- Liked (Lo que gustó): La estabilidad alcanzada en la arquitectura base con Docker y PostgreSQL, además de las 78 pruebas de dominio exitosas que respaldaron la entrega.
+- 
+- Learned (Lo que se aprendió): A partir de los consejos recibidos por el Product Owner, comprendimos la importancia de que la identidad visual del producto refleje fielmente la marca del cliente. A nivel técnico, confirmamos que asegurar primero el flujo central del MVP facilita hacer ajustes visuales y funcionales posteriores sin romper la lógica del sistema.
 
-Lacked (Lo que faltó): Una alineación estética más temprana con la paleta de colores corporativa de la marca, ya que en el sprint anterior se priorizó la estructura funcional sobre la identidad gráfica.
+- Lacked (Lo que faltó): Una alineación estética más temprana con la paleta de colores corporativa de la marca, ya que en el sprint anterior se priorizó la estructura funcional sobre la identidad gráfica.
 
-Longed for (Lo que se deseó): Haber validado los lineamientos visuales de la marca desde el diseño inicial de los prototipos para evitar retrabajos en los estilos de la interfaz.
+- Longed for (Lo que se deseó): Haber validado los lineamientos visuales de la marca desde el diseño inicial de los prototipos para evitar retrabajos en los estilos de la interfaz.
 
 Acciones de mejora aplicadas en el Sprint 3:  
 Rediseño de identidad visual (UI): Ajustar la interfaz gráfica en Next.js para incorporar la paleta de colores oficial de la marca, siguiendo directamente las recomendaciones del Product Owner.
